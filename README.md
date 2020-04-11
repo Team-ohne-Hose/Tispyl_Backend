@@ -6,6 +6,8 @@ through the docker container found under the docker directory.
 
 ## Getting started
 
+Running the backend requires docker. Install ```Docker Desktop``` for windows and ```docker``` on unix.
+
 Building the docker container that hosts the predefined MariaDB:
 ```
 cd <project root>/docker
