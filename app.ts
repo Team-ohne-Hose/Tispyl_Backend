@@ -1,4 +1,5 @@
 import express from 'express';
+import {Request, Response} from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'colyseus';
@@ -23,12 +24,24 @@ const gameServer = new Server({
 
 gameServer.define('game', GameRoom);
 
+// Logging
+app.use((req: Request, res, next) => {
+    const now = new Date(Date.now()).toLocaleTimeString();
+    const queries = JSON.stringify(req.query);
+    const params = JSON.stringify(req.params);
+    const body = JSON.stringify(req.body);
+    console.log(`[${now}] Got: ${req.method} at ${req.originalUrl} with query: ${queries} params: ${params} body ${body}`);
+    next();
+});
+
 // Routing
 app.use('/colyseus', monitor());
 app.use('/api', apiRouter);
 app.use('/', (req, res, next) => {
     res.sendFile(__dirname + "/views/index.html")
 });
+
+
 
 gameServer.onShutdown(function(){
     console.log(`game server is going down.`);

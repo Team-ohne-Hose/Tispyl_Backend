@@ -32,11 +32,19 @@ export class MariaDAO {
         return connection.query('SELECT * FROM BrettSpiel.User');
     }
 
-    async getUser(userId: number): Promise<any> {
+    async getUserById(userId: number): Promise<any> {
         const connection = await this.pool.getConnection();
         return connection.query(
             {namedPlaceholders: true, sql: 'SELECT * FROM BrettSpiel.User WHERE user_id=:id'},
             {id: userId}
+        );
+    }
+
+    async getUserByLogginName(name: string): Promise<any> {
+        const connection = await this.pool.getConnection();
+        return connection.query(
+            {namedPlaceholders: true, sql: 'SELECT * FROM BrettSpiel.User WHERE login_name=:ln'},
+            {ln: name}
         );
     }
 
@@ -61,6 +69,14 @@ export class MariaDAO {
         return connection.query(
             {namedPlaceholders: true, sql: 'UPDATE BrettSpiel.User SET login_name=:ln, display_name=:dn, password_hash=:ph WHERE user_id=:id'},
             {ln: user.login_name, dn: user.display_name, ph: user.password_hash, id: user.user_id}
+        );
+    }
+
+    async findLogin(login_name: string, password_hash: string): Promise<any> {
+        const connection = await this.pool.getConnection();
+        return connection.query(
+            {namedPlaceholders: true, sql: 'SELECT * FROM BrettSpiel.User WHERE login_name=:ln AND password_hash=:ph'},
+            {ln: login_name, ph: password_hash}
         );
     }
 }
