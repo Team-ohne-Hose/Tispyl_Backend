@@ -4,6 +4,8 @@ import {Client, Room} from "colyseus";
 
 export class GameRoom extends Room {
 
+    playerNames = new Map<string, string>();
+
     onCreate(options: any): void | Promise<any> {
         console.log("onCreate was triggered with: ", options);
 
@@ -22,6 +24,9 @@ export class GameRoom extends Room {
 
     onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
         console.log("onJoin was triggered");
+        this.playerNames.set(client.id, options.displayName);
+        console.log('options were: ', options);
+        this.broadcast({type: 'JOIN_MESSAGE', content: { message: `[Server] ${this.playerNames.get(client.id)}(${client.id}) joined the game` }});
 
         return undefined;
     }
@@ -34,7 +39,7 @@ export class GameRoom extends Room {
 
     onMessage(client: Client, data: any): void {
         console.log("onMessage was triggered", data);
-        this.broadcast({type: 'CHAT_MESSAGE', content: { message: `[${client.id}] ${data.content.message}` }})
+        this.broadcast({type: 'CHAT_MESSAGE', content: { message: `[${this.playerNames.get(client.id)}] ${data.content.message}` }})
     }
 
 }
