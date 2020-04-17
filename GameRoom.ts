@@ -33,8 +33,8 @@ export class GameRoom extends Room {
     }
 
     onMessage(client: Client, data: any): void {
-        console.log("onMessage was triggered");
-
+        console.log("onMessage was triggered", data);
+        this.broadcast({type: 'CHAT_MESSAGE', content: { message: `[${client.id}] ${data.content.message}` }})
     }
 
 }
