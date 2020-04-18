@@ -46,7 +46,9 @@ export class GameRoom extends Room<GameState> {
         if (data.type === 'CHAT_MESSAGE') {
             this.broadcast({type: 'CHAT_MESSAGE', content: { message: `[${this.playerNames.get(client.id)}] ${data.content.message}` }})
         } else if (data.type === 'ADVANCE_ROUND') {
-            this.state.nextRound()
+            this.state.nextRound();
+        } else if (data.type === 'ADVANCE_ACTION') {
+            this.state.nextAction();
         } else {
             console.error("Unknown data: ", data);
         }
