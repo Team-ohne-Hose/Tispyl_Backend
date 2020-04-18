@@ -1,18 +1,22 @@
 import {Client, Room} from "colyseus";
+import {GameState} from "./GameState";
 
 
 
-export class GameRoom extends Room {
+export class GameRoom extends Room<GameState> {
 
     playerNames = new Map<string, string>();
 
     onCreate(options: any): void | Promise<any> {
         console.log("onCreate was triggered with: ", options);
 
+        this.setState(new GameState());
+
         this.setMetadata({
             lobbyName: options['name'],
             author: options['author']
         });
+
         return undefined;
     }
 
@@ -39,7 +43,13 @@ export class GameRoom extends Room {
 
     onMessage(client: Client, data: any): void {
         console.log("onMessage was triggered", data);
-        this.broadcast({type: 'CHAT_MESSAGE', content: { message: `[${this.playerNames.get(client.id)}] ${data.content.message}` }})
+        if (data.type === 'CHAT_MESSAGE') {
+            this.broadcast({type: 'CHAT_MESSAGE', content: { message: `[${this.playerNames.get(client.id)}] ${data.content.message}` }})
+        } else if (data.type === 'ADVANCE_ROUND') {
+            this.state.nextRound()
+        } else {
+            console.error("Unknown data: ", data);
+        }
     }
 
 }
