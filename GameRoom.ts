@@ -1,5 +1,6 @@
 import {Client, Room} from "colyseus";
-import {GameState} from "./GameState";
+import {GameState} from "./model/state/GameState";
+import {PhysicsCommand} from "./model/WsData";
 
 
 
@@ -41,7 +42,7 @@ export class GameRoom extends Room<GameState> {
     }
 
     onMessage(client: Client, data: any): void {
-        console.log('Got: ', data);
+        console.log('Got: ', data.type, data.message ? data.message.subType : '');
         if (data.type === 'CHAT_MESSAGE') {
             this.broadcast({type: 'CHAT_MESSAGE', content: { message: `[${this.playerNames.get(client.id)}] ${data.content.message}` }})
         } else if (data.type === 'ADVANCE_ROUND') {
@@ -52,6 +53,12 @@ export class GameRoom extends Room<GameState> {
             this.state.nextTurn();
         } else if (data.type === 'SET_STARTING_CONDITIONS') {
             this.state.startGame();
+        } else if (data.type === 'SERVER_COMMAND') {
+            if (data.content.subType === 'listphysics') {
+                this.broadcast({type: 'CHAT_MESSAGE', content: { message: 'Objects' + this.state.physicsState.listPhysicsItems()}});
+            }
+        } else if (data.type === 'PHYSICS_COMMAND') {
+            this.state.physicsState.handlePhysicsCommand(data.content as PhysicsCommand, data);
         } else {
             console.error("Unknown data: ", data);
         }

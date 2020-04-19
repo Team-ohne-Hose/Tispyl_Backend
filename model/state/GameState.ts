@@ -1,4 +1,5 @@
 import {Schema, ArraySchema, type} from "@colyseus/schema"
+import {PhysicsState} from "./PhysicsState";
 
 enum Actions {
     ROLL,
@@ -16,6 +17,9 @@ export class GameState extends Schema {
 
     @type('string')
     action: string = Actions[Actions.EXECUTE];
+
+    @type(PhysicsState)
+    physicsState = new PhysicsState();
 
     internalPlayerList: Map<string, string> = new Map<string, string>();
     turnIndex = 0;
@@ -58,5 +62,4 @@ export class GameState extends Schema {
             this.turn = Array.from( this.internalPlayerList.values() )[0];
             this.action = Actions[Actions.ROLL];
     }
-
 }
