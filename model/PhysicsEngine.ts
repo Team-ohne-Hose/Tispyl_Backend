@@ -145,9 +145,10 @@ export class PhysicsEngine {
                                 this.disposeFromViewport(phys);
                             }
                         }
-                    } else if (key >= 0) {
+                    } else { //  if (key >= 0)
                         this.networkObjects[key].position.set(p.x(), p.y(), p.z());
                         this.networkObjects[key].quaternion.set(q.x(), q.y(), q.z(), q.w());
+                        // console.log('rot: ', key, q.x(), q.y(), q.z(), q.w());
                     }
                 }
             }
@@ -197,12 +198,14 @@ export class PhysicsEngine {
     }
 
     setRotationQuat(objID: number, x: number, y: number, z: number, w: number) {
-        const ms = this.getPhysicsObjectByID(objID).physicsBody.getMotionState();
+        const pBody = this.getPhysicsObjectByID(objID).physicsBody;
+        const ms = pBody.getMotionState();
         if (ms) {
             this.tmpQuat.setValue(x, y, z, w);
             this.tmpTrans.setIdentity();
             this.tmpTrans.setRotation(this.tmpQuat);
             ms.setWorldTransform(this.tmpTrans);
+            // pBody.setWorldTransform(this.tmpTrans);
         }
     }
 
@@ -218,14 +221,17 @@ export class PhysicsEngine {
         const transform = new Ammo.btTransform();
         transform.setIdentity();
         transform.setOrigin(new Ammo.btVector3(params.posX, params.posY, params.posZ));
-        transform.setRotation(new Ammo.btQuaternion(params.quatX, params.quatY, params.quatZ, params.quatW));
+        transform.setRotation(new Ammo.btQuaternion(0, 0, 0, 1)); //params.quatX, params.quatY, params.quatZ, params.quatW));
         const motionState = new Ammo.btDefaultMotionState(transform);
 
 
-        let colShape = new Ammo.btSphereShape( 1 );
-        colShape.setMargin( 0.05 );
+        // let colShape = new Ammo.btSphereShape( 1 );
+        // colShape.setMargin( 0.05 );
 
-        const rbInfo = new Ammo.btRigidBodyConstructionInfo(phys.mass, motionState, params.shape); //  colShape); //
+        let localInertia = new Ammo.btVector3( 0, 0, 0 );
+        params.shape.calculateLocalInertia( phys.mass, localInertia );
+
+        const rbInfo = new Ammo.btRigidBodyConstructionInfo(phys.mass, motionState, params.shape, localInertia); //  colShape); //
         const body = new Ammo.btRigidBody(rbInfo);
 
         body.setFriction(0.5);
