@@ -1,6 +1,5 @@
 import {MapSchema, Schema, type} from "@colyseus/schema";
 import {CollisionGroups, PhysicsEngine, PhysicsObject} from "../PhysicsEngine";
-import Ammo from "ammojs-typed";
 import {PhysicsCommand, PhysicsCommandType} from "../WsData";
 
 export enum OnDeleteBehaviour {
@@ -70,6 +69,7 @@ export class PhysicsState extends Schema {
     objects = new MapSchema<PhysicsObjectState>();
 
     private readonly physicsEngine: PhysicsEngine;
+    private idCounter = 1;
 
     constructor() {
         super();
@@ -82,12 +82,8 @@ export class PhysicsState extends Schema {
         return undefined;
     }
 
-    // TODO implement rendering
-    renderPhysics() {
-        this.physicsEngine.updatePhysics()
-    }
-    handlePhysicsCommand(cmd: PhysicsCommand, raw: any) {
-        if (cmd !== undefined && cmd.subType !== undefined) {
+    handlePhysicsCommand(cmd: PhysicsCommand) {
+        console.log('PCMD: ', cmd.subType, cmd['objectID']);
             switch (cmd.subType) {
                 case PhysicsCommandType.create:
                     const pos = new Vector(cmd.positionX, cmd.positionY, cmd.positionZ);
@@ -112,10 +108,15 @@ export class PhysicsState extends Schema {
                 case PhysicsCommandType.angularVelocity:
                     this.setAngularVelocity(cmd.objectID, cmd.angularX, cmd.angularY, cmd.angularZ);
                     break;
+                default:
+                    console.log('PhysicsCommand not recognised', cmd);
+                    break;
             }
-        } else {
-            console.log('PhysicsCommand not recognised', raw)
-        }
+    }
+    getNewId(): number {
+        this.idCounter++;
+        console.log('gave out id ', this.idCounter);
+        return this.idCounter;
     }
 
     listPhysicsItems(): string {

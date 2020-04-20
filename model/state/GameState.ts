@@ -10,6 +10,20 @@ enum Actions {
 class Player extends Schema {
     @type('string')
     displayName: string;
+    @type('number')
+    figureId: number;
+    @type('number')
+    figureColor: number;
+    @type('number')
+    currentTile: number;
+
+    setFigure(id: number, color: number) {
+        this.figureId = id;
+        this.figureColor = color;
+    }
+    setTile(tile: number) {
+        this.currentTile = tile;
+    }
 }
 
 export class GameState extends Schema {
@@ -65,6 +79,18 @@ export class GameState extends Schema {
 
     removePlayer(id: string) {
         delete this.playerList[id]
+    }
+
+    getPlayer(id: string): Player {
+        return this.playerList[id];
+    }
+    getPlayerByFigure(id: number): Player {
+        for (let key in this.playerList) {
+            const player: Player = this.playerList[key];
+            if (player.figureId === id) {
+                return player;
+            }
+        }
     }
 
     startGame() {
