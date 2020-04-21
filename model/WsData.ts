@@ -31,10 +31,11 @@ export enum GameActionType {
   advanceRound,
   advanceAction,
   advanceTurn,
+  readyPropertyChange,
   setStartingCondition,
   setTile
 }
-export type GameMessage = GameAction | GameSetTile;
+export type GameMessage = GameAction | GameSetTile | GameReadyProperty;
 type actionTypes = GameActionType.none |
     GameActionType.advanceRound |
     GameActionType.advanceAction |
@@ -43,6 +44,11 @@ type actionTypes = GameActionType.none |
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
   action: actionTypes;
+}
+export interface GameReadyProperty {
+    type: MessageType.GAME_MESSAGE;
+    action: GameActionType.readyPropertyChange;
+    isReady: boolean;
 }
 export interface GameSetTile {
   type: MessageType.GAME_MESSAGE;

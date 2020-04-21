@@ -101,6 +101,17 @@ export class GameRoom extends Room<GameState> {
                         if (player !== undefined) {
                             player.setTile(data.tileId);
                         }
+                        break;
+                    case GameActionType.readyPropertyChange:
+                        this.state.playerList[client.id].isReady = data.isReady;
+                        let allReady = true;
+                        for (let id in this.state.playerList) {
+                            if (!this.state.playerList[id].isReady) { allReady = false }
+                        }
+                        if (allReady) {
+                            this.state.startGame()
+                        }
+                        break;
                     case GameActionType.none:
                     default:
                         console.log('nothing to do to that action');

@@ -12,6 +12,8 @@ class Player extends Schema {
     displayName: string;
     @type('boolean')
     isCurrentHost: boolean;
+    @type('boolean')
+    isReady: boolean;
     @type('number')
     figureId: number;
     @type('number')
@@ -41,6 +43,9 @@ export class GameState extends Schema {
 
     @type('string')
     hostSession: string = '';
+
+    @type('boolean')
+    hasStarted: boolean = false;
 
     @type(PhysicsState)
     physicsState = new PhysicsState();
@@ -103,6 +108,7 @@ export class GameState extends Schema {
         this.turnIndex = 0;
         this.turn = this.asArray(this.playerList)[0].displayName;
         this.action = Actions[Actions.ROLL];
+        this.hasStarted = true;
     }
 
     setHost(clientId: string) {
