@@ -10,6 +10,22 @@ enum Actions {
 class Player extends Schema {
     @type('string')
     displayName: string;
+    @type('boolean')
+    isCurrentHost: boolean;
+    @type('number')
+    figureId: number;
+    @type('number')
+    figureColor: number;
+    @type('number')
+    currentTile: number;
+
+    setFigure(id: number, color: number) {
+        this.figureId = id;
+        this.figureColor = color;
+    }
+    setTile(tile: number) {
+        this.currentTile = tile;
+    }
 }
 
 export class GameState extends Schema {
@@ -22,6 +38,9 @@ export class GameState extends Schema {
 
     @type('string')
     action: string = Actions[Actions.EXECUTE];
+
+    @type('string')
+    hostSession: string = '';
 
     @type(PhysicsState)
     physicsState = new PhysicsState();
@@ -67,11 +86,31 @@ export class GameState extends Schema {
         delete this.playerList[id]
     }
 
+    getPlayer(id: string): Player {
+        return this.playerList[id];
+    }
+    getPlayerByFigure(id: number): Player {
+        for (let key in this.playerList) {
+            const player: Player = this.playerList[key];
+            if (player.figureId === id) {
+                return player;
+            }
+        }
+    }
+
     startGame() {
         this.round = 1;
         this.turnIndex = 0;
         this.turn = this.asArray(this.playerList)[0].displayName;
         this.action = Actions[Actions.ROLL];
+    }
+
+    setHost(clientId: string) {
+        const hostCandidate: Player = this.playerList[clientId];
+        if (hostCandidate !== undefined) {
+            hostCandidate.isCurrentHost = true;
+            this.hostSession = clientId;
+        }
     }
 
     private asArray<T>(map: MapSchema<T>): T[] {
