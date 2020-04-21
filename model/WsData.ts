@@ -59,45 +59,49 @@ export interface SetFigure {
 }
 
 export enum PhysicsCommandType {
-  getNewId,
-  create,
+  addEntity,
   remove,
   kinematic,
   position,
   quaternion,
   velocity,
-  angularVelocity
+  angularVelocity,
+  getNewId,
+  create
 }
 export type PhysicsCommand = PhysicsCommandKinematic |
-    PhysicsCommandCreate    |
     PhysicsCommandRemove    |
     PhysicsCommandPosition  |
     PhysicsCommandQuat      |
     PhysicsCommandVelocity  |
     PhysicsCommandAngular   |
-    PhysicsCommandGetNewId;
+    PhysicsCommandAddEntity;
+export enum PhysicsEntity {
+  dice,
+  figure
+}
+export enum PhysicsEntityVariation {
+  default
+}
+export interface PhysicsCommandAddEntity {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.addEntity;
+  entity: number;
+  posX: number;
+  posY: number;
+  posZ: number;
+  rotX: number;
+  rotY: number;
+  rotZ: number;
+  rotW: number;
+  color: number;
+  variant: PhysicsEntityVariation;
+}
 export interface PhysicsCommandKinematic {
   type: MessageType.PHYSICS_MESSAGE;
   subType: PhysicsCommandType.kinematic;
   objectID: number;
   kinematic: boolean;
-}
-export interface PhysicsCommandCreate {
-  type: MessageType.PHYSICS_MESSAGE;
-  subType: PhysicsCommandType.create;
-  objectID: number;
-  geo: ArrayLike<number>;
-  mass: number;
-  colGroup: number;
-  colMask: number;
-  behavior: number;
-  positionX: number;
-  positionY: number;
-  positionZ: number;
-  quaternionX: number;
-  quaternionY: number;
-  quaternionZ: number;
-  quaternionW: number;
 }
 export interface PhysicsCommandRemove {
   type: MessageType.PHYSICS_MESSAGE;
@@ -137,11 +141,6 @@ export interface PhysicsCommandAngular {
   angularY: number;
   angularZ: number;
 }
-export interface PhysicsCommandGetNewId {
-  type: MessageType.PHYSICS_MESSAGE;
-  subType: PhysicsCommandType.getNewId;
-  id: number;
-}
 
 export type DebugCommand = ListPhysics;
 export enum DebugCommandType {
@@ -151,4 +150,3 @@ export interface ListPhysics {
   type: MessageType.DEBUG_COMMAND;
   subType: DebugCommandType.listPhysics;
 }
-

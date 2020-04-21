@@ -1,6 +1,7 @@
 import {MapSchema, Schema, type} from "@colyseus/schema";
 import {CollisionGroups, PhysicsEngine, PhysicsObject} from "../PhysicsEngine";
 import {PhysicsCommand, PhysicsCommandType} from "../WsData";
+import {EntityLoader} from "../EntityLoader";
 
 export enum OnDeleteBehaviour {
     default
@@ -70,10 +71,12 @@ export class PhysicsState extends Schema {
 
     private readonly physicsEngine: PhysicsEngine;
     private idCounter = 1;
+    private loader: EntityLoader
 
     constructor() {
         super();
         this.physicsEngine = new PhysicsEngine(this.objects);
+        this.loader = new EntityLoader();
     }
 
 
@@ -85,10 +88,13 @@ export class PhysicsState extends Schema {
     handlePhysicsCommand(cmd: PhysicsCommand) {
         console.log('PCMD: ', cmd.subType, cmd['objectID']);
             switch (cmd.subType) {
-                case PhysicsCommandType.create:
-                    const pos = new Vector(cmd.positionX, cmd.positionY, cmd.positionZ);
-                    const quat = new Quaternion(cmd.quaternionX, cmd.quaternionY, cmd.quaternionZ, cmd.quaternionW);
-                    this.addPhysicsObject(cmd.objectID, pos, quat, cmd.geo, cmd.mass, cmd.colGroup, cmd.colMask, cmd.behavior)
+                case PhysicsCommandType.addEntity:
+                    // TODO: use color
+                    const id = this.getNewId();
+                    const pos = new Vector(cmd.posX, cmd.posY, cmd.posZ);
+                    const quat = new Quaternion(cmd.rotX, cmd.rotY, cmd.rotZ, cmd.rotW);
+                    const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat);
+                    this.loader.load(this.physicsEngine, obj, cmd.entity, cmd.variant);
                     break;
                 case PhysicsCommandType.remove:
                     this.removePhysicsObject(cmd.objectID);

@@ -6,8 +6,6 @@ import {
     GameActionType,
     JoinMessage,
     MessageType,
-    PhysicsCommandGetNewId,
-    PhysicsCommandType,
     PlayerMessageType,
     WsData
 } from "./model/WsData";
@@ -101,14 +99,6 @@ export class GameRoom extends Room<GameState> {
                 break;
             case MessageType.PHYSICS_MESSAGE:
                 switch (data.subType) {
-                    case PhysicsCommandType.getNewId:
-                        const msg: PhysicsCommandGetNewId = {
-                            type: MessageType.PHYSICS_MESSAGE,
-                            subType: PhysicsCommandType.getNewId,
-                            id: this.state.physicsState.getNewId()
-                        }
-                        this.send(client, msg);
-                        break;
                     default:
                         this.state.physicsState.handlePhysicsCommand(data);
                         break;
