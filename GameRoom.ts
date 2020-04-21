@@ -13,8 +13,6 @@ import {
 
 export class GameRoom extends Room<GameState> {
 
-    playerNames = new Map<string, string>();
-
     onCreate(options: any): void | Promise<any> {
         console.log("onCreate was triggered with: ", options);
 
@@ -35,19 +33,40 @@ export class GameRoom extends Room<GameState> {
     }
 
     onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
-        this.playerNames.set(client.id, options.displayName);
         this.state.addPlayer(client.id, options.displayName);
-        console.log('options were: ', options);
+        if (this.state.hostSession === '') { this.state.setHost(client.id) }
+        console.log('Options were: ', options);
         const msg: JoinMessage = {
             type: MessageType.JOIN_MESSAGE,
-            message: `[Server] ${this.playerNames.get(client.id)}(${client.id}) joined the game`
+            message: `[SERVER] ${this.state.playerList[client.id].displayName}(${client.id}) joined the game`
         };
         this.broadcast(msg);
         return undefined;
     }
 
     onLeave(client: Client, consented?: boolean): void | Promise<any> {
-        console.log("onLeave was triggered");
+        console.log("OnLeave(): Client left the room:", client);
+        if (client.id === this.state.hostSession) {
+            this.broadcast({
+                type: MessageType.LEFT_MESSAGE,
+                message: `[SERVER] The host: ${this.state.playerList[client.id].displayName} left the game.`
+            });
+            this.state.removePlayer(client.id);
+            // only way to access 'first' element...
+            for (let id in this.state.playerList) {
+                this.state.setHost(id);
+                this.broadcast({
+                    type: MessageType.CHAT_MESSAGE,
+                    message: `[SERVER] Player: ${this.state.playerList[id].displayName} is now host of the game.`
+                });
+                break;
+            }
+        } else {
+            this.broadcast({
+                type: MessageType.CHAT_MESSAGE,
+                message: `[SERVER] Player: ${this.state.playerList[client.id].displayName} left the game.`
+            });
+        }
         this.state.removePlayer(client.id);
         return undefined;
     }
@@ -57,8 +76,8 @@ export class GameRoom extends Room<GameState> {
             case MessageType.CHAT_MESSAGE:
                 const msg: ChatMessage = {
                     type: MessageType.CHAT_MESSAGE,
-                    message: `[${this.playerNames.get(client.id)}] ${data.message}`
-                }
+                    message: `[${this.state.playerList[client.id].displayName}] ${data.message}`
+                };
                 this.broadcast(msg);
                 break;
             case MessageType.JOIN_MESSAGE:
@@ -107,7 +126,7 @@ export class GameRoom extends Room<GameState> {
             case MessageType.DEBUG_COMMAND:
                 switch (data.subType) {
                     case DebugCommandType.listPhysics:
-                        this.state.physicsState.listPhysicsItems()
+                        this.state.physicsState.listPhysicsItems();
                         break;
                 }
                 break;
@@ -118,5 +137,4 @@ export class GameRoom extends Room<GameState> {
                 break;
         }
     }
-
 }

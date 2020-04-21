@@ -10,6 +10,8 @@ enum Actions {
 class Player extends Schema {
     @type('string')
     displayName: string;
+    @type('boolean')
+    isCurrentHost: boolean;
     @type('number')
     figureId: number;
     @type('number')
@@ -36,6 +38,9 @@ export class GameState extends Schema {
 
     @type('string')
     action: string = Actions[Actions.EXECUTE];
+
+    @type('string')
+    hostSession: string = '';
 
     @type(PhysicsState)
     physicsState = new PhysicsState();
@@ -98,6 +103,14 @@ export class GameState extends Schema {
         this.turnIndex = 0;
         this.turn = this.asArray(this.playerList)[0].displayName;
         this.action = Actions[Actions.ROLL];
+    }
+
+    setHost(clientId: string) {
+        const hostCandidate: Player = this.playerList[clientId];
+        if (hostCandidate !== undefined) {
+            hostCandidate.isCurrentHost = true;
+            this.hostSession = clientId;
+        }
     }
 
     private asArray<T>(map: MapSchema<T>): T[] {

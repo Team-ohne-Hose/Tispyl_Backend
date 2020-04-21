@@ -3,6 +3,7 @@ export enum MessageType {
   OTHER,
   CHAT_MESSAGE,
   JOIN_MESSAGE,
+  LEFT_MESSAGE,
   GAME_MESSAGE,
   PLAYER_MESSAGE,
   PHYSICS_MESSAGE,
@@ -19,6 +20,10 @@ export interface ChatMessage {
 }
 export interface JoinMessage {
   type: MessageType.JOIN_MESSAGE;
+  message: string;
+}
+export interface LeftMessage {
+  type: MessageType.LEFT_MESSAGE;
   message: string;
 }
 export enum GameActionType {
