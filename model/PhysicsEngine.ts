@@ -85,11 +85,11 @@ export class PhysicsEngine {
     addGameBoard() {
         const transform = new Ammo.btTransform();
         transform.setIdentity();
-        transform.setOrigin( new Ammo.btVector3( 0, -.5, 0 ) );
+        transform.setOrigin( new Ammo.btVector3( 0, -.1, 0 ) );
         transform.setRotation( new Ammo.btQuaternion( 0, 0, 0, 1 ) );
         let motionState = new Ammo.btDefaultMotionState( transform );
 
-        let colShape = new Ammo.btBoxShape( new Ammo.btVector3( 100, 1,100) );
+        let colShape = new Ammo.btBoxShape( new Ammo.btVector3( 50, .5,50) );
         colShape.setMargin( 0.05 );
 
         let localInertia = new Ammo.btVector3( 0, 0, 0 );
@@ -232,7 +232,7 @@ export class PhysicsEngine {
             ms.getWorldTransform(this.tmpTrans);
             this.tmpVec3 = this.tmpTrans.getOrigin();
             this.tmpTrans.setIdentity();
-            this.tmpTrans.setOrigin(this.tmpVec3);
+            // this.tmpTrans.setOrigin(this.tmpVec3);
             this.tmpTrans.setRotation(this.tmpQuat);
             ms.setWorldTransform(this.tmpTrans);
             // pBody.setWorldTransform(this.tmpTrans);

@@ -113,7 +113,7 @@ export class PhysicsState extends Schema {
     }
 
     handlePhysicsCommand(cmd: PhysicsCommand) {
-        console.log('PCMD: ', cmd.subType, cmd['objectID']);
+        // console.log('PCMD: ', cmd.subType, cmd['objectID']);
             switch (cmd.subType) {
                 case PhysicsCommandType.addEntity:
                     // TODO: use color
