@@ -50,7 +50,7 @@ export class EntityLoader {
         }
     }
     private readonly resourcePath = __dirname + '/../resources/models/';
-    private geometries: GeometryList = {
+    private static geometries: GeometryList = {
         diceDefault: undefined,
         figureDefault: undefined
     }
@@ -133,20 +133,20 @@ export class EntityLoader {
             case PhysicsEntity.dice:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
-                        if (this.geometries.diceDefault === undefined) {
-                            this.geometries.diceDefault = await this.loadModel(this.constantProperties.dice.default.fname);
+                        if (EntityLoader.geometries.diceDefault === undefined) {
+                            EntityLoader.geometries.diceDefault = await this.loadModel(this.constantProperties.dice.default.fname);
                         }
-                        return this.geometries.diceDefault;
+                        return EntityLoader.geometries.diceDefault;
                         break;
                 }
                 break;
             case PhysicsEntity.figure:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
-                        if (this.geometries.figureDefault === undefined) {
-                            this.geometries.figureDefault = await this.loadModel(this.constantProperties.figure.default.fname);
+                        if (EntityLoader.geometries.figureDefault === undefined) {
+                            EntityLoader.geometries.figureDefault = await this.loadModel(this.constantProperties.figure.default.fname);
                         }
-                        return this.geometries.figureDefault;
+                        return EntityLoader.geometries.figureDefault;
                         break;
                 }
                 break;
