@@ -57,6 +57,15 @@ export class PhysicsEngine {
     deletionPlane = -15;
     disposeFromViewport: (obj: PhysicsObject) => boolean;
 
+    init() {
+        Ammo(Ammo).then(() => {
+            this.tmpTrans = new Ammo.btTransform();
+            this.tmpVec3 = new Ammo.btVector3();
+            this.tmpQuat = new Ammo.btQuaternion(0, 0, 0, 1);
+            this.setupPhysicsWorld();
+        });
+    }
+
     setupPhysicsWorld() {
         const collisionConfiguration = new Ammo.btDefaultCollisionConfiguration();
         const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
@@ -67,9 +76,31 @@ export class PhysicsEngine {
         this.physicsWorld.setGravity(new Ammo.btVector3(0, -100, 0));
         // this.addTestPlane();
         // this.addTestBall();
+        this.addGameBoard();
         console.log('rendering started');
         this.clock = new THREE.Clock();
-        setInterval(this.updatePhysics.bind(this), 10);
+        setInterval(this.updatePhysics.bind(this), 25);
+    }
+
+    addGameBoard() {
+        const transform = new Ammo.btTransform();
+        transform.setIdentity();
+        transform.setOrigin( new Ammo.btVector3( 0, -.5, 0 ) );
+        transform.setRotation( new Ammo.btQuaternion( 0, 0, 0, 1 ) );
+        let motionState = new Ammo.btDefaultMotionState( transform );
+
+        let colShape = new Ammo.btBoxShape( new Ammo.btVector3( 100, 1,100) );
+        colShape.setMargin( 0.05 );
+
+        let localInertia = new Ammo.btVector3( 0, 0, 0 );
+        colShape.calculateLocalInertia( 0, localInertia );
+
+        let rbInfo = new Ammo.btRigidBodyConstructionInfo( 0, motionState, colShape, localInertia );
+        let body = new Ammo.btRigidBody( rbInfo );
+        body.setCollisionFlags(FLAGS.CF_KINEMATIC_OBJECT);
+
+
+        this.physicsWorld.addRigidBody( body );
     }
 
     addTestBall() {
@@ -114,14 +145,6 @@ export class PhysicsEngine {
         this.physicsWorld.addRigidBody( body );
     }
 
-    init() {
-        Ammo(Ammo).then(() => {
-            this.tmpTrans = new Ammo.btTransform();
-            this.tmpVec3 = new Ammo.btVector3();
-            this.tmpQuat = new Ammo.btQuaternion(0, 0, 0, 1);
-            this.setupPhysicsWorld();
-        });
-    }
 
     getPhysicsObjectByID(id: number): PhysicsObject {
         return this.physicsObjects.get(id);
@@ -221,7 +244,7 @@ export class PhysicsEngine {
         const transform = new Ammo.btTransform();
         transform.setIdentity();
         transform.setOrigin(new Ammo.btVector3(params.posX, params.posY, params.posZ));
-        transform.setRotation(new Ammo.btQuaternion(0, 0, 0, 1)); //params.quatX, params.quatY, params.quatZ, params.quatW));
+        transform.setRotation(new Ammo.btQuaternion(params.quatX, params.quatY, params.quatZ, params.quatW));
         const motionState = new Ammo.btDefaultMotionState(transform);
 
 
@@ -266,7 +289,7 @@ export class PhysicsEngine {
     }
 
     addShape(geo: ArrayLike<number>, object: PhysicsObjectState, mass: number, colGroup: CollisionGroups, colMask: CollisionGroups, onDelete?: (obj: PhysicsObject) => boolean) {
-        const objectID = object.objectIDTHREE;
+        const objectID = object.objectIDPhysics;
         this.physicsObjects.set(objectID, {
             collided: false,
             mass: mass,
@@ -288,7 +311,7 @@ export class PhysicsEngine {
             colGroup: colGroup || CollisionGroups.Other,
             colMask: colMask || CollisionGroups.All
         };
-        console.log('Shape Mass: ', objectID, mass, rigidBodyParams.colGroup, rigidBodyParams.colMask);
+        console.log('Shape Mass: ', objectID, mass, rigidBodyParams.colGroup, rigidBodyParams.colMask, rigidBodyParams.quatX, rigidBodyParams.quatY, rigidBodyParams.quatZ, rigidBodyParams.quatW);
         const body = this.createRigidBody(objectID, rigidBodyParams);
     }
 }

@@ -31,7 +31,7 @@ export class EntityLoader {
 
     private readonly constantProperties = {
         dice: {
-            default:{
+            default: {
                 mass: 1,
                 colGroup: CollisionGroups.Dice,
                 colMask: CollisionGroups.All,
@@ -40,12 +40,12 @@ export class EntityLoader {
             }
         },
         figure: {
-            default:{
+            default: {
                 mass: 1,
                 colGroup: CollisionGroups.Figures,
                 colMask: CollisionGroups.All,
                 behavior: 0,
-                fname: 'figureDefault.gltf'
+                fname: 'figureDefaultNoTex.gltf'
             }
         }
     }
@@ -62,9 +62,9 @@ export class EntityLoader {
     }
     async init() {
         // console.log('Loaded: ', await this.loadModel('diceDefault.gltf'));
-        console.log('Loaded: ', await this.loadGeometry(PhysicsEntity.dice, PhysicsEntityVariation.default));
-        // console.log('Loaded: ', await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default));
-        console.log('done');
+        // console.log('Loaded: ', await this.loadGeometry(PhysicsEntity.dice, PhysicsEntityVariation.default));
+        console.log('Loaded: ', await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default));
+        // console.log('done');
     }
 
 
@@ -83,6 +83,7 @@ export class EntityLoader {
             // console.log('Mesh: ', parent.name);
             const geo = parent.geometry.clone();
             const buffGeo = geo instanceof THREE.BufferGeometry ? geo : new THREE.BufferGeometry().fromGeometry(geo);
+            buffGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
             return buffGeo;
         } else {
             // console.log('other: ', parent.name, parent.type);
@@ -99,20 +100,23 @@ export class EntityLoader {
             } else if (bufferGeos.length <= 1) {
                 return bufferGeos[0];
             } else {
-                return BufferGeometryUtils.mergeBufferGeometries(bufferGeos);
+                const resultGeo: THREE.BufferGeometry = BufferGeometryUtils.mergeBufferGeometries(bufferGeos);
+                resultGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
+                return resultGeo;
             }
         }
         return undefined;
     }
 
     private async loadModel(fName: string): Promise<number[]> {
+        console.log('loading new model: ', fName);
         const loader = new GLTFLoader(); //.setPath(this.resourcePath);
         const path = this.resourcePath + fName;
 
         const scene: THREE.Group = await new Promise((resolve, reject) => {
             var data = this.fs.readFileSync(this.resourcePath + fName);
             loader.parse(data, fName, (gltf: GLTF) => {
-                // console.log('loaded: ', gltf.scene);
+                console.log('loaded: ', fName); // gltf.scene);
                 resolve(gltf.scene);
             }, (e) => {
                 console.log('Error', e);
