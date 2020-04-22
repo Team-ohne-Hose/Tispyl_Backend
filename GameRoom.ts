@@ -1,14 +1,15 @@
 import {Client, Room} from "colyseus";
-import {GameState} from "./model/state/GameState";
+import {GameState, Player} from "./model/state/GameState";
 import {
     ChatMessage,
     DebugCommandType,
     GameActionType,
     JoinMessage,
     MessageType, PhysicsCommandAddEntity,
-    PlayerMessageType,
+    PlayerMessageType, PlayerModel, SetFigure,
     WsData
 } from "./model/WsData";
+import {PlayerInfo} from "./PlayerInfo";
 
 
 export class GameRoom extends Room<GameState> {
@@ -36,7 +37,7 @@ export class GameRoom extends Room<GameState> {
     }
 
     onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
-        this.state.addPlayer(client.id, options.displayName);
+        const player: Player = this.state.addPlayer(client.id, options.displayName);
         if (this.state.hostSession === '') { this.state.setHost(client.id) }
         console.log('Options were: ', options);
         const msg: JoinMessage = {
@@ -48,9 +49,10 @@ export class GameRoom extends Room<GameState> {
             console.log('sending', obj);
             this.send(client, obj);
         });
-        const id = this.state.physicsState.addPlayer();
+        const id = this.state.physicsState.addPlayerFigure();
         console.log('added Player');
         // TODO: attach id to player
+        player.figureId = id;
         return undefined;
     }
 
@@ -132,7 +134,7 @@ export class GameRoom extends Room<GameState> {
                     case PlayerMessageType.setFigure:
                         const player = this.state.getPlayer(data.playerId);
                         if (player !== undefined) {
-                            player.setFigure(data.figureId, data.color);
+                            player.setFigure(player.figureId, data.playerModel);
                         }
                         break;
                 }

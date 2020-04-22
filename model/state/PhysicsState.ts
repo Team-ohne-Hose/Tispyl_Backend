@@ -151,7 +151,7 @@ export class PhysicsState extends Schema {
                     break;
             }
     }
-    addPlayer(): number {
+    addPlayerFigure(): number {
         const rot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, -Math.PI / 2));
         const id = this.getNewId();
         const pos = new Vector(this.startPoint.x, this.startPoint.y, this.startPoint.z);

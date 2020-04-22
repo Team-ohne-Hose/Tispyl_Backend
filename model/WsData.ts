@@ -61,12 +61,22 @@ export type PlayerMessage = SetFigure;
 export enum PlayerMessageType {
   setFigure
 }
+export enum PlayerModel {
+  bcap_NukaCola = 1,
+  bcap_CocaCola,
+  bcap_Tiddies1,
+  bcap_Schmucker,
+  bcap_Jagermeister,
+  bcap_OurAnthem,
+  bcap_Murica,
+  bcap_Developer,
+  bcap_hb
+}
 export interface SetFigure {
   type: MessageType.PLAYER_MESSAGE;
   subType: PlayerMessageType.setFigure;
   playerId: string;
-  figureId: number;
-  color: number;
+  playerModel: PlayerModel;
 }
 
 export enum PhysicsCommandType {

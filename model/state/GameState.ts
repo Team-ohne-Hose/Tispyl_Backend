@@ -1,5 +1,6 @@
 import {PhysicsState} from "./PhysicsState";
 import {Schema, MapSchema, type} from "@colyseus/schema"
+import {PlayerModel} from "../WsData";
 
 enum Actions {
     ROLL,
@@ -7,9 +8,11 @@ enum Actions {
     EXECUTE
 }
 
-class Player extends Schema {
+export class Player extends Schema {
     @type('string')
     displayName: string;
+    @type('string')
+    playerId: string;
     @type('boolean')
     isCurrentHost: boolean;
     @type('boolean')
@@ -17,13 +20,19 @@ class Player extends Schema {
     @type('number')
     figureId: number;
     @type('number')
-    figureColor: number;
+    figureModel: PlayerModel;
     @type('number')
     currentTile: number;
 
-    setFigure(id: number, color: number) {
+    constructor(playerId: string, displayName: string) {
+        super();
+        this.playerId = playerId;
+        this.displayName = displayName;
+    }
+
+    setFigure(id: number, figureModel?: PlayerModel) {
         this.figureId = id;
-        this.figureColor = color;
+        this.figureModel = figureModel !== undefined ? figureModel : this.figureModel;
     }
     setTile(tile: number) {
         this.currentTile = tile;
@@ -81,10 +90,10 @@ export class GameState extends Schema {
         this.turn = turnArray[this.turnIndex].displayName;
     }
 
-    addPlayer(id: string, name: string) {
-        const p = new Player();
-        p.displayName = name;
+    addPlayer(id: string, name: string): Player {
+        const p = new Player(id, name);
         this.playerList[id] = p;
+        return p;
     }
 
     removePlayer(id: string) {
