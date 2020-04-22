@@ -108,6 +108,12 @@ export class GameRoom extends Room<GameState> {
                     case GameActionType.setStartingCondition:
                         this.state.startGame();
                         break;
+                    case GameActionType.addRule:
+                        this.state.rules.push(data.text);
+                        break;
+                    case GameActionType.deleteRule:
+                        this.state.rules.splice(data.id,1);
+                        break;
                     case GameActionType.setTile:
                         const player = data.playerId ? this.state.getPlayer(data.playerId) : this.state.getPlayerByFigure(data.figureId);
                         if (player !== undefined) {

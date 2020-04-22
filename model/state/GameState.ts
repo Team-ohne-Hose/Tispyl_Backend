@@ -1,6 +1,6 @@
 import {PhysicsState} from "./PhysicsState";
-import {Schema, MapSchema, type} from "@colyseus/schema"
 import {PlayerModel} from "../WsData";
+import {Schema, ArraySchema, MapSchema, type} from "@colyseus/schema"
 
 enum Actions {
     ROLL,
@@ -63,6 +63,9 @@ export class GameState extends Schema {
 
     @type({map: Player})
     playerList = new MapSchema<Player>();
+
+    @type([ 'string' ])
+    rules = new ArraySchema<string>();
 
     turnIndex = 0;
 
