@@ -5,7 +5,7 @@ import {
     DebugCommandType,
     GameActionType,
     JoinMessage,
-    MessageType,
+    MessageType, PhysicsCommandAddEntity,
     PlayerMessageType,
     WsData
 } from "./model/WsData";
@@ -22,6 +22,9 @@ export class GameRoom extends Room<GameState> {
             lobbyName: options['name'],
             author: options['author']
         });
+
+        this.state.physicsState.setBroadcastCallback(this.broadcast.bind(this));
+        this.state.physicsState.addDice();
 
         return undefined;
     }
@@ -41,6 +44,13 @@ export class GameRoom extends Room<GameState> {
             message: `[SERVER] ${this.state.playerList[client.id].displayName}(${client.id}) joined the game`
         };
         this.broadcast(msg);
+        this.state.physicsState.sendExisting((obj: PhysicsCommandAddEntity) => {
+            console.log('sending', obj);
+            this.send(client, obj);
+        });
+        const id = this.state.physicsState.addPlayer();
+        console.log('added Player');
+        // TODO: attach id to player
         return undefined;
     }
 
