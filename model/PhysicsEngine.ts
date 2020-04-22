@@ -203,8 +203,11 @@ export class PhysicsEngine {
         const ms = pBody.getMotionState();
         if (ms) {
             this.tmpVec3.setValue(x, y, z);
+            ms.getWorldTransform(this.tmpTrans);
+            this.tmpQuat = this.tmpTrans.getRotation();
             this.tmpTrans.setIdentity();
             this.tmpTrans.setOrigin(this.tmpVec3);
+            this.tmpTrans.setRotation(this.tmpQuat);
             ms.setWorldTransform(this.tmpTrans);
             pBody.setWorldTransform(this.tmpTrans);
         }
@@ -221,11 +224,15 @@ export class PhysicsEngine {
     }
 
     setRotationQuat(objID: number, x: number, y: number, z: number, w: number) {
+        console.log('setting rotation of', objID);
         const pBody = this.getPhysicsObjectByID(objID).physicsBody;
         const ms = pBody.getMotionState();
         if (ms) {
             this.tmpQuat.setValue(x, y, z, w);
+            ms.getWorldTransform(this.tmpTrans);
+            this.tmpVec3 = this.tmpTrans.getOrigin();
             this.tmpTrans.setIdentity();
+            this.tmpTrans.setOrigin(this.tmpVec3);
             this.tmpTrans.setRotation(this.tmpQuat);
             ms.setWorldTransform(this.tmpTrans);
             // pBody.setWorldTransform(this.tmpTrans);
