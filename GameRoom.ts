@@ -130,6 +130,9 @@ export class GameRoom extends Room<GameState> {
                             this.state.startGame()
                         }
                         break;
+                    case GameActionType.refreshData:
+                        this.state.playerList.triggerAll();
+                        break;
                     case GameActionType.none:
                     default:
                         console.log('nothing to do to that action');
