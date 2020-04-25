@@ -1,4 +1,10 @@
 {
+  "host": "0.0.0.0",
+  "port": "41920",
+
+  "tlsCert": "/home/tispyl/etc/certificates/tispyl.uber.space.crt",
+  "tlsKey": "/home/tispyl/etc/certificates/tispyl.uber.space.key",
+
   "mariaDao": {
     "schemaName": "tispyl",
     "connectionLimit": 5,

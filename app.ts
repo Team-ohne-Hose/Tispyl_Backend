@@ -7,12 +7,10 @@ import { Server } from 'colyseus';
 import { monitor } from '@colyseus/monitor';
 import { GameRoom} from "./GameRoom";
 import { apiRouter} from "./ApiRouter";
+import backendConfig from "./backend-config.json"
 
-// temporary file path for the uber-space certificate
-const CERT_PATH = '/home/tispyl/etc/certificates/';
-
-const port = Number(process.env.PORT || 41920) + Number(process.env.NODE_APP_INSTANCE || 0);
-const address = '0.0.0.0'; // listen on the interface required by uber-space
+const port = Number(process.env.PORT || backendConfig.port) + Number(process.env.NODE_APP_INSTANCE || 0);
+const address = backendConfig.host; // listen on the interface required by uber-space
 const app = express();
 
 app.use(cors());
@@ -22,8 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 // Attach WebSocket Server on HTTPS Server.
 const gameServer = new Server({
     server: createServer({
-        key: fs.readFileSync(CERT_PATH + 'tispyl.uber.space.key'),
-        cert: fs.readFileSync(CERT_PATH + 'tispyl.uber.space.crt')
+        key: fs.readFileSync(backendConfig.tlsCert),
+        cert: fs.readFileSync(backendConfig.tlsKey)
     }, app),
     express: app,
     pingInterval: 0,
