@@ -154,9 +154,6 @@ export class EntityLoader {
         console.error('could not load geometry for', entity, variant);
         return undefined;
     }
-    private getDeleteBehavior(behavior: number): (obj: PhysicsObject) => boolean {
-        return undefined;
-    }
 
     async load(engine: PhysicsEngine, object: PhysicsObjectState, entity: PhysicsEntity, variation?: PhysicsEntityVariation): Promise<void> {
         switch (entity) {
@@ -184,7 +181,7 @@ export class EntityLoader {
             this.constantProperties.dice.default.mass,
             this.constantProperties.dice.default.colGroup,
             this.constantProperties.dice.default.colMask,
-            this.getDeleteBehavior(this.constantProperties.dice.default.behavior));
+            this.constantProperties.dice.default.behavior);
         return;
         return;
     }
@@ -202,7 +199,7 @@ export class EntityLoader {
             this.constantProperties.figure.default.mass,
             this.constantProperties.figure.default.colGroup,
             this.constantProperties.figure.default.colMask,
-            this.getDeleteBehavior(this.constantProperties.figure.default.behavior));
+            this.constantProperties.figure.default.behavior);
         return;
     }
 
@@ -221,7 +218,7 @@ export class EntityLoader {
             this.constantProperties.figure.default.mass,
             this.constantProperties.figure.default.colGroup,
             this.constantProperties.figure.default.colMask,
-            this.getDeleteBehavior(this.constantProperties.figure.default.behavior));
+            this.constantProperties.figure.default.behavior);
         return;
     }
 }

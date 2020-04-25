@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import Ammo from 'ammojs-typed';
-import {PhysicsObjectState} from "./state/PhysicsState";
+import {OnDeleteBehaviour, PhysicsObjectState} from "./state/PhysicsState";
 import {MapSchema} from "@colyseus/schema";
+import destroy = Ammo.destroy;
 
 export interface PhysicsObject {
     physicsBody: Ammo.btRigidBody;
@@ -52,10 +53,13 @@ export class PhysicsEngine {
     private tmpQuat: Ammo.btQuaternion;
     private physicsObjects = new Map<number, PhysicsObject>();
     private networkObjects: MapSchema<PhysicsObjectState>
+    private physicsLoop: NodeJS.Timeout;
     physicsWorld: Ammo.btDiscreteDynamicsWorld;
     margin = 0.05;
     deletionPlane = -15;
     disposeFromViewport: (obj: PhysicsObject) => boolean;
+
+    disposeInfo = {solver: undefined, broadphase: undefined, dispatcher: undefined, collision: undefined};
 
     init() {
         Ammo(Ammo).then(() => {
@@ -71,6 +75,10 @@ export class PhysicsEngine {
         const dispatcher = new Ammo.btCollisionDispatcher(collisionConfiguration);
         const overlappingPairCache = new Ammo.btDbvtBroadphase();
         const solver = new Ammo.btSequentialImpulseConstraintSolver();
+        this.disposeInfo = {solver: solver,
+            broadphase: overlappingPairCache,
+            dispatcher: dispatcher,
+            collision: collisionConfiguration}
 
         this.physicsWorld = new Ammo.btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
         this.physicsWorld.setGravity(new Ammo.btVector3(0, -100, 0));
@@ -79,7 +87,7 @@ export class PhysicsEngine {
         this.addGameBoard();
         console.log('rendering started');
         this.clock = new THREE.Clock();
-        setInterval(this.updatePhysics.bind(this), 25);
+        this.physicsLoop = setInterval(this.updatePhysics.bind(this), 25);
     }
 
     addGameBoard() {
@@ -288,21 +296,33 @@ export class PhysicsEngine {
         return shape;
     }
 
+
+    private getOnDelete(type: OnDeleteBehaviour): (obj: PhysicsObject) => boolean {
+        switch (type) {
+            case OnDeleteBehaviour.default:
+            default:
+                return this.defaultOnDelete;
+                break;
+        }
+    }
     private defaultOnDelete(obj: PhysicsObject): boolean {
+        return this.respawnOnDelete(obj);
+    }
+    private respawnOnDelete(obj: PhysicsObject): boolean {
         // console.log("deleting with default: " + obj.objectIdTHREE);
         this.setPosition(obj.objectIdTHREE, 0, 15, 0);
         obj.physicsBody.setLinearVelocity(new Ammo.btVector3(0, 0, 0));
         return true;
     }
 
-    addShape(geo: ArrayLike<number>, object: PhysicsObjectState, mass: number, colGroup: CollisionGroups, colMask: CollisionGroups, onDelete?: (obj: PhysicsObject) => boolean) {
+    addShape(geo: ArrayLike<number>, object: PhysicsObjectState, mass: number, colGroup: CollisionGroups, colMask: CollisionGroups, onDelete?: OnDeleteBehaviour) {
         const objectID = object.objectIDPhysics;
         this.physicsObjects.set(objectID, {
             collided: false,
             mass: mass,
             objectIdTHREE: objectID,
             physicsBody: undefined,
-            onDelete: onDelete || this.defaultOnDelete
+            onDelete: this.getOnDelete(onDelete) || this.defaultOnDelete
         });
         const shape = this.createConvexHullPhysicsShape(geo);
         shape.setMargin(this.margin);
@@ -320,5 +340,19 @@ export class PhysicsEngine {
         };
         console.log('Shape Mass: ', objectID, mass, rigidBodyParams.colGroup, rigidBodyParams.colMask, rigidBodyParams.quatX, rigidBodyParams.quatY, rigidBodyParams.quatZ, rigidBodyParams.quatW);
         const body = this.createRigidBody(objectID, rigidBodyParams);
+    }
+
+    destructEngine(){
+        clearInterval(this.physicsLoop);
+
+        Ammo.destroy(this.tmpTrans);
+        Ammo.destroy(this.tmpVec3);
+        Ammo.destroy(this.tmpQuat);
+        Ammo.destroy(this.disposeInfo.broadphase);
+        Ammo.destroy(this.disposeInfo.collision);
+        Ammo.destroy(this.disposeInfo.dispatcher);
+        Ammo.destroy(this.disposeInfo.solver);
+        Ammo.destroy(this.physicsWorld);
+        Ammo.destroy(Ammo);
     }
 }

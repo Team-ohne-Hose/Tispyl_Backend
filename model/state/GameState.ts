@@ -13,6 +13,8 @@ export class Player extends Schema {
     displayName: string;
     @type('string')
     playerId: string;
+    @type('string')
+    loginName: string;
     @type('boolean')
     isCurrentHost: boolean;
     @type('boolean')
@@ -23,11 +25,15 @@ export class Player extends Schema {
     figureModel: PlayerModel;
     @type('number')
     currentTile: number;
+    @type('boolean')
+    isConnected: boolean;
 
-    constructor(playerId: string, displayName: string) {
+    constructor(loginName: string, playerId: string, displayName: string) {
         super();
+        this.loginName = loginName;
         this.playerId = playerId;
         this.displayName = displayName;
+        this.isConnected = true;
     }
 
     setFigure(id: number, figureModel?: PlayerModel) {
@@ -43,9 +49,6 @@ export class GameState extends Schema {
 
     @type('number')
     round: number = 0;
-
-    @type('string')
-    turn: string = 'none';
 
     @type('string')
     action: string = Actions[Actions.EXECUTE];
@@ -67,7 +70,7 @@ export class GameState extends Schema {
     @type([ 'string' ])
     rules = new ArraySchema<string>();
 
-    turnIndex = 0;
+    currentPlayer: Player;
 
     nextRound() {
         this.round += 1;
@@ -83,24 +86,55 @@ export class GameState extends Schema {
         }
     }
 
-    nextTurn() {
-        this.turnIndex = this.turnIndex + 1;
-        const turnArray = this.asArray(this.playerList);
-        if (this.turnIndex === turnArray.length) {
+    private getNextActivePlayer(current: Player): Player {
+        const playerArray: Player[] = this.asArray(this.playerList);
+        if (current !== undefined) {
+            let currentPlayerInd = -1;
+            for (let i = 0; i < playerArray.length; i++) {
+                if (currentPlayerInd >= 0 && playerArray[i].isConnected) {
+                    return playerArray[i];
+                }
+                if (current.loginName === playerArray[i].loginName) {
+                    currentPlayerInd = i;
+                }
+            }
             this.nextRound();
-            this.turnIndex = 0;
         }
-        this.turn = turnArray[this.turnIndex].displayName;
+        for (let j = 0; j < playerArray.length; j++) {
+            if (playerArray[j].isConnected) {
+                return playerArray[j];
+            }
+        }
+        console.error('something went wrong.. No client is marked as connected');
     }
 
-    addPlayer(id: string, name: string): Player {
-        const p = new Player(id, name);
+    nextTurn() {
+        this.currentPlayer = this.getNextActivePlayer(this.currentPlayer);
+    }
+
+    // Attention!: also updates id if id != undefined
+    getOrAddPlayer(login: string, id: string, name: string): [Player, boolean] {
+        const playerArray: Player[] = this.asArray(this.playerList);
+        const playerRef: Player = playerArray.find((val: Player, index: number) => {
+            return val.loginName === login;
+        });
+        if (playerRef !== undefined) {
+            playerRef.playerId = id || playerRef.playerId;
+            return[playerRef, false];
+        } else {
+            return[this.addPlayer(login, id, name), true];
+        }
+    }
+
+    addPlayer(login: string, id: string, name: string): Player {
+        const p = new Player(login, id, name);
         this.playerList[id] = p;
         return p;
     }
 
     removePlayer(id: string) {
-        delete this.playerList[id]
+        this.playerList[id].isConnected = false;
+        // delete this.playerList[id]
     }
 
     getPlayer(id: string): Player {
@@ -117,8 +151,7 @@ export class GameState extends Schema {
 
     startGame() {
         this.round = 1;
-        this.turnIndex = 0;
-        this.turn = this.asArray(this.playerList)[0].displayName;
+        this.currentPlayer = this.getNextActivePlayer(undefined);
         this.action = Actions[Actions.ROLL];
         this.hasStarted = true;
     }

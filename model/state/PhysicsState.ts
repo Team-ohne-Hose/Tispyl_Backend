@@ -98,11 +98,6 @@ export class PhysicsState extends Schema {
     setBroadcastCallback(broadcastCallback: ((cmd: PhysicsCommandAddEntity) => void)) {
         this.broadcastNewObject = broadcastCallback;
     }
-
-    private getOnDelete(type: OnDeleteBehaviour): (obj: PhysicsObject) => boolean {
-        // TODO implement
-        return undefined;
-    }
     private getNewId(): number {
         this.idCounter++;
         console.log('gave out id ', this.idCounter);
@@ -231,7 +226,7 @@ export class PhysicsState extends Schema {
     private addPhysicsObject(id: number, pos: Vector, quat: Quaternion, geo: ArrayLike<number>, mass: number, colGroup?: CollisionGroups, colMask?: CollisionGroups, behavior?: OnDeleteBehaviour) {
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat);
         this.objects[id] = obj;
-        this.physicsEngine.addShape(geo, obj, mass, colGroup, colMask, this.getOnDelete(behavior));
+        this.physicsEngine.addShape(geo, obj, mass, colGroup, colMask, behavior);
     }
 
     removePhysicsObject(id: number) {
@@ -253,5 +248,9 @@ export class PhysicsState extends Schema {
     }
     setAngularVelocity(objID: number, x: number, y: number, z: number) {
         this.physicsEngine.setAngularVelocity(objID, x || 0, y || 0, z || 0);
+    }
+
+    destructState() {
+        this.physicsEngine.destructEngine();
     }
 }

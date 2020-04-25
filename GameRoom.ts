@@ -32,12 +32,13 @@ export class GameRoom extends Room<GameState> {
 
     onDispose(): void | Promise<any> {
         console.log("onDispose was triggered");
+        this.state.physicsState.destructState();
 
         return undefined;
     }
 
     onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
-        const player: Player = this.state.addPlayer(client.id, options.displayName);
+        const playerResult: [Player, boolean] = this.state.getOrAddPlayer(options.login, client.id, options.displayName);
         if (this.state.hostSession === '') { this.state.setHost(client.id) }
         console.log('Options were: ', options);
         const msg: JoinMessage = {
@@ -49,10 +50,11 @@ export class GameRoom extends Room<GameState> {
             console.log('sending', obj);
             this.send(client, obj);
         });
-        const id = this.state.physicsState.addPlayerFigure();
-        console.log('added Player');
-        // TODO: attach id to player
-        player.figureId = id;
+        if (playerResult[1]) {
+            const id = this.state.physicsState.addPlayerFigure();
+            console.log('created PlayerFigure');
+            playerResult[0].figureId = id;
+        }
         return undefined;
     }
 
