@@ -9,7 +9,6 @@ import {
     PlayerMessageType, PlayerModel, SetFigure,
     WsData
 } from "./model/WsData";
-import {PlayerInfo} from "./PlayerInfo";
 
 
 export class GameRoom extends Room<GameState> {
