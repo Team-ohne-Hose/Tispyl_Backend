@@ -154,6 +154,12 @@ export class PhysicsEngine {
     }
 
 
+    removePhysicsObjectByID(id: number): void {
+        this.physicsObjects.set(id, undefined);
+    }
+    addPhysicsObject(obj: PhysicsObject): void {
+        this.physicsObjects.set(obj.objectIdTHREE, obj);
+    }
     getPhysicsObjectByID(id: number): PhysicsObject {
         return this.physicsObjects.get(id);
     }

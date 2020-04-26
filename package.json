@@ -4,8 +4,8 @@
   "description": "Backend for the famous TischSpiel",
   "main": "index.js",
   "scripts": {
-    "run dev": "ts-node app.ts -e dev",
-    "run prod": "ts-node app.ts -e prod",
+    "runDev": "ts-node app.ts -e dev",
+    "runProd": "ts-node app.ts -e prod",
     "deploy": ""
   },
   "engines": {

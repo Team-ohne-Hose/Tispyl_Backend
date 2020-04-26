@@ -67,6 +67,10 @@ export class PhysicsObjectState extends Schema {
     entity: PhysicsEntity;
     @type("number")
     variant: PhysicsEntityVariation;
+    @type("boolean")
+    disabled = false;
+
+    private physicsBuffer: PhysicsObject;
     private physicsEngine: PhysicsEngine;
     constructor(id: number, engine: PhysicsEngine, position?: Vector, quaternion?: Quaternion, entity?: PhysicsEntity, variation?: PhysicsEntityVariation) {
         super();
@@ -76,6 +80,20 @@ export class PhysicsObjectState extends Schema {
         this.quaternion = quaternion || new Quaternion();
         this.entity = entity;
         this.variant = variation;
+    }
+
+    setDisabled(disable: boolean) {
+        if (disable !== this.disabled) {
+            if (disable) {
+                this.physicsBuffer = this.physicsEngine.getPhysicsObjectByID(this.objectIDPhysics);
+                this.physicsEngine.physicsWorld.removeRigidBody(this.physicsBuffer.physicsBody);
+                this.physicsEngine.removePhysicsObjectByID(this.objectIDPhysics);
+            } else if (this.physicsBuffer !== undefined) {
+                this.physicsEngine.physicsWorld.addRigidBody(this.physicsBuffer.physicsBody);
+                this.physicsEngine.addPhysicsObject(this.physicsBuffer);
+            }
+            this.disabled = disable;
+        }
     }
 
 }
@@ -199,6 +217,7 @@ export class PhysicsState extends Schema {
 
     sendExisting(cb: ((obj: PhysicsCommandAddEntity) => void)) {
         for (let key in this.objects) {
+            if (key in this.objects && !this.objects[key].disabled)
             console.log('transmitting Object: ', key);
             const obj: PhysicsObjectState = this.objects[key];
             const cmd: PhysicsCommandAddEntity = {

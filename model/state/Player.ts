@@ -1,5 +1,7 @@
 import {Schema, type} from "@colyseus/schema";
 import {PlayerModel} from "../WsData";
+import Timeout = NodeJS.Timeout;
+import {PhysicsObjectState} from "./PhysicsState";
 
 export class Player extends Schema {
     @type('string')
@@ -20,6 +22,9 @@ export class Player extends Schema {
     currentTile: number;
     @type('boolean')
     isConnected: boolean;
+    @type('boolean')
+    hasLeft: boolean;
+    gracePeriodTimeout: Timeout;
 
     constructor(loginName: string, playerId: string, displayName: string) {
         super();
@@ -27,6 +32,7 @@ export class Player extends Schema {
         this.clientId = playerId;
         this.displayName = displayName;
         this.isConnected = true;
+        this.hasLeft = false;
     }
 
     setFigure(id: number, figureModel?: PlayerModel) {

@@ -11,6 +11,7 @@ import {
     WsData
 } from "./model/WsData";
 import {Player} from "./model/state/Player";
+import {PhysicsObjectState} from "./model/state/PhysicsState";
 
 
 export class GameRoom extends Room<GameState> {
@@ -44,6 +45,17 @@ export class GameRoom extends Room<GameState> {
         if (this.state.currentPlayerLogin === undefined) {
             this.state.nextTurn();
         }
+
+        if (playerResult[0].gracePeriodTimeout !== undefined) {
+            global.clearTimeout(playerResult[0].gracePeriodTimeout);
+            playerResult[0].gracePeriodTimeout = undefined;
+        }
+        if (playerResult[0].hasLeft) {
+            playerResult[0].hasLeft = false;
+            const pObj: PhysicsObjectState = this.state.physicsState.objects[playerResult[0].figureId];
+            pObj.setDisabled(false);
+        }
+        playerResult[0].isConnected = true;
 
         if (this.state.hostLoginName === '') { this.state.setHost(playerResult[0].loginName) }
         const msg: JoinMessage = {
@@ -91,6 +103,14 @@ export class GameRoom extends Room<GameState> {
                 });
                 this.state.removePlayer(player.loginName);
             }
+            player.gracePeriodTimeout = global.setTimeout(((p: Player) => {
+                if (!p.isConnected) {
+                    p.hasLeft = true;
+                    const pObj: PhysicsObjectState = this.state.physicsState.objects[p.figureId];
+                    pObj.setDisabled(true);
+                }
+                p.gracePeriodTimeout = undefined;
+            }).bind(this), 120000, player);
         }
         return undefined;
     }
