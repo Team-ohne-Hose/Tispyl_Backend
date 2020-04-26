@@ -1,20 +1,20 @@
 
 import * as mariadb from 'mariadb'
 import {DBUser} from "./model/DBUser";
-import credentials from "./credentials.json"
-import backendConfig from "./backend-config.json"
+import credentials from "./credentials.json";
 
 export class MariaDAO {
 
     private pool;
-    private schemaName = backendConfig.mariaDao.schemaName;
+    private readonly schemaName;
 
-    constructor() {
+    constructor(config) {
+        this.schemaName = config.mariaDao.schemaName;
         this.pool = mariadb.createPool({
-            host: backendConfig.mariaDao.host,
+            host: config.mariaDao.host,
             user: credentials.mariaDao.user,
             password: credentials.mariaDao.password,
-            connectionLimit: backendConfig.mariaDao.connectionLimit
+            connectionLimit: config.mariaDao.connectionLimit
         })
     }
 

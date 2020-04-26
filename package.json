@@ -1,11 +1,12 @@
 {
-  "name": "colyseus-examples",
+  "name": "Tispyl_Backend",
   "version": "1.0.0",
-  "description": "Usage Examples of Colyseus Game Server",
+  "description": "Backend for the famous TischSpiel",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node app.ts",
-    "heroku-postbuild": "npm run build"
+    "run dev": "ts-node app.ts -e dev",
+    "run prod": "ts-node app.ts -e prod",
+    "deploy": ""
   },
   "engines": {
     "node": "8.9.1"
@@ -23,7 +24,8 @@
     "mariadb": "^2.3.1",
     "serve-index": "^1.8.0",
     "superagent": "^3.8.1",
-    "three": "^0.115.0"
+    "three": "^0.115.0",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "browserify": "^14.4.0",
