@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import Ammo from 'ammojs-typed';
 import {OnDeleteBehaviour, PhysicsObjectState} from "./state/PhysicsState";
 import {MapSchema} from "@colyseus/schema";
-import destroy = Ammo.destroy;
 
 export interface PhysicsObject {
     physicsBody: Ammo.btRigidBody;
@@ -60,14 +59,23 @@ export class PhysicsEngine {
     disposeFromViewport: (obj: PhysicsObject) => boolean;
 
     disposeInfo = {solver: undefined, broadphase: undefined, dispatcher: undefined, collision: undefined};
+    private ammoInitialized = false;
 
     init() {
-        Ammo(Ammo).then(() => {
+        if (this.ammoInitialized) {
             this.tmpTrans = new Ammo.btTransform();
             this.tmpVec3 = new Ammo.btVector3();
             this.tmpQuat = new Ammo.btQuaternion(0, 0, 0, 1);
             this.setupPhysicsWorld();
-        });
+        } else {
+            Ammo(Ammo).then(() => {
+                this.ammoInitialized = true;
+                this.tmpTrans = new Ammo.btTransform();
+                this.tmpVec3 = new Ammo.btVector3();
+                this.tmpQuat = new Ammo.btQuaternion(0, 0, 0, 1);
+                this.setupPhysicsWorld();
+            });
+        }
     }
 
     setupPhysicsWorld() {
