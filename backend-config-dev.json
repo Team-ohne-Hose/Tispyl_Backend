@@ -1,0 +1,10 @@
+{
+  "host": "127.0.0.1",
+  "port": "2567",
+
+  "mariaDao": {
+    "schemaName": "BrettSpiel",
+    "connectionLimit": 5,
+    "host": "127.0.0.1"
+  }
+}

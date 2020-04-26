@@ -1,23 +1,59 @@
 import express from 'express';
 import {Request, Response} from 'express';
 import cors from 'cors';
-import { createServer } from 'http';
+import fs from 'fs';
+import { createServer as createHttpsServer } from 'https';
+import { createServer as createHttpServer } from 'http';
 import { Server } from 'colyseus';
 import { monitor } from '@colyseus/monitor';
 import { GameRoom} from "./GameRoom";
-import { apiRouter} from "./ApiRouter";
+import { ApiRouter} from "./ApiRouter";
+import backendConfig from "./backend-config.json";
+import backendConfigDev from "./backend-config-dev.json";
+import * as yargs from "yargs";
 
+const argv = yargs.options({
+    env: {
+        alias: 'e',
+        choices: ['dev', 'prod'],
+        demandOption: true,
+        description: 'app environment'
+    }
+}).argv;
 
-const port = Number(process.env.PORT || 2567) + Number(process.env.NODE_APP_INSTANCE || 0);
+let config;
+if (argv.env === 'prod') {
+    config = backendConfig;
+    console.log('Selected the production environment. This is tailored to be used on the uberspace setup.');
+} else if (argv.env === 'dev') {
+    config = backendConfigDev;
+    console.log('Selected the development environment. Only use this environment on local setups.');
+} else {
+    console.error('No environment was selected. The script will exit now.');
+    process.exit(-1);
+}
+
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Attach WebSocket Server on HTTP Server.
+// Attach WebSocket Server on HTTPS Server.
+let internalServer;
+let serverProtocol;
+if (argv.env === 'prod') {
+    serverProtocol = 'https';
+    internalServer = createHttpsServer({
+        key: fs.readFileSync(backendConfig.tlsCert),
+        cert: fs.readFileSync(backendConfig.tlsKey)
+    }, app);
+} else if (argv.env === 'dev') {
+    serverProtocol = 'http';
+    internalServer = createHttpServer(app);
+}
+
 const gameServer = new Server({
-    server: createServer(app),
+    server: internalServer,
     express: app,
     pingInterval: 0,
 });
@@ -36,17 +72,14 @@ app.use((req: Request, res, next) => {
 
 // Routing
 app.use('/colyseus', monitor());
-app.use('/api', apiRouter);
+app.use('/api', new ApiRouter(config).router);
 app.use('/', (req, res, next) => {
     res.sendFile(__dirname + "/views/index.html")
 });
-
-
 
 gameServer.onShutdown(function(){
     console.log(`game server is going down.`);
 });
 
-gameServer.listen(port);
-
-console.log(`Listening on http://localhost:${ port }`);
+gameServer.listen(config.port, config.host);
+console.log(`Listening on ${ serverProtocol }://${ config.host }:${ config.port }`);
