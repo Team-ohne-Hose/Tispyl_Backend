@@ -151,7 +151,6 @@ export class PhysicsState extends Schema {
         const id = this.getNewId();
         const pos = new Vector(this.startPoint.x, this.startPoint.y, this.startPoint.z);
         const quat = new Quaternion(rot.x, rot.y, rot.z, rot.w);
-        console.log('calculated Quat:', quat.x, quat.y, quat.z, quat.w);
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, PhysicsEntity.figure, PhysicsEntityVariation.default);
         this.objects[id] = obj;
         this.loader.load(this.physicsEngine, obj, PhysicsEntity.figure, PhysicsEntityVariation.default);
@@ -219,7 +218,6 @@ export class PhysicsState extends Schema {
             }
             cb(cmd);
         }
-        console.log('transmitted... ');
     }
 
     // TODO remove

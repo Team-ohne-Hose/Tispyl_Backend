@@ -87,7 +87,7 @@ export class PhysicsEngine {
         this.addGameBoard();
         console.log('rendering started');
         this.clock = new THREE.Clock();
-        this.physicsLoop = setInterval(this.updatePhysics.bind(this), 25);
+        this.physicsLoop = global.setInterval(this.updatePhysics.bind(this), 25);
     }
 
     addGameBoard() {
@@ -279,7 +279,6 @@ export class PhysicsEngine {
         if (phys.mass > 0) {
             // Disable deactivation
             body.setActivationState(STATE.DISABLE_DEACTIVATION);
-            console.log('obj with positive mass', objectID);
         }
         this.physicsWorld.addRigidBody(body, params.colGroup, params.colMask);
         return body;
@@ -338,21 +337,20 @@ export class PhysicsEngine {
             colGroup: colGroup || CollisionGroups.Other,
             colMask: colMask || CollisionGroups.All
         };
-        console.log('Shape Mass: ', objectID, mass, rigidBodyParams.colGroup, rigidBodyParams.colMask, rigidBodyParams.quatX, rigidBodyParams.quatY, rigidBodyParams.quatZ, rigidBodyParams.quatW);
+        // console.log('Shape Mass: ', objectID, mass, rigidBodyParams.colGroup, rigidBodyParams.colMask, rigidBodyParams.quatX, rigidBodyParams.quatY, rigidBodyParams.quatZ, rigidBodyParams.quatW);
         const body = this.createRigidBody(objectID, rigidBodyParams);
     }
 
     destructEngine(){
-        clearInterval(this.physicsLoop);
+        global.clearInterval(this.physicsLoop);
 
         Ammo.destroy(this.tmpTrans);
         Ammo.destroy(this.tmpVec3);
         Ammo.destroy(this.tmpQuat);
+        Ammo.destroy(this.physicsWorld);
         Ammo.destroy(this.disposeInfo.broadphase);
         Ammo.destroy(this.disposeInfo.collision);
         Ammo.destroy(this.disposeInfo.dispatcher);
         Ammo.destroy(this.disposeInfo.solver);
-        Ammo.destroy(this.physicsWorld);
-        Ammo.destroy(Ammo);
     }
 }

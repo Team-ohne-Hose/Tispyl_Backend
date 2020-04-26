@@ -63,7 +63,7 @@ export class EntityLoader {
     async init() {
         // console.log('Loaded: ', await this.loadModel('diceDefault.gltf'));
         // console.log('Loaded: ', await this.loadGeometry(PhysicsEntity.dice, PhysicsEntityVariation.default));
-        console.log('Loaded: ', await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default));
+        // await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default)
         // console.log('done');
     }
 

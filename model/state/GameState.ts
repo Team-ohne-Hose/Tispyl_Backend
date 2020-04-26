@@ -1,6 +1,7 @@
 import {PhysicsState} from "./PhysicsState";
 import {PlayerModel} from "../WsData";
 import {Schema, ArraySchema, MapSchema, type} from "@colyseus/schema"
+import {Player} from "./Player";
 
 enum Actions {
     ROLL,
@@ -8,61 +9,22 @@ enum Actions {
     EXECUTE
 }
 
-export class Player extends Schema {
-    @type('string')
-    displayName: string;
-    @type('string')
-    playerId: string;
-    @type('string')
-    loginName: string;
-    @type('boolean')
-    isCurrentHost: boolean;
-    @type('boolean')
-    isReady: boolean;
-    @type('number')
-    figureId: number;
-    @type('number')
-    figureModel: PlayerModel;
-    @type('number')
-    currentTile: number;
-    @type('boolean')
-    isConnected: boolean;
-
-    constructor(loginName: string, playerId: string, displayName: string) {
-        super();
-        this.loginName = loginName;
-        this.playerId = playerId;
-        this.displayName = displayName;
-        this.isConnected = true;
-    }
-
-    setFigure(id: number, figureModel?: PlayerModel) {
-        this.figureId = id;
-        this.figureModel = figureModel !== undefined ? figureModel : this.figureModel;
-    }
-    setTile(tile: number) {
-        this.currentTile = tile;
-    }
-}
-
 export class GameState extends Schema {
 
     @type('number')
-    round: number = 0;
+    round = 0;
 
     @type('string')
     action: string = Actions[Actions.EXECUTE];
 
     @type('string')
-    hostSession: string = '';
+    hostLoginName = '';
 
     @type('boolean')
-    hasStarted: boolean = false;
+    hasStarted = false;
 
     @type(PhysicsState)
     physicsState = new PhysicsState();
-
-    internalPlayerList: Map<string, string> = new Map<string, string>();
 
     @type({map: Player})
     playerList = new MapSchema<Player>();
@@ -70,7 +32,8 @@ export class GameState extends Schema {
     @type([ 'string' ])
     rules = new ArraySchema<string>();
 
-    currentPlayer: Player;
+    @type('string')
+    currentPlayerLogin: string;
 
     nextRound() {
         this.round += 1;
@@ -86,7 +49,7 @@ export class GameState extends Schema {
         }
     }
 
-    private getNextActivePlayer(current: Player): Player {
+    private getNextActivePlayer(current: string): Player {
         const playerArray: Player[] = this.asArray(this.playerList);
         if (current !== undefined) {
             let currentPlayerInd = -1;
@@ -94,7 +57,7 @@ export class GameState extends Schema {
                 if (currentPlayerInd >= 0 && playerArray[i].isConnected) {
                     return playerArray[i];
                 }
-                if (current.loginName === playerArray[i].loginName) {
+                if (current === playerArray[i].loginName) {
                     currentPlayerInd = i;
                 }
             }
@@ -109,17 +72,15 @@ export class GameState extends Schema {
     }
 
     nextTurn() {
-        this.currentPlayer = this.getNextActivePlayer(this.currentPlayer);
+        this.currentPlayerLogin = this.getNextActivePlayer(this.currentPlayerLogin).loginName;
     }
 
-    // Attention!: also updates id if id != undefined
     getOrAddPlayer(login: string, id: string, name: string): [Player, boolean] {
         const playerArray: Player[] = this.asArray(this.playerList);
         const playerRef: Player = playerArray.find((val: Player, index: number) => {
             return val.loginName === login;
         });
         if (playerRef !== undefined) {
-            playerRef.playerId = id || playerRef.playerId;
             return[playerRef, false];
         } else {
             return[this.addPlayer(login, id, name), true];
@@ -128,17 +89,27 @@ export class GameState extends Schema {
 
     addPlayer(login: string, id: string, name: string): Player {
         const p = new Player(login, id, name);
-        this.playerList[id] = p;
+        this.playerList[login] = p;
         return p;
     }
 
-    removePlayer(id: string) {
-        this.playerList[id].isConnected = false;
+    removePlayer(login: string) {
+        this.playerList[login].isConnected = false;
         // delete this.playerList[id]
     }
 
-    getPlayer(id: string): Player {
-        return this.playerList[id];
+    getPlayer(loginName: string): Player {
+        return this.playerList[loginName];
+    }
+    getPlayerByClientId(clientId: string): Player {
+        for (const key in this.playerList) {
+            if (key in this.playerList) {
+                if (this.playerList[key].clientId === clientId) {
+                    return this.playerList[key];
+                }
+            }
+        }
+        return undefined;
     }
     getPlayerByFigure(id: number): Player {
         for (let key in this.playerList) {
@@ -151,16 +122,16 @@ export class GameState extends Schema {
 
     startGame() {
         this.round = 1;
-        this.currentPlayer = this.getNextActivePlayer(undefined);
+        this.currentPlayerLogin = this.getNextActivePlayer(undefined).loginName;
         this.action = Actions[Actions.ROLL];
         this.hasStarted = true;
     }
 
-    setHost(clientId: string) {
-        const hostCandidate: Player = this.playerList[clientId];
+    setHost(login: string) {
+        const hostCandidate: Player = this.playerList[login];
         if (hostCandidate !== undefined) {
             hostCandidate.isCurrentHost = true;
-            this.hostSession = clientId;
+            this.hostLoginName = login;
         }
     }
 
