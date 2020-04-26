@@ -1,7 +1,7 @@
 
 import * as mariadb from 'mariadb'
 import {DBUser} from "./model/DBUser";
-import credentials from "./credentials.json";
+import credentials from "./configs/credentials.json";
 
 export class MariaDAO {
 
