@@ -1,12 +1,14 @@
 import {MapSchema, Schema, type} from "@colyseus/schema";
-import {CollisionGroups, PhysicsEngine, PhysicsObject} from "../PhysicsEngine";
+import {PhysicsEngine, PhysicsObject} from "../PhysicsEngine";
 import {
+    GameActionType,
+    GameDiceRoll,
     MessageType,
     PhysicsCommand,
     PhysicsCommandAddEntity,
     PhysicsCommandType,
     PhysicsEntity,
-    PhysicsEntityVariation
+    PhysicsEntityVariation, WsData
 } from "../WsData";
 import {EntityLoader} from "../EntityLoader";
 import * as THREE from 'three';
@@ -101,20 +103,26 @@ export class PhysicsState extends Schema {
     @type({ map: PhysicsObjectState})
     objects = new MapSchema<PhysicsObjectState>();
 
+    private diceObj: PhysicsObjectState;
+    private diceNoMotion = true;
+    private updateDiceLoop: NodeJS.Timeout;
+    private readonly sqrtHalf = Math.sqrt(.5);
+
     private readonly physicsEngine: PhysicsEngine;
     private idCounter = 1;
     private loader: EntityLoader
     private readonly startPoint = {x: 38.708, y: 10, z: -36.776};
-    private broadcastNewObject: (cmd: PhysicsCommandAddEntity) => void;
+    private broadcastNewMessage: (cmd: WsData) => void;
 
     constructor() {
         super();
         this.physicsEngine = new PhysicsEngine(this.objects);
         this.loader = new EntityLoader();
+        this.updateDiceLoop = global.setInterval(this.updateDice.bind(this), 500);
     }
 
-    setBroadcastCallback(broadcastCallback: ((cmd: PhysicsCommandAddEntity) => void)) {
-        this.broadcastNewObject = broadcastCallback;
+    setBroadcastCallback(broadcastCallback: ((cmd: WsData) => void)) {
+        this.broadcastNewMessage = broadcastCallback;
     }
     private getNewId(): number {
         this.idCounter++;
@@ -124,7 +132,6 @@ export class PhysicsState extends Schema {
     listPhysicsItems(): string {
         return this.physicsEngine.listObjects();
     }
-
     handlePhysicsCommand(cmd: PhysicsCommand) {
         // console.log('PCMD: ', cmd.subType, cmd['objectID']);
             switch (cmd.subType) {
@@ -139,7 +146,7 @@ export class PhysicsState extends Schema {
                     obj.variant = cmd.variant || PhysicsEntityVariation.default;
                     this.objects[id] = obj;
                     this.loader.load(this.physicsEngine, obj, cmd.entity, cmd.variant);
-                    this.broadcastNewObject(cmd);
+                    this.broadcastNewMessage(cmd);
                     break;
                 case PhysicsCommandType.remove:
                     this.removePhysicsObject(cmd.objectID);
@@ -187,7 +194,7 @@ export class PhysicsState extends Schema {
             rotW: quat.w,
             color: undefined,
         }
-        this.broadcastNewObject(cmd);
+        this.broadcastNewMessage(cmd);
         return id;
     }
     addDice() {
@@ -197,6 +204,7 @@ export class PhysicsState extends Schema {
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, PhysicsEntity.dice, PhysicsEntityVariation.default);
         this.objects[id] = obj;
         this.loader.load(this.physicsEngine, obj, PhysicsEntity.dice, PhysicsEntityVariation.default);
+        this.diceObj = obj;
         const cmd: PhysicsCommandAddEntity = {
             type: MessageType.PHYSICS_MESSAGE,
             subType: PhysicsCommandType.addEntity,
@@ -212,7 +220,70 @@ export class PhysicsState extends Schema {
             rotW: 1,
             color: undefined,
         }
-        this.broadcastNewObject(cmd);
+        this.broadcastNewMessage(cmd);
+    }
+
+    checkDiceMoving(): boolean {
+        if (this.diceObj !== undefined) {
+            const physObj = this.physicsEngine.getPhysicsObjectByID(this.diceObj.objectIDPhysics);
+            // console.log(physObj.physicsBody.getLinearVelocity().length(), physObj.physicsBody.getAngularVelocity().length());
+            if (physObj.physicsBody.getLinearVelocity().length() < 1 && physObj.physicsBody.getAngularVelocity().length() < 1 * Math.PI) {
+                if (!this.diceNoMotion) {
+                    this.diceNoMotion = true;
+                    return false;
+                }
+            } else if (physObj.physicsBody.getLinearVelocity().length() > 10 || physObj.physicsBody.getAngularVelocity().length() > 10 * Math.PI) {
+                this.diceNoMotion = false;
+            }
+        }
+        return true;
+    }
+    getDiceNumber(): number {
+        const diceOrientationUp = new THREE.Vector3(0, 1, 0).normalize();
+        const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize();
+        const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize();
+        diceOrientationUp.applyQuaternion(new THREE.Quaternion(
+            this.diceObj.quaternion.x,
+            this.diceObj.quaternion.y,
+            this.diceObj.quaternion.z,
+            this.diceObj.quaternion.w));
+        diceOrientationLeft.applyQuaternion(new THREE.Quaternion(
+            this.diceObj.quaternion.x,
+            this.diceObj.quaternion.y,
+            this.diceObj.quaternion.z,
+            this.diceObj.quaternion.w));
+        diceOrientationFwd.applyQuaternion(new THREE.Quaternion(
+            this.diceObj.quaternion.x,
+            this.diceObj.quaternion.y,
+            this.diceObj.quaternion.z,
+            this.diceObj.quaternion.w));
+
+        let diceNumber = -1;
+        if (diceOrientationUp.y >= this.sqrtHalf) {
+            diceNumber = 4;
+        } else if (diceOrientationUp.y <= -this.sqrtHalf) {
+            diceNumber = 3;
+        } else if (diceOrientationLeft.y >= this.sqrtHalf) {
+            diceNumber = 5;
+        } else if (diceOrientationLeft.y <= -this.sqrtHalf) {
+            diceNumber = 2;
+        } else if (diceOrientationFwd.y >= this.sqrtHalf) {
+            diceNumber = 1;
+        } else if (diceOrientationFwd.y <= -this.sqrtHalf) {
+            diceNumber = 6;
+        }
+        return diceNumber;
+    }
+    updateDice() {
+        if (!this.checkDiceMoving()) {
+            const num = this.getDiceNumber()
+            console.log('throwed a ', num);
+            const msg: GameDiceRoll = {
+                type: MessageType.GAME_MESSAGE,
+                action: GameActionType.diceRolled,
+                roll: num };
+            this.broadcastNewMessage(msg);
+        }
     }
 
     sendExisting(cb: ((obj: PhysicsCommandAddEntity) => void)) {
@@ -239,13 +310,6 @@ export class PhysicsState extends Schema {
         }
     }
 
-    // TODO remove
-    private addPhysicsObject(id: number, pos: Vector, quat: Quaternion, geo: ArrayLike<number>, mass: number, colGroup?: CollisionGroups, colMask?: CollisionGroups, behavior?: OnDeleteBehaviour) {
-        const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat);
-        this.objects[id] = obj;
-        this.physicsEngine.addShape(geo, obj, mass, colGroup, colMask, behavior);
-    }
-
     removePhysicsObject(id: number) {
         delete this.objects[id];
     }
@@ -268,6 +332,7 @@ export class PhysicsState extends Schema {
     }
 
     destructState() {
+        global.clearInterval(this.updateDiceLoop);
         this.physicsEngine.destructEngine();
     }
 }

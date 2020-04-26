@@ -6,7 +6,6 @@ import {MapSchema} from "@colyseus/schema";
 export interface PhysicsObject {
     physicsBody: Ammo.btRigidBody;
     mass: number;
-    collided: boolean;
     objectIdTHREE: number;
     onDelete: ((obj: PhysicsObject) => boolean);
 }
@@ -131,11 +130,14 @@ export class PhysicsEngine {
 
         let rbInfo = new Ammo.btRigidBodyConstructionInfo( 1, motionState, colShape);
         let body = new Ammo.btRigidBody( rbInfo );
+        // body.setFriction(friction);
+        // body.setRestitution(.9);
+        // body.setDamping(0.2, 0.2);
 
 
         this.physicsWorld.addRigidBody( body );
         this.physicsObjects.set(-1, {
-            collided: false, mass: 1, objectIdTHREE: -1, onDelete(obj: PhysicsObject): boolean {
+            mass: 1, objectIdTHREE: -1, onDelete(obj: PhysicsObject): boolean {
                 return false;
             }, physicsBody: body
         });
@@ -289,7 +291,6 @@ export class PhysicsEngine {
         body.setFriction(0.5);
 
         phys.physicsBody = body;
-        phys.collided = false;
         if (phys.mass > 0) {
             // Disable deactivation
             body.setActivationState(STATE.DISABLE_DEACTIVATION);
@@ -331,7 +332,6 @@ export class PhysicsEngine {
     addShape(geo: ArrayLike<number>, object: PhysicsObjectState, mass: number, colGroup: CollisionGroups, colMask: CollisionGroups, onDelete?: OnDeleteBehaviour) {
         const objectID = object.objectIDPhysics;
         this.physicsObjects.set(objectID, {
-            collided: false,
             mass: mass,
             objectIdTHREE: objectID,
             physicsBody: undefined,
