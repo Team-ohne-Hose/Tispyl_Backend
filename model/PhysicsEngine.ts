@@ -358,13 +358,13 @@ export class PhysicsEngine {
     destructEngine(){
         global.clearInterval(this.physicsLoop);
 
-        Ammo.destroy(this.tmpTrans);
-        Ammo.destroy(this.tmpVec3);
+        // Ammo.destroy(this.physicsWorld);
+        // Ammo.destroy(this.disposeInfo.solver);
+        // Ammo.destroy(this.disposeInfo.broadphase);
+        // Ammo.destroy(this.disposeInfo.dispatcher);
+        // Ammo.destroy(this.disposeInfo.collision);
         Ammo.destroy(this.tmpQuat);
-        Ammo.destroy(this.physicsWorld);
-        Ammo.destroy(this.disposeInfo.broadphase);
-        Ammo.destroy(this.disposeInfo.collision);
-        Ammo.destroy(this.disposeInfo.dispatcher);
-        Ammo.destroy(this.disposeInfo.solver);
+        Ammo.destroy(this.tmpVec3);
+        Ammo.destroy(this.tmpTrans);
     }
 }

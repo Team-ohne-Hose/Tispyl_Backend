@@ -1,5 +1,5 @@
-import {PhysicsCommandAddEntity, PhysicsEntity, PhysicsEntityVariation} from "./WsData";
-import {CollisionGroups, PhysicsEngine, PhysicsObject} from "./PhysicsEngine";
+import {PhysicsEntity, PhysicsEntityVariation} from "./WsData";
+import {CollisionGroups, PhysicsEngine} from "./PhysicsEngine";
 import {PhysicsObjectState} from "./state/PhysicsState";
 import * as THREE from 'three';
 import {AnimationClip, BufferGeometry, Camera, Group} from 'three';
