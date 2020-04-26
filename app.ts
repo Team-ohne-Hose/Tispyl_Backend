@@ -8,8 +8,8 @@ import { Server } from 'colyseus';
 import { monitor } from '@colyseus/monitor';
 import { GameRoom} from "./GameRoom";
 import { ApiRouter} from "./ApiRouter";
-import backendConfig from "./backend-config.json";
-import backendConfigDev from "./backend-config-dev.json";
+import backendConfig from "./configs/backend-config.json";
+import backendConfigDev from "./configs/backend-config-dev.json";
 import * as yargs from "yargs";
 
 const argv = yargs.options({
@@ -44,8 +44,8 @@ let serverProtocol;
 if (argv.env === 'prod') {
     serverProtocol = 'https';
     internalServer = createHttpsServer({
-        key: fs.readFileSync(backendConfig.tlsCert),
-        cert: fs.readFileSync(backendConfig.tlsKey)
+        key: fs.readFileSync(backendConfig.tlsKey),
+        cert: fs.readFileSync(backendConfig.tlsCert)
     }, app);
 } else if (argv.env === 'dev') {
     serverProtocol = 'http';

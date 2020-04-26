@@ -6,7 +6,9 @@
   "scripts": {
     "runDev": "ts-node app.ts -e dev",
     "runProd": "ts-node app.ts -e prod",
-    "deploy": ""
+    "updateRemote": "deployment\\updateRemote.cmd deployment_rsa",
+    "startRemote": "deployment\\startRemote.cmd deployment_rsa",
+    "shutDownRemote": "deployment\\shutDownRemote.cmd deployment_rsa"
   },
   "engines": {
     "node": "8.9.1"
