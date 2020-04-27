@@ -3,7 +3,7 @@ import {PlayerModel} from "../WsData";
 import {Schema, ArraySchema, MapSchema, type} from "@colyseus/schema"
 import {Player} from "./Player";
 
-enum Actions {
+export enum Actions {
     ROLL,
     MOVE,
     EXECUTE
@@ -42,7 +42,6 @@ export class GameState extends Schema {
     nextAction() {
         let newAction = Actions[Actions[this.action] + 1];
         if (newAction === undefined) {
-            this.action = Actions[Actions.ROLL];
             this.nextTurn();
         } else {
             this.action = newAction;
@@ -73,6 +72,7 @@ export class GameState extends Schema {
 
     nextTurn() {
         this.currentPlayerLogin = this.getNextActivePlayer(this.currentPlayerLogin).loginName;
+        this.action = Actions[Actions.ROLL];
     }
 
     getOrAddPlayer(login: string, id: string, name: string): [Player, boolean] {

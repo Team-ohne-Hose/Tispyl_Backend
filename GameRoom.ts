@@ -1,5 +1,5 @@
 import {Client, Room} from "colyseus";
-import {GameState} from "./model/state/GameState";
+import {Actions, GameState} from "./model/state/GameState";
 import {
     ChatMessage,
     DebugCommandType,
@@ -28,6 +28,11 @@ export class GameRoom extends Room<GameState> {
 
         this.state.physicsState.setBroadcastCallback(this.broadcast.bind(this));
         this.state.physicsState.addDice();
+        this.state.physicsState.setOnDiceThrow(((num: number) => {
+            if (this.state.action === Actions[Actions.ROLL]) {
+                this.state.nextAction();
+            }
+        }).bind(this));
 
         return undefined;
     }
@@ -152,6 +157,11 @@ export class GameRoom extends Room<GameState> {
                             const myPlayer = data.playerId ? this.state.getPlayer(data.playerId) : this.state.getPlayerByFigure(data.figureId);
                             if (myPlayer !== undefined) {
                                 myPlayer.setTile(data.tileId);
+                            }
+                            if (this.state.currentPlayerLogin === data.playerId) {
+                                if (this.state.action === Actions[Actions.MOVE]) {
+                                    this.state.nextAction();
+                                }
                             }
                             break;
                         case GameActionType.readyPropertyChange:

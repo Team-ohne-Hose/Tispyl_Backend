@@ -113,6 +113,7 @@ export class PhysicsState extends Schema {
     private loader: EntityLoader
     private readonly startPoint = {x: 38.708, y: 10, z: -36.776};
     private broadcastNewMessage: (cmd: WsData) => void;
+    private onDiceThrow: (number: number) => void;
 
     constructor() {
         super();
@@ -123,6 +124,9 @@ export class PhysicsState extends Schema {
 
     setBroadcastCallback(broadcastCallback: ((cmd: WsData) => void)) {
         this.broadcastNewMessage = broadcastCallback;
+    }
+    setOnDiceThrow(diceCallback: ((num: number) => void)) {
+        this.onDiceThrow = diceCallback;
     }
     private getNewId(): number {
         this.idCounter++;
@@ -278,6 +282,9 @@ export class PhysicsState extends Schema {
         if (!this.checkDiceMoving()) {
             const num = this.getDiceNumber()
             console.log('throwed a ', num);
+            if (this.onDiceThrow !== undefined) {
+                this.onDiceThrow(num);
+            }
             const msg: GameDiceRoll = {
                 type: MessageType.GAME_MESSAGE,
                 action: GameActionType.diceRolled,
