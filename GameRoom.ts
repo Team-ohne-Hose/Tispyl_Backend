@@ -162,6 +162,13 @@ export class GameRoom extends Room<GameState> {
                                 if (this.state.action === Actions[Actions.MOVE]) {
                                     this.state.nextAction();
                                 }
+                                const msg = {
+                                    type: MessageType.GAME_MESSAGE,
+                                    action: GameActionType.showTile,
+                                    tile: data.tileId
+                                };
+                                console.log(msg);
+                                this.broadcast(msg);
                             }
                             break;
                         case GameActionType.readyPropertyChange:
