@@ -12,15 +12,16 @@ import {
 } from "./model/WsData";
 import {Player} from "./model/state/Player";
 import {PhysicsObjectState} from "./model/state/PhysicsState";
-
+import {WSLogger} from "./WSLogger";
 
 export class GameRoom extends Room<GameState> {
 
+
+
     onCreate(options: any): void | Promise<any> {
-        console.log("onCreate was triggered with: ", options);
+        WSLogger.log(`[onCreate] Room created. Options: ${JSON.stringify(options)}`);
 
         this.setState(new GameState());
-
         this.setMetadata({
             lobbyName: options['name'],
             author: options['author']
@@ -38,58 +39,64 @@ export class GameRoom extends Room<GameState> {
     }
 
     onDispose(): void | Promise<any> {
+        WSLogger.log(`[onDispose] Destructing physicsState`);
         this.state.physicsState.destructState();
-        console.log("onDispose was triggered, rendering Stopped");
-
         return undefined;
     }
 
     onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
+        WSLogger.log(`[onJoin] Client ID: ${client.id} DisplayName: ${options.displayName} joined. Options: ${JSON.stringify(options)}`);
+
+        // find matching player object or create a new one
         const playerResult: [Player, boolean] = this.state.getOrAddPlayer(options.login, client.id, options.displayName);
-        console.log('Options were: ', options);
-        if (this.state.currentPlayerLogin === undefined) {
-            this.state.nextTurn();
-        }
+        const player: Player = playerResult[0];
+        const isNewPlayer: boolean = playerResult[1];
 
-        if (playerResult[0].gracePeriodTimeout !== undefined) {
-            global.clearTimeout(playerResult[0].gracePeriodTimeout);
-            playerResult[0].gracePeriodTimeout = undefined;
-        }
-        if (playerResult[0].hasLeft) {
-            playerResult[0].hasLeft = false;
-            const pObj: PhysicsObjectState = this.state.physicsState.objects[playerResult[0].figureId];
-            pObj.setDisabled(false);
-        }
-        playerResult[0].isConnected = true;
+        // set joining player as host if no host exists
+        if (this.state.hostLoginName === '') { this.state.setHost(player.loginName) }
 
-        if (this.state.hostLoginName === '') { this.state.setHost(playerResult[0].loginName) }
-        const msg: JoinMessage = {
-            type: MessageType.JOIN_MESSAGE,
-            message: `[SERVER] ${this.state.playerList[options.login].displayName}(${client.id}) joined the game`
-        };
-        this.broadcast(msg);
+        // send existing physics objects
         this.state.physicsState.sendExisting((obj: PhysicsCommandAddEntity) => {
+            WSLogger.log(`[onJoin] Transmitting physics object ID: ${obj.physicsId} to client ${client.id}`);
             this.send(client, obj);
         });
-        if (playerResult[1]) {
-            const id = this.state.physicsState.addPlayerFigure();
-            console.log('created PlayerFigure');
-            playerResult[0].figureId = id;
+
+
+        let joinedMsg: string = '';
+        if (isNewPlayer) {
+            joinedMsg = `${this.state.playerList[options.login].displayName}(${client.id}) joined the game`;
+            player.figureId = this.state.physicsState.addPlayerFigure();
+
         } else {
-            playerResult[0].clientId = client.id;
-            playerResult[0].isConnected = true;
+            joinedMsg = `${this.state.playerList[options.login].displayName}(${client.id}) reconnected to the game`;
+
+            // remove potential timeout
+            if (player.gracePeriodTimeout !== undefined) {
+              global.clearTimeout(player.gracePeriodTimeout);
+              player.gracePeriodTimeout = undefined;
+            }
+
+            // re-enable figure old game
+            const pObj: PhysicsObjectState = this.state.physicsState.objects[player.figureId];
+            pObj.setDisabled(false);
+
+            // register new sessionId to old player object
+            player.clientId = client.id;
         }
+
+        player.isConnected = true;
+        this.broadcast({ type: MessageType.JOIN_MESSAGE, message: `[SERVER] ${joinedMsg}` });
         return undefined;
     }
 
     onLeave(client: Client, consented?: boolean): void | Promise<any> {
         const player = this.state.getPlayerByClientId(client.id);
-        console.log("OnLeave(): Client left the room:", player.loginName);
+        WSLogger.log(`[onLeave] Client left the room: ${player.loginName}`);
         if (player !== undefined) {
             if (player.loginName === this.state.hostLoginName) {
                 this.broadcast({
                     type: MessageType.LEFT_MESSAGE,
-                    message: `[SERVER] The host: ${this.state.playerList[player.loginName].displayName} left the game.`
+                    message: `[SERVER] The Host: ${this.state.playerList[player.loginName].displayName} left the game.`
                 });
                 this.state.removePlayer(player.loginName);
                 // only way to access 'first' element...
@@ -194,7 +201,7 @@ export class GameRoom extends Room<GameState> {
                             break;
                         case GameActionType.none:
                         default:
-                            console.log('nothing to do to that action');
+                            WSLogger.log(`[onMessage] GAME_MESSAGE: No action found for ${JSON.stringify(data)}`);
                     }
                     break;
                 case MessageType.PLAYER_MESSAGE:
