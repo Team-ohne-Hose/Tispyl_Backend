@@ -17,7 +17,7 @@ SET @OLD_SQL_MODE=@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO
 -- -----------------------------------------------------
 -- Schema BrettSpiel
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `BrettSpiel` DEFAULT CHARACTER SET latin1 ;
+CREATE SCHEMA IF NOT EXISTS `BrettSpiel` DEFAULT CHARACTER SET utf16 ;
 USE `BrettSpiel` ;
 
 -- -----------------------------------------------------
@@ -28,6 +28,12 @@ CREATE TABLE IF NOT EXISTS `BrettSpiel`.`User` (
   `login_name` VARCHAR(45) NOT NULL,
   `display_name` VARCHAR(45) NOT NULL,
   `password_hash` VARCHAR(45) NOT NULL,
+  `user_creation` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `time_played` INT(10) UNSIGNED NOT NULL DEFAULT 0,
+  `profile_picture` VARCHAR(45) NOT NULL,
+  `last_figure` INT(10) UNSIGNED NOT NULL DEFAULT 1,
+  `is_connected` TINYINT(1) NOT NULL DEFAULT 0,
+  `is_dev` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY (`user_id`),
   UNIQUE KEY (`login_name`))
