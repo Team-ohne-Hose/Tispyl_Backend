@@ -77,8 +77,8 @@ export class GameState extends Schema {
 
     getOrAddPlayer(login: string, id: string, name: string): [Player, boolean] {
         const playerArray: Player[] = this.asArray(this.playerList);
-        const playerRef: Player = playerArray.find((val: Player, index: number) => {
-            return val.loginName === login;
+        const playerRef: Player = playerArray.find((p: Player) => {
+            return p.loginName === login;
         });
         if (playerRef !== undefined) {
             return[playerRef, false];

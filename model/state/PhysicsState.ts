@@ -12,6 +12,7 @@ import {
 } from "../WsData";
 import {EntityLoader} from "../EntityLoader";
 import * as THREE from 'three';
+import {WSLogger} from "../../WSLogger";
 
 export enum OnDeleteBehaviour {
     default
@@ -110,7 +111,7 @@ export class PhysicsState extends Schema {
 
     private readonly physicsEngine: PhysicsEngine;
     private idCounter = 1;
-    private loader: EntityLoader
+    private loader: EntityLoader;
     private readonly startPoint = {x: 38.708, y: 10, z: -36.776};
     private broadcastNewMessage: (cmd: WsData) => void;
     private onDiceThrow: (number: number) => void;
@@ -130,7 +131,7 @@ export class PhysicsState extends Schema {
     }
     private getNewId(): number {
         this.idCounter++;
-        console.log('gave out id ', this.idCounter);
+        WSLogger.log(`Gave out new physcics ID: ${this.idCounter}`);
         return this.idCounter;
     }
     listPhysicsItems(): string {
@@ -171,7 +172,7 @@ export class PhysicsState extends Schema {
                     this.setAngularVelocity(cmd.objectID, cmd.angularX, cmd.angularY, cmd.angularZ);
                     break;
                 default:
-                    console.log('PhysicsCommand not recognised', cmd);
+                    console.error('PhysicsCommand not recognised', cmd);
                     break;
             }
     }
@@ -280,8 +281,8 @@ export class PhysicsState extends Schema {
     }
     updateDice() {
         if (!this.checkDiceMoving()) {
-            const num = this.getDiceNumber()
-            console.log('throwed a ', num);
+            const num = this.getDiceNumber();
+            WSLogger.log(`Dice roll resulted in a ${num}`);
             if (this.onDiceThrow !== undefined) {
                 this.onDiceThrow(num);
             }
@@ -295,25 +296,25 @@ export class PhysicsState extends Schema {
 
     sendExisting(cb: ((obj: PhysicsCommandAddEntity) => void)) {
         for (let key in this.objects) {
-            if (key in this.objects && !this.objects[key].disabled)
-            console.log('transmitting Object: ', key);
-            const obj: PhysicsObjectState = this.objects[key];
-            const cmd: PhysicsCommandAddEntity = {
-                type: MessageType.PHYSICS_MESSAGE,
-                subType: PhysicsCommandType.addEntity,
-                physicsId: obj.objectIDPhysics,
-                entity: obj.entity || PhysicsEntity.figure,
-                variant: obj.variant || PhysicsEntityVariation.default,
-                posX: obj.position.x,
-                posY: obj.position.y,
-                posZ: obj.position.z,
-                rotX: obj.quaternion.x,
-                rotY: obj.quaternion.y,
-                rotZ: obj.quaternion.z,
-                rotW: obj.quaternion.w,
-                color: undefined,
+            if (key in this.objects && !this.objects[key].disabled) {
+                const obj: PhysicsObjectState = this.objects[key];
+                const cmd: PhysicsCommandAddEntity = {
+                    type: MessageType.PHYSICS_MESSAGE,
+                    subType: PhysicsCommandType.addEntity,
+                    physicsId: obj.objectIDPhysics,
+                    entity: obj.entity || PhysicsEntity.figure,
+                    variant: obj.variant || PhysicsEntityVariation.default,
+                    posX: obj.position.x,
+                    posY: obj.position.y,
+                    posZ: obj.position.z,
+                    rotX: obj.quaternion.x,
+                    rotY: obj.quaternion.y,
+                    rotZ: obj.quaternion.z,
+                    rotW: obj.quaternion.w,
+                    color: undefined,
+                };
+                cb(cmd);
             }
-            cb(cmd);
         }
     }
 

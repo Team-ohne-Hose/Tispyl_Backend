@@ -12,8 +12,8 @@ export class MariaDAO {
         this.schemaName = config.mariaDao.schemaName;
         this.pool = mariadb.createPool({
             host: config.mariaDao.host,
-            user: 'root', // credentials.mariaDao.user,
-            password: 'root', // credentials.mariaDao.password,
+            user: credentials.mariaDao.user,
+            password: credentials.mariaDao.password,
             connectionLimit: config.mariaDao.connectionLimit
         })
     }

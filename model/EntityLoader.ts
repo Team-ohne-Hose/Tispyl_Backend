@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import {AnimationClip, BufferGeometry, Camera, Group} from 'three';
 import {GLTFLoader} from "./gltfLoaderLocal/GLTFLoaderLocal.js";
 import {BufferGeometryUtils} from "./BufferGeometryUtils.js";
+import {WSLogger} from "../WSLogger";
 
 
 interface GLTF {
@@ -109,17 +110,17 @@ export class EntityLoader {
     }
 
     private async loadModel(fName: string): Promise<number[]> {
-        console.log('loading new model: ', fName);
+        WSLogger.log(`Loading new model: ${fName}`);
         const loader = new GLTFLoader(); //.setPath(this.resourcePath);
         const path = this.resourcePath + fName;
 
         const scene: THREE.Group = await new Promise((resolve, reject) => {
             var data = this.fs.readFileSync(this.resourcePath + fName);
             loader.parse(data, fName, (gltf: GLTF) => {
-                console.log('loaded: ', fName); // gltf.scene);
+                WSLogger.log(`Finished loading: ${fName}`); // gltf.scene);
                 resolve(gltf.scene);
             }, (e) => {
-                console.log('Error', e);
+                console.error('Error', e);
                 reject();
             });
         });

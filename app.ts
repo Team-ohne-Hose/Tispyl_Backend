@@ -66,7 +66,7 @@ app.use((req: Request, res, next) => {
     const queries = JSON.stringify(req.query);
     const params = JSON.stringify(req.params);
     const body = JSON.stringify(req.body);
-    console.log(`[${now}] Got: ${req.method} at ${req.originalUrl} with query: ${queries} params: ${params} body ${body}`);
+    console.log(`[${now}][HTTP] Got: ${req.method} at ${req.originalUrl} with query: ${queries} params: ${params} body ${body}`);
     next();
 });
 
