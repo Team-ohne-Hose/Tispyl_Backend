@@ -4,6 +4,12 @@ export class DBUser {
     login_name: string;
     display_name: string;
     password_hash: string;
+    user_creation: string;
+    time_played: number;
+    profile_picture: string;
+    last_figure: string;
+    is_connected: boolean;
+    is_dev: boolean;
 }
 
 export class APIUser {

@@ -12,8 +12,8 @@ export class MariaDAO {
         this.schemaName = config.mariaDao.schemaName;
         this.pool = mariadb.createPool({
             host: config.mariaDao.host,
-            user: credentials.mariaDao.user,
-            password: credentials.mariaDao.password,
+            user: config.dev ? 'root' : credentials.mariaDao.user,
+            password: config.dev ? 'root' : credentials.mariaDao.password,
             connectionLimit: config.mariaDao.connectionLimit
         })
     }
@@ -31,7 +31,7 @@ export class MariaDAO {
     }
 
     async getAllUsers(): Promise<any> {
-        return this.withConnection(c => c.query('SELECT * FROM tispyl.User'));
+        return this.withConnection(c => c.query(`SELECT * FROM ${this.schemaName}.User`));
     }
 
     async getUserById(userId: number): Promise<any> {
