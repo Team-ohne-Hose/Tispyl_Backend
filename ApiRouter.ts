@@ -3,11 +3,44 @@ import {Request, Response} from 'express';
 import {MariaDAO} from "./MariaDAO";
 import {DBUser} from "./model/DBUser";
 import {APIResponse} from "./model/APIResponse";
+import multer, {MulterError} from "multer";
+
 
 export class ApiRouter {
 
     db: MariaDAO;
     router;
+
+    // multer configuration see: https://www.npmjs.com/package/multer for reference
+    private multerStorage = multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb( null, 'fileStash' )
+        },
+        filename: ( req, file, cb ) => {
+            cb( null, file.fieldname + '_' + Date.now() + '_' + file.originalname)
+        }
+    });
+    private multerLimits = {
+        fileSize: 1*1024*1024,
+        files: 5,
+        parts: 10
+    };
+    private multerFileFilter = (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            let err = new Error('Invalid format. Allowed formats are: .png, .jpg and .jpeg');
+            err.name = 'MULTER_FILTER_REJECTION';
+            return cb(err);
+        }
+    };
+    private multipartData = multer({
+        storage: this.multerStorage,
+        limits: this.multerLimits,
+        fileFilter: this.multerFileFilter
+    });
+    ///////////////////////////////////////////////////////////////////////////////
 
     constructor (config) {
         this.db = new MariaDAO(config);
@@ -15,6 +48,18 @@ export class ApiRouter {
 
         this.router.get('/', async (req, res) => {
             res.sendFile(__dirname + '/views/api.html');
+        });
+
+        this.router.post('/profilePic', this.multipartData.single('img'), (req, res) => {
+            const id: number = req.body.user_id;
+            const pw: string = req.body.hash;
+
+            console.log('Multer Data', req.file, id, pw);
+            new APIResponse(res, 200, 'ok').send();
+        });
+
+        this.router.get('/error', (req, res) => {
+            throw new Error('Calamity!')
         });
 
         this.router.get('/users', async (req, res) => {

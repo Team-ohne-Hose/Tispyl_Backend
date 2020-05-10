@@ -11,6 +11,7 @@ import { ApiRouter} from "./ApiRouter";
 import backendConfig from "./configs/backend-config.json";
 import backendConfigDev from "./configs/backend-config-dev.json";
 import * as yargs from "yargs";
+import {ErrorHandler} from "./ErrorHandler";
 
 const argv = yargs.options({
     env: {
@@ -76,6 +77,11 @@ app.use('/api', new ApiRouter(config).router);
 app.use('/', (req, res, next) => {
     res.sendFile(__dirname + "/views/index.html")
 });
+
+// Error handling
+app.use(ErrorHandler.logErrors);
+app.use(ErrorHandler.handleKnownError);
+app.use(ErrorHandler.handleUnexpectedError);
 
 gameServer.onShutdown(function(){
     console.log(`game server is going down.`);
