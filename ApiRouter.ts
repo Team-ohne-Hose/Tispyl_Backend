@@ -3,7 +3,7 @@ import {Request, Response} from 'express';
 import {MariaDAO} from "./MariaDAO";
 import {DBUser} from "./model/DBUser";
 import {APIResponse} from "./model/APIResponse";
-import multer, {MulterError} from "multer";
+import multer from "multer";
 import * as fs from "fs";
 import {ImagePreparer} from "./ImagePreparer";
 import * as path from "path";
@@ -20,7 +20,7 @@ export class ApiRouter {
             cb( null, 'fileStash' )
         },
         filename: ( req, file, cb ) => {
-            cb( null, file.fieldname + '_' + Date.now() + '_' + file.originalname)
+            cb( null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
         }
     });
     private multerLimits = {
@@ -67,15 +67,15 @@ export class ApiRouter {
 
         this.router.get('/profilePic', (req, res) => {
             const defaultImagePath = 'fileStash/defaultImage.jpg';
-            const ln: string = req.body.login_name;
-            const pw: string = req.body.hash;
+            const ln: string = req.query.login_name;
+            const pw: string = req.query.hash;
             this.db.getProfilePicture(ln, pw).then( dbResponse => {
                 let picturePath: string = dbResponse[0].profile_picture;
                 if ( picturePath !== undefined ) {
                     if ( picturePath === null ) {
                         picturePath = defaultImagePath;
                     }
-                    const mimeType = this.mimeTypes[path.extname(picturePath).slice(1)] || 'text/plain';
+                    const mimeType = this.mimeTypes[path.extname(picturePath).slice(1).toLowerCase()] || 'text/plain';
                     const stream = fs.createReadStream(picturePath);
                     stream.on('open', () => {
                         res.set('Content-Type', mimeType);
@@ -89,27 +89,35 @@ export class ApiRouter {
         this.router.post('/profilePic', this.multipartData.single('img'), (req, res) => {
             const ln: string = req.body.login_name;
             const pw: string = req.body.hash;
-
             ImagePreparer.prepare(req.file.path).then( (preparedImagePath: string) => {
-                this.db.setProfilePicture(ln, pw, preparedImagePath).then( dbResponse => {
-                    if (dbResponse.affectedRows === 1) {
-                        new APIResponse(res, 200, dbResponse).send();
-                    } else {
-                        fs.unlink(req.file.path, () => {});
-                        new APIResponse(res, 500, dbResponse).send();
+                // Remove old picture
+                this.db.getProfilePicture(ln, pw).then( dbOldPicture => {
+                    const oldPath = dbOldPicture[0].profile_picture;
+                    if(oldPath !== undefined && oldPath !== null) {
+                        fs.unlink(oldPath, () => {});
                     }
-                }, err => {
-                    fs.unlink(req.file.path, () => {});
-                    new APIResponse(res, 500, {}, [err]).send();
-                    console.error(err)
+                }).then( suc => {
+                    // Set new Picture
+                    this.db.setProfilePicture(ln, pw, preparedImagePath).then( dbSetNewPicture => {
+                        if (dbSetNewPicture.affectedRows === 1) {
+                            new APIResponse(res, 200, dbSetNewPicture).send();
+                        } else {
+                            fs.unlink(req.file.path, () => {});
+                            new APIResponse(res, 500, dbSetNewPicture).send();
+                        }
+                    }, err => {
+                        fs.unlink(req.file.path, () => {});
+                        new APIResponse(res, 500, {}, [err]).send();
+                        console.error(err)
+                    });
                 });
             });
         });
 
         // clean dbResponse in MariaDAO for this
         this.router.delete('/profilePic', (req, res) => {
-            const ln: string = req.body.login_name;
-            const pw: string = req.body.hash;
+            const ln: string = req.query.login_name;
+            const pw: string = req.query.hash;
             if(ln !== undefined && pw !== undefined) {
                 this.db.removeProfilePicture(ln, pw).then( dbResposne => {
                     if( dbResposne[0].profile_picture !== undefined ) {
