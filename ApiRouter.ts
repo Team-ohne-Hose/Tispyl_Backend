@@ -4,6 +4,9 @@ import {MariaDAO} from "./MariaDAO";
 import {DBUser} from "./model/DBUser";
 import {APIResponse} from "./model/APIResponse";
 import multer, {MulterError} from "multer";
+import * as fs from "fs";
+import {ImagePreparer} from "./ImagePreparer";
+import * as path from "path";
 
 
 export class ApiRouter {
@@ -42,6 +45,18 @@ export class ApiRouter {
     });
     ///////////////////////////////////////////////////////////////////////////////
 
+    private mimeTypes = {
+        html: 'text/html',
+        txt: 'text/plain',
+        css: 'text/css',
+        gif: 'image/gif',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        png: 'image/png',
+        svg: 'image/svg+xml',
+        js: 'application/javascript'
+    };
+
     constructor (config) {
         this.db = new MariaDAO(config);
         this.router = express.Router();
@@ -50,12 +65,61 @@ export class ApiRouter {
             res.sendFile(__dirname + '/views/api.html');
         });
 
+        this.router.get('/profilePic', (req, res) => {
+            const defaultImagePath = 'fileStash/defaultImage.jpg';
+            const ln: string = req.body.login_name;
+            const pw: string = req.body.hash;
+            this.db.getProfilePicture(ln, pw).then( dbResponse => {
+                let picturePath: string = dbResponse[0].profile_picture;
+                if ( picturePath !== undefined ) {
+                    if ( picturePath === null ) {
+                        picturePath = defaultImagePath;
+                    }
+                    const mimeType = this.mimeTypes[path.extname(picturePath).slice(1)] || 'text/plain';
+                    const stream = fs.createReadStream(picturePath);
+                    stream.on('open', () => {
+                        res.set('Content-Type', mimeType);
+                        stream.pipe(res);
+                    })
+                }
+            })
+        });
+
+        // Change this as soon as we have proper authentication
         this.router.post('/profilePic', this.multipartData.single('img'), (req, res) => {
-            const id: number = req.body.user_id;
+            const ln: string = req.body.login_name;
             const pw: string = req.body.hash;
 
-            console.log('Multer Data', req.file, id, pw);
-            new APIResponse(res, 200, 'ok').send();
+            ImagePreparer.prepare(req.file.path).then( (preparedImagePath: string) => {
+                this.db.setProfilePicture(ln, pw, preparedImagePath).then( dbResponse => {
+                    if (dbResponse.affectedRows === 1) {
+                        new APIResponse(res, 200, dbResponse).send();
+                    } else {
+                        fs.unlink(req.file.path, () => {});
+                        new APIResponse(res, 500, dbResponse).send();
+                    }
+                }, err => {
+                    fs.unlink(req.file.path, () => {});
+                    new APIResponse(res, 500, {}, [err]).send();
+                    console.error(err)
+                });
+            });
+        });
+
+        // clean dbResponse in MariaDAO for this
+        this.router.delete('/profilePic', (req, res) => {
+            const ln: string = req.body.login_name;
+            const pw: string = req.body.hash;
+            if(ln !== undefined && pw !== undefined) {
+                this.db.removeProfilePicture(ln, pw).then( dbResposne => {
+                    if( dbResposne[0].profile_picture !== undefined ) {
+                        fs.unlink(dbResposne[0].profile_picture, () => {});
+                    }
+                    new APIResponse(res, 200, dbResposne).send();
+                })
+            } else {
+                new APIResponse(res, 401, 'Bad Request', []).send()
+            }
         });
 
         this.router.get('/error', (req, res) => {
@@ -116,7 +180,7 @@ export class ApiRouter {
         this.router.post('/users/login', async (req, res) => {
             this.db.findLogin(req.body.login_name, req.body.password_hash).then( suc => {
                 if ((suc as any[]).length === 0 ) {
-                    new APIResponse(res, 404, suc).send()
+                    new APIResponse(res, 404, 'Credentials did not match.').send()
                 } else if ((suc as any[]).length === 1 ) {
                     new APIResponse(res, 200, suc).send()
                 } else {
@@ -124,7 +188,7 @@ export class ApiRouter {
                 }
             }, err => {
                 new APIResponse(res, 500, {}, [err]).send();
-                console.warn(err)
+                console.error(err)
             });
         });
     }
