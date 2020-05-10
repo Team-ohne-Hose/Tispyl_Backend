@@ -75,4 +75,32 @@ export class MariaDAO {
             {ln: login_name, ph: password_hash}
         ));
     }
+
+    async setProfilePicture(login_name: string, password_hash: string, picture_path: string): Promise<any> {
+        return this.withConnection(c => c.query(
+            {namedPlaceholders: true, sql: `UPDATE ${this.schemaName}.User SET profile_picture=:pp WHERE login_name=:ln AND password_hash=:ph`},
+            {ln: login_name, ph: password_hash, pp: picture_path}
+        ));
+    }
+
+    async getProfilePicture(login_name: string, password_hash: string): Promise<any> {
+        return await this.withConnection(c => c.query(
+            {namedPlaceholders: true, sql: `SELECT profile_picture FROM ${this.schemaName}.User WHERE login_name=:ln AND password_hash=:ph`},
+            {ln: login_name, ph: password_hash}
+        ));
+    }
+
+    async removeProfilePicture(login_name: string, password_hash: string): Promise<any> {
+        const firstResult = await this.withConnection(c => c.query(
+                {namedPlaceholders: true, sql: `SELECT profile_picture FROM ${this.schemaName}.User WHERE login_name=:ln AND password_hash=:ph`},
+                {ln: login_name, ph: password_hash}
+            ));
+
+        const secondResult = await this.withConnection( c => c.query(
+            {namedPlaceholders: true, sql: `UPDATE ${this.schemaName}.User SET profile_picture=DEFAULT WHERE login_name=:ln AND password_hash=:ph`},
+            {ln: login_name, ph: password_hash}
+        ));
+
+        return firstResult;
+    }
 }

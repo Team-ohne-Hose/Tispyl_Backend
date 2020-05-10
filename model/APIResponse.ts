@@ -15,6 +15,6 @@ export class APIResponse {
 
     send() {
         const prettyBody = JSON.stringify(JSON.parse(this.responseBody), null, 2);
-        return this.response.send(prettyBody);
+        this.response.send(prettyBody);
     }
 }
