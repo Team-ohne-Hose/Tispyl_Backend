@@ -97,6 +97,54 @@ export class PhysicsEngine {
         this.physicsLoop = global.setInterval(this.updatePhysics.bind(this), 25);
     }
 
+    addGameBoardBoundarys() {
+        const borderCoords = {
+            x: [-35, -25, -15, -5, 5, 15, 25, 35, 45],
+            y: [-40, -30, -20, -10, 0, 10, 20, 30, 40]
+        };
+        const addGameBoardBoundary = (origin: Ammo.btVector3, size: Ammo.btVector3) => {
+            const transform = new Ammo.btTransform();
+            transform.setIdentity();
+            transform.setOrigin( origin );
+            transform.setRotation( new Ammo.btQuaternion( 0, 0, 0, 1 ) );
+            let motionState = new Ammo.btDefaultMotionState( transform );
+
+            let colShape = new Ammo.btBoxShape( size );
+            colShape.setMargin( 0.05 );
+
+            let localInertia = new Ammo.btVector3( 0, 0, 0 );
+            colShape.calculateLocalInertia( 0, localInertia );
+
+            let rbInfo = new Ammo.btRigidBodyConstructionInfo( 0, motionState, colShape, localInertia );
+            let body = new Ammo.btRigidBody( rbInfo );
+            body.setCollisionFlags(FLAGS.CF_KINEMATIC_OBJECT);
+
+            this.physicsWorld.addRigidBody( body );
+        }
+        const landscapeBoundary = (x1: number, x2: number, y: number) => {
+            const len = borderCoords.x[x2] - borderCoords.x[x1];
+            const vec = new Ammo.btVector3((borderCoords.x[x2] + borderCoords.x[x1]) / 2, 0.5, borderCoords.y[y]);
+            addGameBoardBoundary(vec, new Ammo.btVector3(len / 2 + .15, .35, .15));
+        };
+        const portraitBoundary = (x: number, y1: number, y2: number) => {
+            const len = borderCoords.y[y2] - borderCoords.y[y1];
+            const vec = new Ammo.btVector3(borderCoords.x[x], 0.5, (borderCoords.y[y2] + borderCoords.y[y1]) / 2);
+            addGameBoardBoundary(vec, new Ammo.btVector3(.15, .35, len / 2 + .15));
+        };
+        landscapeBoundary(1, 8, 1);
+        portraitBoundary(1, 1, 7);
+        landscapeBoundary(1, 7, 7);
+        portraitBoundary(7, 2, 7);
+        landscapeBoundary(2, 7, 2);
+        portraitBoundary(2, 2, 6);
+        landscapeBoundary(2, 6, 6);
+        portraitBoundary(6, 3, 6);
+        landscapeBoundary(3, 6, 3);
+        portraitBoundary(3, 3, 5);
+        landscapeBoundary(3, 5, 5);
+        portraitBoundary(5, 4, 5);
+        landscapeBoundary(4, 5, 4);
+    }
     addGameBoard() {
         const transform = new Ammo.btTransform();
         transform.setIdentity();
@@ -114,8 +162,9 @@ export class PhysicsEngine {
         let body = new Ammo.btRigidBody( rbInfo );
         body.setCollisionFlags(FLAGS.CF_KINEMATIC_OBJECT);
 
-
         this.physicsWorld.addRigidBody( body );
+
+        this.addGameBoardBoundarys();
     }
 
     addTestBall() {
