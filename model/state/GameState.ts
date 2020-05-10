@@ -2,6 +2,7 @@ import {PhysicsState} from "./PhysicsState";
 import {PlayerModel} from "../WsData";
 import {Schema, ArraySchema, MapSchema, type} from "@colyseus/schema"
 import {Player} from "./Player";
+import {BoardLayoutState} from "./BoardLayoutState";
 
 export enum Actions {
     ROLL,
@@ -34,6 +35,9 @@ export class GameState extends Schema {
 
     @type('string')
     currentPlayerLogin: string;
+
+    @type(BoardLayoutState)
+    boardLayout = new BoardLayoutState();
 
     nextRound() {
         this.round += 1;

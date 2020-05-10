@@ -26,6 +26,7 @@ export class GameRoom extends Room<GameState> {
             lobbyName: options['name'],
             author: options['author']
         });
+        this.state.boardLayout.generateDefaultLayout();
 
         this.state.physicsState.setBroadcastCallback(this.broadcast.bind(this));
         this.state.physicsState.addDice();
