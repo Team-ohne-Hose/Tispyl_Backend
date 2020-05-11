@@ -11,7 +11,6 @@ import * as path from "path";
 
 export class ApiRouter {
 
-    db: MariaDAO;
     router;
 
     // multer configuration see: https://www.npmjs.com/package/multer for reference
@@ -58,7 +57,7 @@ export class ApiRouter {
     };
 
     constructor (config) {
-        this.db = new MariaDAO(config);
+        MariaDAO.init(config);
         this.router = express.Router();
 
         this.router.get('/', async (req, res) => {
@@ -69,7 +68,7 @@ export class ApiRouter {
             const defaultImagePath = 'fileStash/defaultImage.jpg';
             const ln: string = req.query.login_name;
             const pw: string = req.query.hash;
-            this.db.getProfilePicture(ln, pw).then( dbResponse => {
+            MariaDAO.getProfilePicture(ln, pw).then( dbResponse => {
                 let picturePath: string = dbResponse[0].profile_picture;
                 if ( picturePath !== undefined ) {
                     if ( picturePath === null ) {
@@ -91,14 +90,14 @@ export class ApiRouter {
             const pw: string = req.body.hash;
             ImagePreparer.prepare(req.file.path).then( (preparedImagePath: string) => {
                 // Remove old picture
-                this.db.getProfilePicture(ln, pw).then( dbOldPicture => {
+                MariaDAO.getProfilePicture(ln, pw).then( dbOldPicture => {
                     const oldPath = dbOldPicture[0].profile_picture;
                     if(oldPath !== undefined && oldPath !== null) {
                         fs.unlink(oldPath, () => {});
                     }
                 }).then( suc => {
                     // Set new Picture
-                    this.db.setProfilePicture(ln, pw, preparedImagePath).then( dbSetNewPicture => {
+                    MariaDAO.setProfilePicture(ln, pw, preparedImagePath).then( dbSetNewPicture => {
                         if (dbSetNewPicture.affectedRows === 1) {
                             new APIResponse(res, 200, dbSetNewPicture).send();
                         } else {
@@ -119,7 +118,7 @@ export class ApiRouter {
             const ln: string = req.query.login_name;
             const pw: string = req.query.hash;
             if(ln !== undefined && pw !== undefined) {
-                this.db.removeProfilePicture(ln, pw).then( dbResposne => {
+                MariaDAO.removeProfilePicture(ln, pw).then( dbResposne => {
                     if( dbResposne[0].profile_picture !== undefined ) {
                         fs.unlink(dbResposne[0].profile_picture, () => {});
                     }
@@ -140,11 +139,11 @@ export class ApiRouter {
             let resultPromise: Promise<any>;
 
             if (id !== undefined) {
-                resultPromise = this.db.getUserById(id)
+                resultPromise = MariaDAO.getUserById(id)
             } else if (name !== undefined) {
-                resultPromise = this.db.getUserByLogginName(name)
+                resultPromise = MariaDAO.getUserByLogginName(name)
             } else {
-                resultPromise = this.db.getAllUsers()
+                resultPromise = MariaDAO.getAllUsers()
             }
 
             resultPromise.then( suc => {
@@ -157,7 +156,7 @@ export class ApiRouter {
 
         this.router.post('/users', async (req: Request, res: Response) => {
             let usrData: DBUser = req.body;
-            this.db.insertUser(usrData).then( suc => {
+            MariaDAO.insertUser(usrData).then( suc => {
                 new APIResponse(res, 201, suc).send()
             }, err => {
                 new APIResponse(res, 500, {}, [err]).send();
@@ -167,7 +166,7 @@ export class ApiRouter {
 
         this.router.put('/users', async (req, res) => {
             let usrData: DBUser = req.body;
-            this.db.updateUser(usrData).then( suc => {
+            MariaDAO.updateUser(usrData).then( suc => {
                 new APIResponse(res, 200, suc).send()
             }, err => {
                 new APIResponse(res, 500, {}, [err]).send();
@@ -177,7 +176,7 @@ export class ApiRouter {
 
         this.router.delete('/users', async (req, res) => {
             let usrData: number = req.query.user_id;
-            this.db.removeUser(usrData).then( suc => {
+            MariaDAO.removeUser(usrData).then( suc => {
                 new APIResponse(res, 200, suc).send()
             }, err => {
                 new APIResponse(res, 500, {}, [err]).send();
@@ -186,7 +185,7 @@ export class ApiRouter {
         });
 
         this.router.post('/users/login', async (req, res) => {
-            this.db.findLogin(req.body.login_name, req.body.password_hash).then( suc => {
+            MariaDAO.findLogin(req.body.login_name, req.body.password_hash).then( suc => {
                 if ((suc as any[]).length === 0 ) {
                     new APIResponse(res, 404, 'Credentials did not match.').send()
                 } else if ((suc as any[]).length === 1 ) {

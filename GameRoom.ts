@@ -13,6 +13,7 @@ import {
 import {Player} from "./model/state/Player";
 import {PhysicsObjectState} from "./model/state/PhysicsState";
 import {WSLogger} from "./WSLogger";
+import {MariaDAO} from "./MariaDAO";
 
 export class GameRoom extends Room<GameState> {
 
@@ -52,6 +53,7 @@ export class GameRoom extends Room<GameState> {
         const playerResult: [Player, boolean] = this.state.getOrAddPlayer(options.login, client.id, options.displayName);
         const player: Player = playerResult[0];
         const isNewPlayer: boolean = playerResult[1];
+        player.joined = new Date();
 
         // set joining player as host if no host exists
         if (this.state.hostLoginName === '') { this.state.setHost(player.loginName) }
@@ -92,6 +94,11 @@ export class GameRoom extends Room<GameState> {
 
     onLeave(client: Client, consented?: boolean): void | Promise<any> {
         const player = this.state.getPlayerByClientId(client.id);
+
+        const minPlayed = (new Date().getTime() - player.joined.getTime()) / 60000;
+        MariaDAO.addPlaytime(player.loginName, minPlayed);
+
+
         WSLogger.log(`[onLeave] Client left the room: ${player.loginName}`);
         if (player !== undefined) {
             if (player.loginName === this.state.hostLoginName) {

@@ -25,6 +25,7 @@ export class Player extends Schema {
     @type('boolean')
     hasLeft: boolean;
     gracePeriodTimeout: Timeout;
+    joined: Date;
 
     constructor(loginName: string, playerId: string, displayName: string) {
         super();
