@@ -67,8 +67,8 @@ export class ApiRouter {
         this.router.get('/profilePic', (req, res) => {
             const defaultImagePath = 'fileStash/defaultImage.jpg';
             const ln: string = req.query.login_name;
-            const pw: string = req.query.hash;
-            MariaDAO.getProfilePicture(ln, pw).then( dbResponse => {
+            //const pw: string = req.query.hash;
+            MariaDAO.getProfilePicture(ln).then( dbResponse => {
                 let picturePath: string = dbResponse[0].profile_picture;
                 if ( picturePath !== undefined ) {
                     if ( picturePath === null ) {
@@ -90,7 +90,7 @@ export class ApiRouter {
             const pw: string = req.body.hash;
             ImagePreparer.prepare(req.file.path).then( (preparedImagePath: string) => {
                 // Remove old picture
-                MariaDAO.getProfilePicture(ln, pw).then( dbOldPicture => {
+                MariaDAO.getProfilePicture(ln).then( dbOldPicture => {
                     const oldPath = dbOldPicture[0].profile_picture;
                     if(oldPath !== undefined && oldPath !== null) {
                         fs.unlink(oldPath, () => {});
