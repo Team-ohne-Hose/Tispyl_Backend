@@ -159,6 +159,10 @@ export class GameRoom extends Room<GameState> {
                         case GameActionType.advanceTurn:
                             this.state.nextTurn();
                             break;
+                        case GameActionType.reverseTurnOrder:
+                            WSLogger.log('reversingTurnOrder');
+                            this.state.reversed = !this.state.reversed;
+                            break;
                         case GameActionType.setStartingCondition:
                             this.state.startGame();
                             break;
