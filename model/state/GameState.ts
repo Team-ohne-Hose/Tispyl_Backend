@@ -39,6 +39,9 @@ export class GameState extends Schema {
     @type(BoardLayoutState)
     boardLayout = new BoardLayoutState();
 
+    @type('boolean')
+    reversed = false;
+
     nextRound() {
         this.round += 1;
     }
@@ -52,8 +55,15 @@ export class GameState extends Schema {
         }
     }
 
-    private getNextActivePlayer(current: string): Player {
-        const playerArray: Player[] = this.asArray(this.playerList);
+    private getNextActivePlayer(current: string, reversed: boolean): Player {
+        let playerArray: Player[];
+
+        if (reversed) {
+            playerArray = this.asArray(this.playerList).reverse();
+        } else {
+            playerArray = this.asArray(this.playerList)
+        }
+
         if (current !== undefined) {
             let currentPlayerInd = -1;
             for (let i = 0; i < playerArray.length; i++) {
@@ -75,7 +85,7 @@ export class GameState extends Schema {
     }
 
     nextTurn() {
-        this.currentPlayerLogin = this.getNextActivePlayer(this.currentPlayerLogin).loginName;
+        this.currentPlayerLogin = this.getNextActivePlayer(this.currentPlayerLogin, this.reversed).loginName;
         this.action = Actions[Actions.ROLL];
     }
 
@@ -126,7 +136,7 @@ export class GameState extends Schema {
 
     startGame() {
         this.round = 1;
-        this.currentPlayerLogin = this.getNextActivePlayer(undefined).loginName;
+        this.currentPlayerLogin = this.getNextActivePlayer(undefined, false).loginName;
         this.action = Actions[Actions.ROLL];
         this.hasStarted = true;
     }
