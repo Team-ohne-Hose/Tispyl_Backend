@@ -5,7 +5,6 @@ import {
     GameDiceRoll,
     MessageType,
     PhysicsCommand,
-    PhysicsCommandAddEntity,
     PhysicsCommandType,
     PhysicsEntity,
     PhysicsEntityVariation, WsData
@@ -140,19 +139,6 @@ export class PhysicsState extends Schema {
     handlePhysicsCommand(cmd: PhysicsCommand) {
         // console.log('PCMD: ', cmd.subType, cmd['objectID']);
             switch (cmd.subType) {
-                case PhysicsCommandType.addEntity:
-                    // TODO: use color
-                    const id = this.getNewId();
-                    cmd.physicsId = id;
-                    const pos = new Vector(cmd.posX, cmd.posY, cmd.posZ);
-                    const quat = new Quaternion(cmd.rotX, cmd.rotY, cmd.rotZ, cmd.rotW);
-                    const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, cmd.entity, cmd.variant);
-                    obj.entity = cmd.entity || PhysicsEntity.figure;
-                    obj.variant = cmd.variant || PhysicsEntityVariation.default;
-                    this.objects[id] = obj;
-                    this.loader.load(this.physicsEngine, obj, cmd.entity, cmd.variant);
-                    this.broadcastNewMessage(cmd);
-                    break;
                 case PhysicsCommandType.remove:
                     this.removePhysicsObject(cmd.objectID);
                     break;
@@ -184,22 +170,6 @@ export class PhysicsState extends Schema {
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, PhysicsEntity.figure, PhysicsEntityVariation.default);
         this.objects[id] = obj;
         this.loader.load(this.physicsEngine, obj, PhysicsEntity.figure, PhysicsEntityVariation.default);
-        const cmd: PhysicsCommandAddEntity = {
-            type: MessageType.PHYSICS_MESSAGE,
-            subType: PhysicsCommandType.addEntity,
-            physicsId: id,
-            entity: PhysicsEntity.figure,
-            variant: PhysicsEntityVariation.default,
-            posX: this.startPoint.x,
-            posY: this.startPoint.y,
-            posZ: this.startPoint.z,
-            rotX: quat.x,
-            rotY: quat.y,
-            rotZ: quat.z,
-            rotW: quat.w,
-            color: undefined,
-        }
-        this.broadcastNewMessage(cmd);
         return id;
     }
     addDice() {
@@ -210,22 +180,6 @@ export class PhysicsState extends Schema {
         this.objects[id] = obj;
         this.loader.load(this.physicsEngine, obj, PhysicsEntity.dice, PhysicsEntityVariation.default);
         this.diceObj = obj;
-        const cmd: PhysicsCommandAddEntity = {
-            type: MessageType.PHYSICS_MESSAGE,
-            subType: PhysicsCommandType.addEntity,
-            physicsId: id,
-            entity: PhysicsEntity.dice,
-            variant: PhysicsEntityVariation.default,
-            posX: 0,
-            posY: 10,
-            posZ: 0,
-            rotX: 0,
-            rotY: 0,
-            rotZ: 0,
-            rotW: 1,
-            color: undefined,
-        }
-        this.broadcastNewMessage(cmd);
     }
 
     checkDiceMoving(): boolean {
@@ -291,30 +245,6 @@ export class PhysicsState extends Schema {
                 action: GameActionType.diceRolled,
                 roll: num };
             this.broadcastNewMessage(msg);
-        }
-    }
-
-    sendExisting(cb: ((obj: PhysicsCommandAddEntity) => void)) {
-        for (let key in this.objects) {
-            if (key in this.objects && !this.objects[key].disabled) {
-                const obj: PhysicsObjectState = this.objects[key];
-                const cmd: PhysicsCommandAddEntity = {
-                    type: MessageType.PHYSICS_MESSAGE,
-                    subType: PhysicsCommandType.addEntity,
-                    physicsId: obj.objectIDPhysics,
-                    entity: obj.entity || PhysicsEntity.figure,
-                    variant: obj.variant || PhysicsEntityVariation.default,
-                    posX: obj.position.x,
-                    posY: obj.position.y,
-                    posZ: obj.position.z,
-                    rotX: obj.quaternion.x,
-                    rotY: obj.quaternion.y,
-                    rotZ: obj.quaternion.z,
-                    rotW: obj.quaternion.w,
-                    color: undefined,
-                };
-                cb(cmd);
-            }
         }
     }
 

@@ -4,9 +4,7 @@ import {
     ChatMessage,
     DebugCommandType,
     GameActionType,
-    JoinMessage,
     MessageType,
-    PhysicsCommandAddEntity,
     PlayerMessageType,
     WsData
 } from "./model/WsData";
@@ -57,13 +55,6 @@ export class GameRoom extends Room<GameState> {
 
         // set joining player as host if no host exists
         if (this.state.hostLoginName === '') { this.state.setHost(player.loginName) }
-
-        // send existing physics objects
-        this.state.physicsState.sendExisting((obj: PhysicsCommandAddEntity) => {
-            WSLogger.log(`[onJoin] Transmitting physics object ID: ${obj.physicsId} to client ${client.id}`);
-            this.send(client, obj);
-        });
-
 
         let joinedMsg: string = '';
         if (isNewPlayer) {
