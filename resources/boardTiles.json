@@ -9,7 +9,7 @@
           "translationKey": "boardField_start",
           "imageUrl": "/assets/board/start.png",
           "restrictToRing": -1,
-          "restrictToField": -1
+          "restrictToField": 0
         },
         {
           "id": 1,
@@ -312,7 +312,7 @@
           "description": "BEGIB DICH EIN FELD NACH UNTEN, FÜHRE DIE NÄCHSTE AUFGABE TROTZDEM AUS.",
           "translationKey": "boardField_descent",
           "imageUrl": "/assets/board/descent.png",
-          "restrictToRing": -1,
+          "restrictToRing": 234,
           "restrictToField": -1
         },
         {
@@ -344,7 +344,7 @@
           "description": "BETRITTST DU DIESES FELD WERDEN DU UND ALLE SPIELER AUF DEN UMLIEGENDEN VIER FEL-DER ZUM START ZURÜCK TELEPORTIERT.",
           "translationKey": "boardField_blackHole",
           "imageUrl": "/assets/board/blackHole.png",
-          "restrictToRing": -1,
+          "restrictToRing": 234,
           "restrictToField": -1
         },
         {
@@ -373,7 +373,7 @@
         },
         {
           "id": 46,
-          "description": "GÖNNE DIR UND DEINEM ZWEITEM ICH EINE RATI-ON.",
+          "description": "GÖNNE DIR UND DEINEM ZWEITEM ICH EINE RATION.",
           "translationKey": "boardField_multiple",
           "imageUrl": "/assets/board/multiple.png",
           "restrictToRing": -1,
@@ -381,7 +381,7 @@
         },
         {
           "id": 47,
-          "description": "FISCHERS FRITZ FISCHT FRISCHE FISCHE, FRI-SCHE FISCHE FISCHT FISCHERS FRITZ.",
+          "description": "FISCHERS FRITZ FISCHT FRISCHE FISCHE, FRISCHE FISCHE FISCHT FISCHERS FRITZ.",
           "translationKey": "boardField_blgrha",
           "imageUrl": "/assets/board/blgrha.png",
           "restrictToRing": -1,
@@ -389,7 +389,7 @@
         },
         {
           "id": 48,
-          "description": "DU WIRST ZUR SCHILDKRÖTE. DEINE AUGENANZ-AHL WIRD DURCH ZWEI GETEILT GGF. AUFGERUN-DET.",
+          "description": "DU WIRST ZUR SCHILDKRÖTE. DEINE AUGENANZAHL WIRD DURCH ZWEI GETEILT GGF. AUFGERUNDET.",
           "translationKey": "boardField_turtle",
           "imageUrl": "/assets/board/turtle.png",
           "restrictToRing": -1,
@@ -513,7 +513,7 @@
           "translationKey": "boardField_goal",
           "imageUrl": "/assets/board/goal.png",
           "restrictToRing": -1,
-          "restrictToField": -1
+          "restrictToField": 63
         }
       ],
       "extensions": []

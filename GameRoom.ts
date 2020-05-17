@@ -23,9 +23,17 @@ export class GameRoom extends Room<GameState> {
         this.setState(new GameState());
         this.setMetadata({
             lobbyName: options['name'],
-            author: options['author']
+            author: options['author'],
+            skin: options['skin'],
+            randomizeTiles: options['randomizeTiles']
         });
-        this.state.boardLayout.generateDefaultLayout();
+        if (options['randomizeTiles']) {
+            this.state.boardLayout.generateRandomLayout();
+            console.log('generated random Layout');
+        } else {
+            this.state.boardLayout.generateDefaultLayout();
+            console.log('generated Layout');
+        }
 
         this.state.physicsState.setBroadcastCallback(this.broadcast.bind(this));
         this.state.physicsState.addDice();
