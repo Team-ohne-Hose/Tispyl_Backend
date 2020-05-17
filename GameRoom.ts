@@ -76,6 +76,7 @@ export class GameRoom extends Room<GameState> {
 
             // register new sessionId to old player object
             player.clientId = client.id;
+            player.hasLeft = false;
         }
 
         player.isConnected = true;
