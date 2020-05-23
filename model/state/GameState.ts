@@ -3,6 +3,7 @@ import {PlayerModel} from "../WsData";
 import {Schema, ArraySchema, MapSchema, type} from "@colyseus/schema"
 import {Player} from "./Player";
 import {BoardLayoutState} from "./BoardLayoutState";
+import {VoteState} from "./VoteState";
 
 export enum Actions {
     ROLL,
@@ -41,6 +42,9 @@ export class GameState extends Schema {
 
     @type('boolean')
     reversed = false;
+
+    @type(VoteState)
+    voteState: VoteState = new VoteState();
 
     nextRound() {
         this.round += 1;

@@ -1,13 +1,6 @@
 import {Client, Room} from "colyseus";
 import {Actions, GameState} from "./model/state/GameState";
-import {
-    ChatMessage,
-    DebugCommandType,
-    GameActionType,
-    MessageType,
-    PlayerMessageType,
-    WsData
-} from "./model/WsData";
+import {ChatMessage, DebugCommandType, GameActionType, MessageType, PlayerMessageType, WsData} from "./model/WsData";
 import {Player} from "./model/state/Player";
 import {PhysicsObjectState} from "./model/state/PhysicsState";
 import {WSLogger} from "./WSLogger";
@@ -208,6 +201,31 @@ export class GameRoom extends Room<GameState> {
                             for (const key in this.state.playerList) {
                                 if (key in this.state.playerList) {
                                     this.state.playerList[key].triggerAll();
+                                }
+                            }
+                            break;
+                        case GameActionType.closeVote:
+                            this.broadcast(data);
+                            this.state.voteState.idle = true;
+                            break;
+                        case GameActionType.startCreateVote:
+                            for (const key in this.state.playerList) {
+                                if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
+                                    this.state.voteState.idle = false;
+                                    this.state.voteState.author = this.state.playerList[key].loginName;
+                                    this.broadcast(data);
+                                    break;
+                                }
+                            }
+                            break;
+                        case GameActionType.createVote:
+                            this.state.voteState.startVote(data.authorId, data.eligible, data.customVote, data.options);
+                            this.broadcast({type: MessageType.GAME_MESSAGE, action: GameActionType.openVote});
+                            break;
+                        case GameActionType.playerVote:
+                            for (const key in this.state.playerList) {
+                                if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
+                                    this.state.voteState.playerVote(this.state.playerList[key].loginName, data.vote);
                                 }
                             }
                             break;

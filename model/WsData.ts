@@ -39,9 +39,25 @@ export enum GameActionType {
   showTile,
   setTile,
   refreshData,
-  diceRolled
+  diceRolled,
+  startCreateVote,
+  createVote,
+  openVote,
+  playerVote,
+  closeVote
 }
-export type GameMessage = GameAction | GameSetTile | GameShowTile | GameReadyProperty | GameAddRule | GameDeleteRule | GameDiceRoll;
+export type GameMessage = GameAction |
+  GameSetTile |
+  GameShowTile |
+  GameReadyProperty |
+  GameAddRule |
+  GameDeleteRule |
+  GameDiceRoll |
+  GameStartCreatingVote |
+  GameCreateVote |
+  GameOpenVote |
+  GamePlayerVote |
+  GameCloseVote;
 type actionTypes = GameActionType.none |
     GameActionType.advanceRound |
     GameActionType.advanceAction |
@@ -53,31 +69,6 @@ export interface GameAction {
   type: MessageType.GAME_MESSAGE;
   action: actionTypes;
 }
-export interface GameShowTile {
-    type: MessageType.GAME_MESSAGE;
-    action: GameActionType.showTile;
-    tile: number;
-}
-export interface GameDiceRoll {
-  type: MessageType.GAME_MESSAGE;
-  action: GameActionType.diceRolled;
-  roll: number;
-}
-export interface GameAddRule {
-    type: MessageType.GAME_MESSAGE;
-    action: GameActionType.addRule;
-    text: string;
-}
-export interface GameDeleteRule {
-    type: MessageType.GAME_MESSAGE;
-    action: GameActionType.deleteRule;
-    id: number;
-}
-export interface GameReadyProperty {
-    type: MessageType.GAME_MESSAGE;
-    action: GameActionType.readyPropertyChange;
-    isReady: boolean;
-}
 export interface GameSetTile {
   type: MessageType.GAME_MESSAGE;
   action: GameActionType.setTile;
@@ -85,6 +76,57 @@ export interface GameSetTile {
   playerId: string;
   tileId: number;
 }
+export interface GameShowTile {
+    type: MessageType.GAME_MESSAGE;
+    action: GameActionType.showTile;
+    tile: number;
+}
+export interface GameReadyProperty {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.readyPropertyChange;
+  isReady: boolean;
+}
+export interface GameAddRule {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.addRule;
+  text: string;
+}
+export interface GameDeleteRule {
+    type: MessageType.GAME_MESSAGE;
+    action: GameActionType.deleteRule;
+    id: number;
+}
+export interface GameDiceRoll {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.diceRolled;
+  roll: number;
+}
+export interface GameStartCreatingVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.startCreateVote;
+}
+export interface GameCreateVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.createVote;
+  authorId: string;
+  eligible: string[];
+  customVote: boolean;
+  options: string[];
+}
+export interface GameOpenVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.openVote;
+}
+export interface GamePlayerVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.playerVote;
+  vote: string;
+}
+export interface GameCloseVote {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.closeVote;
+}
+
 export type PlayerMessage = SetFigure;
 export enum PlayerMessageType {
   setFigure
