@@ -205,22 +205,24 @@ export class GameRoom extends Room<GameState> {
                             }
                             break;
                         case GameActionType.closeVote:
-                            this.broadcast(data);
+                            this.broadcast(data, { afterNextPatch: true });
                             this.state.voteState.idle = true;
                             break;
                         case GameActionType.startCreateVote:
                             for (const key in this.state.playerList) {
                                 if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
-                                    this.state.voteState.idle = false;
-                                    this.state.voteState.author = this.state.playerList[key].loginName;
-                                    this.broadcast(data);
-                                    break;
+                                    if (data.authorLogin === this.state.playerList[key].loginName) {
+                                        this.state.voteState.idle = false;
+                                        this.state.voteState.author = data.authorLogin;
+                                        this.broadcast(data, { afterNextPatch: true });
+                                        break;
+                                    }
                                 }
                             }
                             break;
                         case GameActionType.createVote:
                             this.state.voteState.startVote(data.authorId, data.eligible, data.customVote, data.options);
-                            this.broadcast({type: MessageType.GAME_MESSAGE, action: GameActionType.openVote});
+                            this.broadcast({type: MessageType.GAME_MESSAGE, action: GameActionType.openVote}, { afterNextPatch: true });
                             break;
                         case GameActionType.playerVote:
                             for (const key in this.state.playerList) {
