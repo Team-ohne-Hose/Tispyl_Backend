@@ -30,9 +30,12 @@ export class VoteState extends Schema {
 
   startVote(author: string, eligible: string[], isCustom: boolean, options?: string[]): void {
     console.log('starting new Vote', author, isCustom, options);
-    for (const key in this.eligibleLoginNames) {
+
+    /*for (const key in this.eligibleLoginNames) {
       delete this.eligibleLoginNames[key];
-    }
+    }*/
+    this.eligibleLoginNames.splice(0);
+
     for (const key in this.votes) {
       delete this.votes[key];
     }

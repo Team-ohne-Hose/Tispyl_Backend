@@ -1,6 +1,6 @@
 {
   "host": "127.0.0.1",
-  "port": "2567",
+  "port": "25670",
 
   "mariaDao": {
     "schemaName": "BrettSpiel",

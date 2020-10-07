@@ -205,8 +205,18 @@ export class GameRoom extends Room<GameState> {
                             }
                             break;
                         case GameActionType.closeVote:
+                            data.withCooldown = true;
                             this.broadcast(data, { afterNextPatch: true });
-                            this.state.voteState.idle = true;
+                            console.log("Closing Vote");
+                            global.setTimeout((() => {
+                                console.log("Closed Vote");
+                                this.broadcast({
+                                    type: MessageType.GAME_MESSAGE,
+                                    action: GameActionType.closeVote,
+                                    withCooldown: false,
+                                }, { afterNextPatch: true });
+                                this.state.voteState.idle = true;
+                            }).bind(this), 5000);
                             break;
                         case GameActionType.startCreateVote:
                             for (const key in this.state.playerList) {
