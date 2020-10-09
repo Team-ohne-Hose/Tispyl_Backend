@@ -158,8 +158,7 @@ export class GameRoom extends Room<GameState> {
         }
     }
     onJoinMessage(client: Client, data: WsData) {
-        const player = this.state.getPlayerByClientId(client.id);
-        if (player !== undefined && data.type === MessageType.JOIN_MESSAGE) {
+        if (data.type === MessageType.JOIN_MESSAGE) {
 
         }
     }
@@ -292,8 +291,7 @@ export class GameRoom extends Room<GameState> {
         }
     }
     onPhysicsMessage(client: Client, data: WsData) {
-        const player = this.state.getPlayerByClientId(client.id);
-        if (player !== undefined && data.type === MessageType.PHYSICS_MESSAGE) {
+        if (data.type === MessageType.PHYSICS_MESSAGE) {
             switch (data.subType) {
                 default:
                     this.state.physicsState.handlePhysicsCommand(data);
@@ -302,8 +300,7 @@ export class GameRoom extends Room<GameState> {
         }
     }
     onDebugMessage(client: Client, data: WsData) {
-        const player = this.state.getPlayerByClientId(client.id);
-        if (player !== undefined && data.type === MessageType.DEBUG_COMMAND) {
+        if (data.type === MessageType.DEBUG_COMMAND) {
             switch (data.subType) {
                 case DebugCommandType.listPhysics:
                     this.state.physicsState.listPhysicsItems();
