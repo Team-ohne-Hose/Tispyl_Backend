@@ -37,6 +37,15 @@ export class GameRoom extends Room<GameState> {
             }
         }).bind(this));
 
+        this.onMessage(MessageType.CHAT_MESSAGE, this.onChatMessage);
+        this.onMessage(MessageType.JOIN_MESSAGE, this.onJoinMessage);
+        this.onMessage(MessageType.GAME_MESSAGE, this.onGameMessage);
+        this.onMessage(MessageType.PLAYER_MESSAGE, this.onPlayerMessage);
+        this.onMessage(MessageType.PHYSICS_MESSAGE, this.onPhysicsMessage);
+        this.onMessage(MessageType.DEBUG_COMMAND, this.onDebugMessage);
+        this.onMessage(MessageType.LEFT_MESSAGE, this.onLeftMessage);
+        this.onMessage(MessageType.OTHER, this.onOtherMessage);
+
         return undefined;
     }
 
@@ -91,7 +100,7 @@ export class GameRoom extends Room<GameState> {
         }
 
         player.isConnected = true;
-        this.broadcast({ type: MessageType.JOIN_MESSAGE, message: `[SERVER] ${joinedMsg}` });
+        this.broadcast(MessageType.JOIN_MESSAGE, { type: MessageType.JOIN_MESSAGE, message: `[SERVER] ${joinedMsg}` });
         return undefined;
     }
 
@@ -105,7 +114,7 @@ export class GameRoom extends Room<GameState> {
         WSLogger.log(`[onLeave] Client left the room: ${player.loginName}`);
         if (player !== undefined) {
             if (player.loginName === this.state.hostLoginName) {
-                this.broadcast({
+                this.broadcast(MessageType.LEFT_MESSAGE, {
                     type: MessageType.LEFT_MESSAGE,
                     message: `[SERVER] The Host: ${this.state.playerList[player.loginName].displayName} left the game.`
                 });
@@ -113,14 +122,14 @@ export class GameRoom extends Room<GameState> {
                 // only way to access 'first' element...
                 for (let id in this.state.playerList) {
                     this.state.setHost(id);
-                    this.broadcast({
+                    this.broadcast(MessageType.CHAT_MESSAGE, {
                         type: MessageType.CHAT_MESSAGE,
                         message: `[SERVER] Player: ${this.state.playerList[id].displayName} is now host of the game.`
                     });
                     break;
                 }
             } else {
-                this.broadcast({
+                this.broadcast(MessageType.CHAT_MESSAGE, {
                     type: MessageType.CHAT_MESSAGE,
                     message: `[SERVER] Player: ${this.state.playerList[player.loginName].displayName} left the game.`
                 });
@@ -138,161 +147,180 @@ export class GameRoom extends Room<GameState> {
         return undefined;
     }
 
-    onMessage(client: Client, data: WsData): void {
+    onChatMessage(client: Client, data: WsData) {
         const player = this.state.getPlayerByClientId(client.id);
-        if (player !== undefined) {
-            switch (data.type) {
-                case MessageType.CHAT_MESSAGE:
-                    const msg: ChatMessage = {
-                        type: MessageType.CHAT_MESSAGE,
-                        message: `[${this.state.playerList[player.loginName].displayName}] ${data.message}`
-                    };
-                    this.broadcast(msg);
+        if (player !== undefined && data.type === MessageType.CHAT_MESSAGE) {
+            const msg: ChatMessage = {
+                type: MessageType.CHAT_MESSAGE,
+                message: `[${this.state.playerList[player.loginName].displayName}] ${data.message}`
+            };
+            this.broadcast(msg.type, msg);
+        }
+    }
+    onJoinMessage(client: Client, data: WsData) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined && data.type === MessageType.JOIN_MESSAGE) {
+
+        }
+    }
+    onGameMessage(client: Client, data: WsData) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined && data.type === MessageType.GAME_MESSAGE) {
+            switch (data.action) {
+                case GameActionType.advanceRound:
+                    this.state.nextRound();
                     break;
-                case MessageType.JOIN_MESSAGE:
+                case GameActionType.advanceAction:
+                    this.state.nextAction();
                     break;
-                case MessageType.GAME_MESSAGE:
-                    switch (data.action) {
-                        case GameActionType.advanceRound:
-                            this.state.nextRound();
-                            break;
-                        case GameActionType.advanceAction:
+                case GameActionType.advanceTurn:
+                    this.state.nextTurn();
+                    break;
+                case GameActionType.reverseTurnOrder:
+                    WSLogger.log('reversingTurnOrder');
+                    this.state.reversed = !this.state.reversed;
+                    break;
+                case GameActionType.setStartingCondition:
+                    this.state.startGame();
+                    break;
+                case GameActionType.addRule:
+                    this.state.rules.push(data.text);
+                    break;
+                case GameActionType.deleteRule:
+                    this.state.rules.splice(data.id, 1);
+                    break;
+                case GameActionType.setTile:
+                    const myPlayer = data.playerId ? this.state.getPlayer(data.playerId) : this.state.getPlayerByFigure(data.figureId);
+                    if (myPlayer !== undefined) {
+                        myPlayer.setTile(data.tileId);
+                    }
+                    if (this.state.currentPlayerLogin === data.playerId) {
+                        if (this.state.action === Actions[Actions.MOVE]) {
                             this.state.nextAction();
-                            break;
-                        case GameActionType.advanceTurn:
-                            this.state.nextTurn();
-                            break;
-                        case GameActionType.reverseTurnOrder:
-                            WSLogger.log('reversingTurnOrder');
-                            this.state.reversed = !this.state.reversed;
-                            break;
-                        case GameActionType.setStartingCondition:
-                            this.state.startGame();
-                            break;
-                        case GameActionType.addRule:
-                            this.state.rules.push(data.text);
-                            break;
-                        case GameActionType.deleteRule:
-                            this.state.rules.splice(data.id, 1);
-                            break;
-                        case GameActionType.setTile:
-                            const myPlayer = data.playerId ? this.state.getPlayer(data.playerId) : this.state.getPlayerByFigure(data.figureId);
-                            if (myPlayer !== undefined) {
-                                myPlayer.setTile(data.tileId);
-                            }
-                            if (this.state.currentPlayerLogin === data.playerId) {
-                                if (this.state.action === Actions[Actions.MOVE]) {
-                                    this.state.nextAction();
-                                }
-                                const msg = {
-                                    type: MessageType.GAME_MESSAGE,
-                                    action: GameActionType.showTile,
-                                    tile: data.tileId
-                                };
-                                console.log(msg);
-                                this.broadcast(msg);
-                            }
-                            break;
-                        case GameActionType.readyPropertyChange:
-                            this.state.playerList[player.loginName].isReady = data.isReady;
-                            let allReady = true;
-                            for (let id in this.state.playerList) {
-                                if (!this.state.playerList[id].isReady) {
-                                    allReady = false
-                                }
-                            }
-                            if (allReady) {
-                                this.state.startGame()
-                            }
-                            break;
-                        case GameActionType.refreshData:
-                            this.state.triggerAll();
-                            this.state.playerList.triggerAll();
-                            for (const key in this.state.playerList) {
-                                if (key in this.state.playerList) {
-                                    this.state.playerList[key].triggerAll();
-                                }
-                            }
-                            break;
-                        case GameActionType.closeVote:
-                            data.withCooldown = true;
-                            this.broadcast(data, { afterNextPatch: true });
-                            console.log("Closing Vote");
-                            global.setTimeout((() => {
-                                console.log("Closed Vote");
-                                this.broadcast({
-                                    type: MessageType.GAME_MESSAGE,
-                                    action: GameActionType.closeVote,
-                                    withCooldown: false,
-                                }, { afterNextPatch: true });
-                                this.state.voteState.idle = true;
-                            }).bind(this), 5000);
-                            break;
-                        case GameActionType.startCreateVote:
-                            for (const key in this.state.playerList) {
-                                if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
-                                    if (data.authorLogin === this.state.playerList[key].loginName) {
-                                        this.state.voteState.idle = false;
-                                        this.state.voteState.author = data.authorLogin;
-                                        this.broadcast(data, { afterNextPatch: true });
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        case GameActionType.createVote:
-                            this.state.voteState.startVote(data.authorId, data.eligible, data.customVote, data.options);
-                            this.broadcast({type: MessageType.GAME_MESSAGE, action: GameActionType.openVote}, { afterNextPatch: true });
-                            break;
-                        case GameActionType.playerVote:
-                            for (const key in this.state.playerList) {
-                                if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
-                                    this.state.voteState.playerVote(this.state.playerList[key].loginName, data.vote);
-                                }
-                            }
-                            break;
-                        case GameActionType.none:
-                        default:
-                            WSLogger.log(`[onMessage] GAME_MESSAGE: No action found for ${JSON.stringify(data)}`);
+                        }
+                        const msg = {
+                            type: MessageType.GAME_MESSAGE,
+                            action: GameActionType.showTile,
+                            tile: data.tileId
+                        };
+                        console.log(msg);
+                        this.broadcast(msg.type, msg);
                     }
                     break;
-                case MessageType.PLAYER_MESSAGE:
-                    switch (data.subType) {
-                        case PlayerMessageType.setFigure:
-                            const player = this.state.getPlayer(data.playerId);
-                            if (player !== undefined) {
-                                player.setFigure(player.figureId, data.playerModel);
+                case GameActionType.readyPropertyChange:
+                    this.state.playerList[player.loginName].isReady = data.isReady;
+                    let allReady = true;
+                    for (let id in this.state.playerList) {
+                        if (!this.state.playerList[id].isReady) {
+                            allReady = false
+                        }
+                    }
+                    if (allReady) {
+                        this.state.startGame()
+                    }
+                    break;
+                case GameActionType.refreshData:
+                    this.state.triggerAll();
+                    this.state.playerList.triggerAll();
+                    for (const key in this.state.playerList) {
+                        if (key in this.state.playerList) {
+                            this.state.playerList[key].triggerAll();
+                        }
+                    }
+                    break;
+                case GameActionType.closeVote:
+                    data.withCooldown = true;
+                    this.broadcast(data.type, data, { afterNextPatch: true });
+                    console.log("Closing Vote");
+                    global.setTimeout((() => {
+                        console.log("Closed Vote");
+                        this.broadcast(MessageType.GAME_MESSAGE, {
+                            type: MessageType.GAME_MESSAGE,
+                            action: GameActionType.closeVote,
+                            withCooldown: false,
+                        }, { afterNextPatch: true });
+                        this.state.voteState.idle = true;
+                    }).bind(this), 5000);
+                    break;
+                case GameActionType.startCreateVote:
+                    for (const key in this.state.playerList) {
+                        if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
+                            if (data.authorLogin === this.state.playerList[key].loginName) {
+                                this.state.voteState.idle = false;
+                                this.state.voteState.author = data.authorLogin;
+                                this.broadcast(data.type, data, { afterNextPatch: true });
+                                break;
                             }
-                            this.state.playerList.triggerAll();
-                            for (const key in this.state.playerList) {
-                                if (key in this.state.playerList) {
-                                    this.state.playerList[key].triggerAll();
-                                }
-                            }
-                            console.log('got Figure: ', player.figureModel, data.playerModel, data.playerId);
-                            break;
+                        }
                     }
                     break;
-                case MessageType.PHYSICS_MESSAGE:
-                    switch (data.subType) {
-                        default:
-                            this.state.physicsState.handlePhysicsCommand(data);
-                            break;
+                case GameActionType.createVote:
+                    this.state.voteState.startVote(data.authorId, data.eligible, data.customVote, data.options);
+                    this.broadcast(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.openVote}, { afterNextPatch: true });
+                    break;
+                case GameActionType.playerVote:
+                    for (const key in this.state.playerList) {
+                        if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
+                            this.state.voteState.playerVote(this.state.playerList[key].loginName, data.vote);
+                        }
                     }
                     break;
-                case MessageType.DEBUG_COMMAND:
-                    switch (data.subType) {
-                        case DebugCommandType.listPhysics:
-                            this.state.physicsState.listPhysicsItems();
-                            break;
-                    }
-                    break;
-                case MessageType.OTHER:
-                    break;
+                case GameActionType.none:
                 default:
-                    console.error('Message not implemented', data);
+                    WSLogger.log(`[onMessage] GAME_MESSAGE: No action found for ${JSON.stringify(data)}`);
+            }
+        }
+    }
+    onPlayerMessage(client: Client, data: WsData) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined && data.type === MessageType.PLAYER_MESSAGE) {
+            switch (data.subType) {
+                case PlayerMessageType.setFigure:
+                    const player = this.state.getPlayer(data.playerId);
+                    if (player !== undefined) {
+                        player.setFigure(player.figureId, data.playerModel);
+                    }
+                    this.state.playerList.triggerAll();
+                    for (const key in this.state.playerList) {
+                        if (key in this.state.playerList) {
+                            this.state.playerList[key].triggerAll();
+                        }
+                    }
+                    console.log('got Figure: ', player.figureModel, data.playerModel, data.playerId);
                     break;
             }
+        }
+    }
+    onPhysicsMessage(client: Client, data: WsData) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined && data.type === MessageType.PHYSICS_MESSAGE) {
+            switch (data.subType) {
+                default:
+                    this.state.physicsState.handlePhysicsCommand(data);
+                    break;
+            }
+        }
+    }
+    onDebugMessage(client: Client, data: WsData) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined && data.type === MessageType.DEBUG_COMMAND) {
+            switch (data.subType) {
+                case DebugCommandType.listPhysics:
+                    this.state.physicsState.listPhysicsItems();
+                    break;
+            }
+        }
+    }
+    onLeftMessage(client: Client, data: WsData) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined && data.type === MessageType.LEFT_MESSAGE) {
+
+        }
+    }
+    onOtherMessage(client: Client, data: WsData) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined && data.type === MessageType.OTHER) {
+
         }
     }
 }
