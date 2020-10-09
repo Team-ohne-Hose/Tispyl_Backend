@@ -112,7 +112,7 @@ export class PhysicsState extends Schema {
     private idCounter = 1;
     private loader: EntityLoader;
     private readonly startPoint = {x: 38.708, y: 10, z: -36.776};
-    private broadcastNewMessage: (cmd: WsData) => void;
+    private broadcastNewMessage: (type: MessageType, cmd: WsData) => void;
     private onDiceThrow: (number: number) => void;
 
     constructor() {
@@ -122,7 +122,7 @@ export class PhysicsState extends Schema {
         this.updateDiceLoop = global.setInterval(this.updateDice.bind(this), 500);
     }
 
-    setBroadcastCallback(broadcastCallback: ((cmd: WsData) => void)) {
+    setBroadcastCallback(broadcastCallback: ((type: MessageType, cmd: WsData) => void)) {
         this.broadcastNewMessage = broadcastCallback;
     }
     setOnDiceThrow(diceCallback: ((num: number) => void)) {
@@ -244,7 +244,7 @@ export class PhysicsState extends Schema {
                 type: MessageType.GAME_MESSAGE,
                 action: GameActionType.diceRolled,
                 roll: num };
-            this.broadcastNewMessage(msg);
+            this.broadcastNewMessage(msg.type, msg);
         }
     }
 
