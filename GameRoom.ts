@@ -8,10 +8,11 @@ import {MariaDAO} from "./MariaDAO";
 
 export class GameRoom extends Room<GameState> {
 
-
+    createDate: Date;
 
     onCreate(options: any): void | Promise<any> {
         WSLogger.log(`[onCreate] Room created. Options: ${JSON.stringify(options)}`);
+        this.createDate = new Date();
 
         this.setState(new GameState());
         this.setMetadata({
@@ -41,6 +42,15 @@ export class GameRoom extends Room<GameState> {
 
     onDispose(): void | Promise<any> {
         WSLogger.log(`[onDispose] Destructing physicsState`);
+        MariaDAO.insertGameLog(this.metadata.lobbyName,
+          this.metadata.author,
+          this.metadata.skin,
+          this.metadata.randomizeTiles,
+          this.createDate.toISOString().slice(0, 19).replace('T', ' '),
+          new Date().toISOString().slice(0, 19).replace('T', ' '),
+          this.state.playerList._indexes.size,
+          this.state.round);
+
         this.state.physicsState.destructState();
         return undefined;
     }

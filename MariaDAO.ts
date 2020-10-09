@@ -111,4 +111,11 @@ export class MariaDAO {
             {ln: login_name, time: minutes}
         ));
     }
+
+    static async insertGameLog(game_name: string, author: string, skin: string, randomizeTiles: boolean, startTime: string, endTime: string, maxPlayers: number, maxRound: number): Promise<any> {
+        return MariaDAO.withConnection(c => c.query(
+          {namedPlaceholders: true, sql: `INSERT INTO ${MariaDAO.schemaName}.Games (game_name, author, skin, randomizeTiles, startTime, endTime, maxPlayers, maxRound) VALUES (:gn, :au, :sk, :rt, CONVERT(:st,datetime), CONVERT(:et,datetime), :mp, :rd)`},
+          {gn: game_name, au: author, sk: skin, rt: randomizeTiles, st: startTime, et: endTime, mp: maxPlayers, rd: maxRound}
+        ));
+    }
 }
