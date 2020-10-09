@@ -37,14 +37,14 @@ export class GameRoom extends Room<GameState> {
             }
         }).bind(this));
 
-        this.onMessage(MessageType.CHAT_MESSAGE, this.onChatMessage);
-        this.onMessage(MessageType.JOIN_MESSAGE, this.onJoinMessage);
-        this.onMessage(MessageType.GAME_MESSAGE, this.onGameMessage);
-        this.onMessage(MessageType.PLAYER_MESSAGE, this.onPlayerMessage);
-        this.onMessage(MessageType.PHYSICS_MESSAGE, this.onPhysicsMessage);
-        this.onMessage(MessageType.DEBUG_COMMAND, this.onDebugMessage);
-        this.onMessage(MessageType.LEFT_MESSAGE, this.onLeftMessage);
-        this.onMessage(MessageType.OTHER, this.onOtherMessage);
+        this.onMessage(MessageType.CHAT_MESSAGE, this.onChatMessage.bind(this));
+        this.onMessage(MessageType.JOIN_MESSAGE, this.onJoinMessage.bind(this));
+        this.onMessage(MessageType.GAME_MESSAGE, this.onGameMessage.bind(this));
+        this.onMessage(MessageType.PLAYER_MESSAGE, this.onPlayerMessage.bind(this));
+        this.onMessage(MessageType.PHYSICS_MESSAGE, this.onPhysicsMessage.bind(this));
+        this.onMessage(MessageType.DEBUG_COMMAND, this.onDebugMessage.bind(this));
+        this.onMessage(MessageType.LEFT_MESSAGE, this.onLeftMessage.bind(this));
+        this.onMessage(MessageType.OTHER, this.onOtherMessage.bind(this));
 
         return undefined;
     }
