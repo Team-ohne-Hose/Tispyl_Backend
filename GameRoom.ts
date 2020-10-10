@@ -45,6 +45,7 @@ export class GameRoom extends Room<GameState> {
         this.onMessage(MessageType.DEBUG_COMMAND, this.onDebugMessage.bind(this));
         this.onMessage(MessageType.LEFT_MESSAGE, this.onLeftMessage.bind(this));
         this.onMessage(MessageType.OTHER, this.onOtherMessage.bind(this));
+        this.onMessage(MessageType.REFRESH_COMMAND, this.onRefreshMessage.bind(this));
 
         return undefined;
     }
@@ -319,5 +320,8 @@ export class GameRoom extends Room<GameState> {
         if (player !== undefined && data.type === MessageType.OTHER) {
 
         }
+    }
+    onRefreshMessage(client: Client, data: WsData) {
+        this.broadcast(data.type, data);
     }
 }

@@ -1,4 +1,4 @@
-export type WsData = OtherMessage | ChatMessage | JoinMessage | LeftMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand;
+export type WsData = OtherMessage | ChatMessage | JoinMessage | LeftMessage | GameMessage | PlayerMessage | PhysicsCommand | DebugCommand | RefreshCommand;
 export enum MessageType {
   OTHER,
   CHAT_MESSAGE,
@@ -7,7 +7,8 @@ export enum MessageType {
   GAME_MESSAGE,
   PLAYER_MESSAGE,
   PHYSICS_MESSAGE,
-  DEBUG_COMMAND
+  DEBUG_COMMAND,
+  REFRESH_COMMAND
 }
 
 export interface OtherMessage {
@@ -141,12 +142,15 @@ export enum PlayerModel {
   bcap_Jagermeister,
   bcap_OurAnthem,
   bcap_Murica,
-  bcap_Developer,
+  bcap_countcount,
   bcap_hb,
   bcap_cat,
   bcap_yoshi,
   bcap_niclas,
-  bcap_adi
+  bcap_adi,
+  bcap_lordHelmchen,
+  bcap_gude,
+  bcap_Developer,
 }
 export interface SetFigure {
   type: MessageType.PLAYER_MESSAGE;
@@ -228,4 +232,13 @@ export enum DebugCommandType {
 export interface ListPhysics {
   type: MessageType.DEBUG_COMMAND;
   subType: DebugCommandType.listPhysics;
+}
+
+export type RefreshCommand = RefreshProfilePics;
+export enum RefreshCommandType {
+  refreshProfilePic
+}
+export interface RefreshProfilePics {
+  type: MessageType.REFRESH_COMMAND;
+  subType: RefreshCommandType.refreshProfilePic;
 }
