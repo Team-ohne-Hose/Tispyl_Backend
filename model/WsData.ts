@@ -91,6 +91,7 @@ export interface GameAddRule {
   type: MessageType.GAME_MESSAGE;
   action: GameActionType.addRule;
   text: string;
+  author: string;
 }
 export interface GameDeleteRule {
     type: MessageType.GAME_MESSAGE;

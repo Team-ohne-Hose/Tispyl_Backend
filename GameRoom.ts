@@ -184,6 +184,7 @@ export class GameRoom extends Room<GameState> {
                     this.state.startGame();
                     break;
                 case GameActionType.addRule:
+                    // TODO: add Author
                     this.state.rules.push(data.text);
                     break;
                 case GameActionType.deleteRule:
