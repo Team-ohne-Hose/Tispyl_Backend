@@ -24,7 +24,7 @@
           "description": "SUCH DIR EINEN DRINKBUDDY.",
           "translationKey": "boardField_buddy",
           "imageUrl": "/assets/board/buddy.png",
-          "restrictToRing": -1,
+          "restrictToRing": 12,
           "restrictToField": -1
         },
         {
