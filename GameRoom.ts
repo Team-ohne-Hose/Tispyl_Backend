@@ -101,7 +101,7 @@ export class GameRoom extends Room<GameState> {
         }
 
         player.isConnected = true;
-        this.broadcast(MessageType.JOIN_MESSAGE, { type: MessageType.JOIN_MESSAGE, message: `[SERVER] ${joinedMsg}` });
+        this.broadcast(MessageType.JOIN_MESSAGE, { type: MessageType.JOIN_MESSAGE, message: joinedMsg});
         return undefined;
     }
 
@@ -117,7 +117,7 @@ export class GameRoom extends Room<GameState> {
             if (player.loginName === this.state.hostLoginName) {
                 this.broadcast(MessageType.LEFT_MESSAGE, {
                     type: MessageType.LEFT_MESSAGE,
-                    message: `[SERVER] The Host: ${this.state.playerList[player.loginName].displayName} left the game.`
+                    message: `The Host: ${this.state.playerList[player.loginName].displayName} left the game.`
                 });
                 this.state.removePlayer(player.loginName);
                 // only way to access 'first' element...
@@ -125,14 +125,16 @@ export class GameRoom extends Room<GameState> {
                     this.state.setHost(id);
                     this.broadcast(MessageType.CHAT_MESSAGE, {
                         type: MessageType.CHAT_MESSAGE,
-                        message: `[SERVER] Player: ${this.state.playerList[id].displayName} is now host of the game.`
+                        message: `Player: ${this.state.playerList[id].displayName} is now host of the game.`,
+                        authorLoginName: 'SERVER'
                     });
                     break;
                 }
             } else {
                 this.broadcast(MessageType.CHAT_MESSAGE, {
                     type: MessageType.CHAT_MESSAGE,
-                    message: `[SERVER] Player: ${this.state.playerList[player.loginName].displayName} left the game.`
+                    message: `Player: ${this.state.playerList[player.loginName].displayName} left the game.`,
+                    authorLoginName: 'SERVER'
                 });
                 this.state.removePlayer(player.loginName);
             }
@@ -153,7 +155,8 @@ export class GameRoom extends Room<GameState> {
         if (player !== undefined && data.type === MessageType.CHAT_MESSAGE) {
             const msg: ChatMessage = {
                 type: MessageType.CHAT_MESSAGE,
-                message: `[${this.state.playerList[player.loginName].displayName}] ${data.message}`
+                message: data.message,
+                authorLoginName: player.loginName
             };
             this.broadcast(msg.type, msg);
         }
