@@ -5,6 +5,7 @@ import {Player} from "./model/state/Player";
 import {PhysicsObjectState} from "./model/state/PhysicsState";
 import {WSLogger} from "./WSLogger";
 import {MariaDAO} from "./MariaDAO";
+import {Link} from "./model/state/Link";
 
 export class GameRoom extends Room<GameState> {
 
@@ -268,6 +269,16 @@ export class GameRoom extends Room<GameState> {
                             this.state.voteState.playerVote(this.state.playerList[key].loginName, data.vote);
                         }
                     }
+                    break;
+                case GameActionType.addDrinkbuddies:
+                    let l = new Link();
+                    l.source = data.source;
+                    l.target = data.target;
+                    this.state.drinkBuddyLinks.push(l);
+                    break;
+                case GameActionType.removeDrinkbuddies:
+                    const linkIndex = this.state.drinkBuddyLinks.findIndex((l) => l.source === data.source && l.target === data.target);
+                    this.state.drinkBuddyLinks.splice(linkIndex, 1);
                     break;
                 case GameActionType.none:
                 default:
