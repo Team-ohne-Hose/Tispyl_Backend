@@ -1,10 +1,19 @@
 import {Client, Room} from "colyseus";
 import {Actions, GameState} from "./model/state/GameState";
-import {ChatMessage, DebugCommandType, GameActionType, MessageType, PlayerMessageType, WsData} from "./model/WsData";
+import {
+    AchievementMessageType,
+    ChatMessage,
+    DebugCommandType,
+    GameActionType, ItemMessageType,
+    MessageType,
+    PlayerMessageType,
+    WsData
+} from "./model/WsData";
 import {Player} from "./model/state/Player";
 import {PhysicsObjectState} from "./model/state/PhysicsState";
 import {WSLogger} from "./WSLogger";
 import {MariaDAO} from "./MariaDAO";
+import {ItemManager} from "./model/ItemManager";
 
 export class GameRoom extends Room<GameState> {
 
@@ -46,6 +55,8 @@ export class GameRoom extends Room<GameState> {
         this.onMessage(MessageType.LEFT_MESSAGE, this.onLeftMessage.bind(this));
         this.onMessage(MessageType.OTHER, this.onOtherMessage.bind(this));
         this.onMessage(MessageType.REFRESH_COMMAND, this.onRefreshMessage.bind(this));
+        this.onMessage(MessageType.ACHIEVEMENT_MESSAGE, this.onAchievementMessage.bind(this));
+        this.onMessage(MessageType.ITEM_MESSAGE, this.onItemMessage.bind(this));
 
         return undefined;
     }
@@ -327,5 +338,68 @@ export class GameRoom extends Room<GameState> {
     }
     onRefreshMessage(client: Client, data: WsData) {
         this.broadcast(data.type, data);
+    }
+    onAchievementMessage(client: Client, data: WsData) {
+        if (data.type === MessageType.ACHIEVEMENT_MESSAGE) {
+            switch (data.subType) {
+                case AchievementMessageType.newAchievement:
+                    this.broadcast(data.type, data);
+                    break;
+            }
+        }
+    }
+    onItemMessage(client: Client, data: WsData) {
+        if (data.type === MessageType.ITEM_MESSAGE) {
+            switch (data.subType) {
+                case ItemMessageType.giveItem:
+                    if (this.isHost(client)) {
+                        const p = this.state.getPlayer(data.playerLoginName);
+                        if (p !== undefined) {
+                            if (data.itemId === -1) {
+                                data.itemId = ItemManager.getRandomItem();
+                            }
+                            p.addItem(Number(data.itemId));
+                            WSLogger.log(`[onItemMessage] Player received Item: ${p.loginName}, Item:${data.itemId}`);
+                            this.broadcast(MessageType.CHAT_MESSAGE, {
+                                type: MessageType.CHAT_MESSAGE,
+                                message: `Player: ${this.state.playerList[data.playerLoginName].displayName} received Item ${data.itemId}.`,
+                                authorLoginName: 'SERVER'
+                            });
+                        } else {
+                            WSLogger.log(`[onItemMessage] Player couldn't be found to receive Item: ${data.playerLoginName}`);
+                        }
+                    } else {
+                        WSLogger.log(`[onItemMessage] Client not authorized to give Item: ${client.id}`);
+                    }
+                    break;
+                case ItemMessageType.useItem:
+                    const player = this.state.getPlayerByClientId(client.id);
+                    if (player !== undefined && player.loginName === data.playerLoginName) {
+                        WSLogger.log(`[onItemMessage] Client using Item: ${data.itemId}`);
+                        if (player.useItem(Number(data.itemId))) {
+                            data.itemName = ItemManager.getName(Number(data.itemId));
+                            data.itemDescription = ItemManager.getDescription(Number(data.itemId));
+                            this.broadcast(data.type, data);
+                            this.broadcast(MessageType.CHAT_MESSAGE, {
+                                type: MessageType.CHAT_MESSAGE,
+                                message: `Player: ${this.state.playerList[player.loginName].displayName} used Item ${data.itemId} on ${this.state.playerList[data.targetLoginName].displayName}.`,
+                                authorLoginName: 'SERVER'
+                            });
+                        } else {
+                            WSLogger.log(`[onItemMessage] Failed using Item: ${data.itemId}`);
+                        }
+                    } else {
+                        WSLogger.log(`[onItemMessage] Client not authorized to use: ${player.loginName} tried to use ${data.playerLoginName}'s Item of ${data.itemId}`);
+                    }
+                    break;
+            }
+        }
+    }
+    private isHost(client: Client) {
+        const player = this.state.getPlayerByClientId(client.id);
+        if (player !== undefined) {
+            return player.loginName === this.state.hostLoginName
+        }
+        return false;
     }
 }
