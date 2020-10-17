@@ -48,8 +48,11 @@ export enum GameActionType {
   createVote,
   openVote,
   playerVote,
-  closeVote
+  closeVote,
+  addDrinkbuddies,
+  removeDrinkbuddies
 }
+
 export type GameMessage = GameAction |
   GameSetTile |
   GameShowTile |
@@ -61,7 +64,9 @@ export type GameMessage = GameAction |
   GameCreateVote |
   GameOpenVote |
   GamePlayerVote |
-  GameCloseVote;
+  GameCloseVote |
+  GameUpdateDrinkBuddies;
+
 type actionTypes = GameActionType.none |
     GameActionType.advanceRound |
     GameActionType.advanceAction |
@@ -69,6 +74,7 @@ type actionTypes = GameActionType.none |
     GameActionType.reverseTurnOrder |
     GameActionType.refreshData |
     GameActionType.setStartingCondition;
+
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
   action: actionTypes;
@@ -132,6 +138,12 @@ export interface GameCloseVote {
   type: MessageType.GAME_MESSAGE;
   action: GameActionType.closeVote;
   withCooldown: boolean;
+}
+export interface GameUpdateDrinkBuddies {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.addDrinkbuddies | GameActionType.removeDrinkbuddies;
+  source: string;
+  target: string;
 }
 
 export type PlayerMessage = SetFigure;
