@@ -366,7 +366,7 @@ export class GameRoom extends Room<GameState> {
                     if (this.isHost(client)) {
                         const p = this.state.getPlayer(data.playerLoginName);
                         if (p !== undefined) {
-                            if (data.itemId === -1) {
+                            if (Number(data.itemId) === -1) {
                                 data.itemId = ItemManager.getRandomItem();
                             }
                             p.addItem(Number(data.itemId));
@@ -391,11 +391,6 @@ export class GameRoom extends Room<GameState> {
                             data.itemName = ItemManager.getName(Number(data.itemId));
                             data.itemDescription = ItemManager.getDescription(Number(data.itemId));
                             this.broadcast(data.type, data);
-                            this.broadcast(MessageType.CHAT_MESSAGE, {
-                                type: MessageType.CHAT_MESSAGE,
-                                message: `Player: ${this.state.playerList[player.loginName].displayName} used Item ${data.itemId} on ${this.state.playerList[data.targetLoginName].displayName}.`,
-                                authorLoginName: 'SERVER'
-                            });
                         } else {
                             WSLogger.log(`[onItemMessage] Failed using Item: ${data.itemId}`);
                         }
