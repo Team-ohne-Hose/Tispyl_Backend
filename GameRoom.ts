@@ -15,6 +15,7 @@ import {WSLogger} from "./WSLogger";
 import {MariaDAO} from "./MariaDAO";
 import {ItemManager} from "./model/ItemManager";
 import {Link} from "./model/state/Link";
+import {VoteConfiguration, VoteEntry} from "./model/state/VoteState";
 
 export class GameRoom extends Room<GameState> {
 
@@ -179,6 +180,7 @@ export class GameRoom extends Room<GameState> {
         }
     }
     onGameMessage(client: Client, data: WsData) {
+        WSLogger.log(`got: ${JSON.stringify(data)}`);
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined && data.type === MessageType.GAME_MESSAGE) {
             switch (data.action) {
@@ -244,42 +246,40 @@ export class GameRoom extends Room<GameState> {
                         }
                     }
                     break;
-                case GameActionType.closeVote:
-                    data.withCooldown = true;
-                    this.broadcast(data.type, data, { afterNextPatch: true });
-                    console.log("Closing Vote");
-                    global.setTimeout((() => {
-                        console.log("Closed Vote");
-                        this.broadcast(MessageType.GAME_MESSAGE, {
-                            type: MessageType.GAME_MESSAGE,
-                            action: GameActionType.closeVote,
-                            withCooldown: false,
-                        }, { afterNextPatch: true });
-                        this.state.voteState.idle = true;
-                    }).bind(this), 5000);
+                case GameActionType.closeVotingSession:
+                    this.state.voteState.closingIn = 5;
+                    const intervalId = setInterval(() => {
+                        if (this.state.voteState.closingIn <= 0) {
+                            this.state.voteState.activeVoteConfiguration.votingOptions
+                                .sort((a: VoteEntry, b: VoteEntry) => { return b.castVotes.length - a.castVotes.length });
+                            this.state.voteState.activeVoteConfiguration.hasConcluded = true;
+                            this.state.voteState.author = '';
+                            clearInterval(intervalId);
+                        }
+                        this.state.voteState.closingIn--;
+                    }, 1000);
                     break;
-                case GameActionType.startCreateVote:
+                case GameActionType.startVoteCreation:
                     for (const key in this.state.playerList) {
-                        if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
-                            if (data.authorLogin === this.state.playerList[key].loginName) {
-                                this.state.voteState.idle = false;
-                                this.state.voteState.author = data.authorLogin;
-                                this.broadcast(data.type, data, { afterNextPatch: true });
+                        if (this.state.playerList[key].clientId === client.id) {
+                            if (data.author === this.state.playerList[key].displayName) {
+                                this.state.voteState.activeVoteConfiguration = undefined;
+                                this.state.voteState.creationInProgress = true;
+                                this.state.voteState.author = data.author;
                                 break;
                             }
                         }
                     }
                     break;
-                case GameActionType.createVote:
-                    this.state.voteState.startVote(data.authorId, data.eligible, data.customVote, data.options);
-                    this.broadcast(MessageType.GAME_MESSAGE, {type: MessageType.GAME_MESSAGE, action: GameActionType.openVote}, { afterNextPatch: true });
+                case GameActionType.beginVotingSession:
+                    this.state.voteState.activeVoteConfiguration = VoteConfiguration.fromObject(data.config);
+                    this.state.voteState.creationInProgress = false;
                     break;
-                case GameActionType.playerVote:
-                    for (const key in this.state.playerList) {
-                        if (key in this.state.playerList && this.state.playerList[key].clientId === client.id) {
-                            this.state.voteState.playerVote(this.state.playerList[key].loginName, data.vote);
-                        }
-                    }
+                case GameActionType.playerCastVote:
+                    this.state.voteState.activeVoteConfiguration.votingOptions.forEach((ve: VoteEntry, i: number) => {
+                        ve.castVotes = ve.castVotes.filter( e => !(e === player.displayName) );
+                        if ( i === data.elementIndex) { ve.castVotes.push(player.displayName) }
+                    });
                     break;
                 case GameActionType.addDrinkbuddies:
                     let l = new Link();

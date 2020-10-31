@@ -1,70 +1,111 @@
 import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
+import {Player} from "./Player";
+import {ReInitialization} from '../ReInitialization';
 
-export class Vote extends Schema {
-  @type('string')
-  loginName = '';
-  @type('string')
-  vote = '';
-  constructor(loginName: string, vote: string) {
-    super();
-    this.loginName = loginName;
-    this.vote = vote;
-  }
+
+export class VoteEntry extends Schema {
+
+    @type('boolean')
+    isPlayerEntry: boolean = false;
+
+    @type('string')
+    playerHandle: string = undefined;
+
+    @type('string')
+    text: string = undefined;
+
+    @type([ 'string' ])
+    castVotes = new ArraySchema<string>();
+
+    static fromPlayer(p: Player): VoteEntry {
+        const entry = new VoteEntry();
+        entry.isPlayerEntry = true;
+        entry.playerHandle = p.loginName;
+        entry.text = p.displayName;
+        return entry;
+    }
+
+    static fromObject(obj: VoteEntry): VoteEntry {
+        const ve = new VoteEntry();
+        ve.isPlayerEntry = obj.isPlayerEntry;
+        ve.playerHandle = obj.playerHandle;
+        ve.text = obj.text;
+        obj.castVotes.map(v => ve.castVotes.push(v));
+        return ve;
+    }
 }
+
+export class VoteConfiguration extends Schema {
+
+    @type('string')
+    author: string;
+
+    @type('string')
+    title: string;
+
+    @type( [ 'string' ] )
+    ineligibles =  new ArraySchema<string>();
+
+    @type( [ VoteEntry ] )
+    votingOptions = new ArraySchema<VoteEntry>();
+
+    @type('boolean')
+    hasConcluded: boolean = false;
+
+    build(title: string, author: string, eligibilities: Map<string, boolean>, options: VoteEntry[]): VoteConfiguration {
+        const config = new VoteConfiguration();
+        config.title = title;
+        config.author = author;
+        options.forEach(e => config.votingOptions.push(e));
+        for (const k of eligibilities) {
+            if (!k[1]) {
+                config.ineligibles.push(k[0]);
+            }
+        }
+        return config;
+    }
+
+    static fromObject(obj: VoteConfiguration): VoteConfiguration {
+        const conf = new VoteConfiguration();
+        conf.title = obj.title;
+        conf.author = obj.author;
+        obj.ineligibles.map(i => conf.ineligibles.push(i));
+        obj.votingOptions.map(e => conf.votingOptions.push(VoteEntry.fromObject(e)));
+        return conf;
+    }
+
+}
+
+export class VoteResult {
+
+    readonly title: string;
+    readonly author: string;
+    readonly entries: VoteEntry[];
+    readonly ineligibles: string[];
+    readonly timestamp: Date;
+
+    constructor( title: string, author: string, options: VoteEntry[], ineligibles: string[] = [] ) {
+        this.title = title;
+        this.author = author;
+        this.entries = options;
+        this.ineligibles = ineligibles;
+        this.timestamp = new Date();
+    }
+}
+
 export class VoteState extends Schema {
+
   @type('boolean')
-  idle = true;
+  creationInProgress: boolean = false;
+
   @type('string')
-  author = '';
-  @type({map: Vote})
-  votes = new MapSchema<Vote>();
-  @type(['string'])
-  eligibleLoginNames = new ArraySchema<string>();
-  @type('boolean')
-  isCustom = false;
-  @type( ['string'] )
-  customOptions = new ArraySchema<string>();
-  constructor() {
-    super();
-  }
+  author: string = '';
 
-  startVote(author: string, eligible: string[], isCustom: boolean, options?: string[]): void {
-    console.log('starting new Vote', author, isCustom, options);
+  @type( VoteConfiguration )
+  activeVoteConfiguration: VoteConfiguration = undefined;
 
-    /*for (const key in this.eligibleLoginNames) {
-      delete this.eligibleLoginNames[key];
-    }*/
-    this.eligibleLoginNames.splice(0);
-
-    for (const key in this.votes) {
-      delete this.votes[key];
-    }
-    this.author = author;
-    eligible.forEach((value: string) => {
-      this.eligibleLoginNames.push(value);
-    })
-
-    this.isCustom = isCustom;
-    if (isCustom) {
-      options = options || [];
-      this.customOptions.splice(0, this.customOptions.length);
-      options.forEach((val: string) => {
-        this.customOptions.push(val);
-      })
-    }
-  }
-  playerVote(playerLogin: string, vote: string): void {
-    if (this.eligibleLoginNames.find((val: string) => {
-      return val === playerLogin;
-    })) {
-      console.log('player Voting:', playerLogin, 'for', vote);
-      if (this.votes[playerLogin] === undefined) {
-        this.votes[playerLogin] = new Vote(playerLogin, vote);
-      } else {
-        this.votes[playerLogin].vote = vote;
-      }
-    } else {
-      console.log("player not eligible to vote!", playerLogin, 'for', vote, 'eligible:', this.eligibleLoginNames);
-    }
-  }
+  @type('number')
+  closingIn: number = -1;
 }
+
+
