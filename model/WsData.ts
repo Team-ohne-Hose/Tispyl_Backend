@@ -50,7 +50,6 @@ export enum GameActionType {
   beginVotingSession,
   playerCastVote,
   closeVotingSession,
-  displayVoteResult,
   addDrinkbuddies,
   removeDrinkbuddies
 }
