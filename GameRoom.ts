@@ -43,7 +43,7 @@ export class GameRoom extends Room<GameState> {
         this.state.physicsState.addDice();
         this.state.physicsState.setOnDiceThrow(((num: number) => {
             if (this.state.action === Actions[Actions.ROLL]) {
-                this.state.nextAction();
+                this.state.nextAction(this);
             }
         }).bind(this));
 
@@ -186,10 +186,10 @@ export class GameRoom extends Room<GameState> {
                     this.state.nextRound();
                     break;
                 case GameActionType.advanceAction:
-                    this.state.nextAction();
+                    this.state.nextAction(this);
                     break;
                 case GameActionType.advanceTurn:
-                    this.state.nextTurn();
+                    this.state.nextTurn(this);
                     break;
                 case GameActionType.reverseTurnOrder:
                     WSLogger.log('reversingTurnOrder');
@@ -212,7 +212,7 @@ export class GameRoom extends Room<GameState> {
                     }
                     if (this.state.currentPlayerLogin === data.playerId) {
                         if (this.state.action === Actions[Actions.MOVE]) {
-                            this.state.nextAction();
+                            this.state.nextAction(this);
                         }
                         const msg = {
                             type: MessageType.GAME_MESSAGE,

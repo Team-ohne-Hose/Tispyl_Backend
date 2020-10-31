@@ -1,10 +1,12 @@
 import {PhysicsState} from "./PhysicsState";
-import {PlayerModel} from "../WsData";
+import {MessageType, PlayerModel} from "../WsData";
 import {Schema, ArraySchema, MapSchema, type} from "@colyseus/schema"
 import {Player} from "./Player";
 import {BoardLayoutState} from "./BoardLayoutState";
 import {VoteState} from "./VoteState";
 import {Link} from "./Link";
+import {ItemManager} from "../ItemManager";
+import {GameRoom} from "../../GameRoom";
 
 export enum Actions {
     ROLL,
@@ -54,10 +56,10 @@ export class GameState extends Schema {
         this.round += 1;
     }
 
-    nextAction() {
+    nextAction(gameRoom: GameRoom) {
         let newAction = Actions[Actions[this.action] + 1];
         if (newAction === undefined) {
-            this.nextTurn();
+            this.nextTurn(gameRoom);
         } else {
             this.action = newAction;
         }
@@ -92,9 +94,18 @@ export class GameState extends Schema {
         console.error('something went wrong.. No client is marked as connected');
     }
 
-    nextTurn() {
+    nextTurn(gameRoom: GameRoom) {
         this.currentPlayerLogin = this.getNextActivePlayer(this.currentPlayerLogin, this.reversed).loginName;
         this.action = Actions[Actions.ROLL];
+        if (Math.random() <= 0.10) {
+            const itemId = ItemManager.getRandomItem();
+            this.getPlayer(this.currentPlayerLogin).addItem(itemId);
+            gameRoom.broadcast(MessageType.CHAT_MESSAGE, {
+                type: MessageType.CHAT_MESSAGE,
+                message: `Player: ${gameRoom.state.playerList[this.currentPlayerLogin].displayName} received Item ${itemId}.`,
+                authorLoginName: 'SERVER'
+            });
+        }
     }
 
     getOrAddPlayer(login: string, id: string, name: string): [Player, boolean] {
