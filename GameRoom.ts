@@ -71,7 +71,7 @@ export class GameRoom extends Room<GameState> {
           this.metadata.randomizeTiles,
           this.createDate.toISOString().slice(0, 19).replace('T', ' '),
           new Date().toISOString().slice(0, 19).replace('T', ' '),
-          this.state.playerList._indexes.size,
+          this.state.playerList.size,
           this.state.round);
 
         this.state.physicsState.destructState();
