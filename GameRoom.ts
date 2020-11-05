@@ -134,14 +134,16 @@ export class GameRoom extends Room<GameState> {
                 });
                 this.state.removePlayer(player.loginName);
                 // only way to access 'first' element...
-                for (let id in this.state.playerList) {
-                    this.state.setHost(id);
+                const pList: [string, Player][] = Array.from(this.state.playerList.entries());
+                if (pList.length > 0) {
+                    const login: string = pList[0][0];
+                    const player: Player = pList[0][1];
+                    this.state.setHost(login);
                     this.broadcast(MessageType.CHAT_MESSAGE, {
                         type: MessageType.CHAT_MESSAGE,
-                        message: `Player: ${this.state.playerList[id].displayName} is now host of the game.`,
+                        message: `Player: ${player.displayName} is now host of the game.`,
                         authorLoginName: 'SERVER'
                     });
-                    break;
                 }
             } else {
                 this.broadcast(MessageType.CHAT_MESSAGE, {
@@ -180,7 +182,7 @@ export class GameRoom extends Room<GameState> {
         }
     }
     onGameMessage(client: Client, data: WsData) {
-        WSLogger.log(`got: ${JSON.stringify(data)}`);
+        WSLogger.log(`got GameMessage: ${JSON.stringify(data)}`);
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined && data.type === MessageType.GAME_MESSAGE) {
             switch (data.action) {
@@ -228,11 +230,11 @@ export class GameRoom extends Room<GameState> {
                 case GameActionType.readyPropertyChange:
                     this.state.playerList[player.loginName].isReady = data.isReady;
                     let allReady = true;
-                    for (let id in this.state.playerList) {
-                        if (!this.state.playerList[id].isReady) {
-                            allReady = false
+                    this.state.playerList.forEach((p => {
+                        if (!p.isReady) {
+                            allReady = false;
                         }
-                    }
+                    }));
                     if (allReady) {
                         this.state.startGame()
                     }
@@ -240,11 +242,9 @@ export class GameRoom extends Room<GameState> {
                 case GameActionType.refreshData:
                     this.state.triggerAll();
                     this.state.playerList.triggerAll();
-                    for (const key in this.state.playerList) {
-                        if (key in this.state.playerList) {
-                            this.state.playerList[key].triggerAll();
-                        }
-                    }
+                    this.state.playerList.forEach(p => {
+                        p.triggerAll();
+                    });
                     break;
                 case GameActionType.closeVotingSession:
                     this.state.voteState.closingIn = 5;
@@ -260,15 +260,10 @@ export class GameRoom extends Room<GameState> {
                     }, 1000);
                     break;
                 case GameActionType.startVoteCreation:
-                    for (const key in this.state.playerList) {
-                        if (this.state.playerList[key].clientId === client.id) {
-                            if (data.author === this.state.playerList[key].displayName) {
-                                this.state.voteState.activeVoteConfiguration = undefined;
-                                this.state.voteState.creationInProgress = true;
-                                this.state.voteState.author = data.author;
-                                break;
-                            }
-                        }
+                    if (data.author === player.displayName) {
+                        this.state.voteState.activeVoteConfiguration = undefined;
+                        this.state.voteState.creationInProgress = true;
+                        this.state.voteState.author = data.author;
                     }
                     break;
                 case GameActionType.beginVotingSession:
@@ -307,11 +302,9 @@ export class GameRoom extends Room<GameState> {
                         player.setFigure(player.figureId, data.playerModel);
                     }
                     this.state.playerList.triggerAll();
-                    for (const key in this.state.playerList) {
-                        if (key in this.state.playerList) {
-                            this.state.playerList[key].triggerAll();
-                        }
-                    }
+                    this.state.playerList.forEach(p => {
+                       p.triggerAll();
+                    });
                     console.log('got Figure: ', player.figureModel, data.playerModel, data.playerId);
                     break;
             }

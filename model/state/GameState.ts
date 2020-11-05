@@ -7,6 +7,7 @@ import {VoteState} from "./VoteState";
 import {Link} from "./Link";
 import {ItemManager} from "../ItemManager";
 import {GameRoom} from "../../GameRoom";
+import {WSLogger} from "../../WSLogger";
 
 export enum Actions {
     ROLL,
@@ -135,21 +136,16 @@ export class GameState extends Schema {
         return this.playerList[loginName];
     }
     getPlayerByClientId(clientId: string): Player {
-        for (const key in this.playerList) {
-            if (key in this.playerList) {
-                if (this.playerList[key].clientId === clientId) {
-                    return this.playerList[key];
-                }
-            }
-        }
-        return undefined;
+        return this.asArray(this.playerList).find((p: Player, i: number) => {
+            return p.clientId === clientId;
+        });
     }
     getPlayerByFigure(id: number): Player {
-        for (let key in this.playerList) {
-            const player: Player = this.playerList[key];
-            if (player.figureId === id) {
-                return player;
-            }
+        const player = Array.from(this.playerList.values()).find(p => {
+            return p.figureId === id;
+        });
+        if (player !== undefined) {
+            return player;
         }
     }
 
@@ -169,10 +165,6 @@ export class GameState extends Schema {
     }
 
     private asArray<T>(map: MapSchema<T>): T[] {
-        const tmpArray: T[] = [];
-        for (let id in map) {
-            tmpArray.push(map[id])
-        }
-        return tmpArray;
+        return Array.from<T>(map.values());
     }
 }
