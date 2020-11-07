@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import Ammo from 'ammojs-typed';
 import {OnDeleteBehaviour, PhysicsObjectState} from "./state/PhysicsState";
 import {MapSchema} from "@colyseus/schema";
+import {WSLogger} from "../WSLogger";
 
 export interface PhysicsObject {
     physicsBody: Ammo.btRigidBody;
@@ -214,7 +215,8 @@ export class PhysicsEngine {
 
 
     removePhysicsObjectByID(id: number): void {
-        this.physicsObjects.set(id, undefined);
+        this.physicsObjects.delete(id);
+        //this.physicsObjects.set(id, undefined);
     }
     addPhysicsObject(obj: PhysicsObject): void {
         this.physicsObjects.set(obj.objectIdTHREE, obj);
@@ -242,13 +244,14 @@ export class PhysicsEngine {
                             }
                         }
                     } else { //  if (key >= 0)
-                        this.networkObjects[key].position.set(p.x(), p.y(), p.z());
-                        this.networkObjects[key].quaternion.set(q.x(), q.y(), q.z(), q.w());
+                        this.networkObjects.get(key.toString()).position.set(p.x(), p.y(), p.z());
+                        this.networkObjects.get(key.toString()).quaternion.set(q.x(), q.y(), q.z(), q.w());
                         // console.log('rot: ', key, q.x(), q.y(), q.z(), q.w());
                     }
                 }
             }
         });
+        this.networkObjects.triggerAll();
     }
 
     listObjects(): string {

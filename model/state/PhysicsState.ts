@@ -138,6 +138,7 @@ export class PhysicsState extends Schema {
     }
     handlePhysicsCommand(cmd: PhysicsCommand) {
         // console.log('PCMD: ', cmd.subType, cmd['objectID']);
+        WSLogger.log(`physics objects ${JSON.stringify(this.objects)}`);
             switch (cmd.subType) {
                 case PhysicsCommandType.remove:
                     this.removePhysicsObject(cmd.objectID);
@@ -168,7 +169,7 @@ export class PhysicsState extends Schema {
         const pos = new Vector(this.startPoint.x, this.startPoint.y, this.startPoint.z);
         const quat = new Quaternion(rot.x, rot.y, rot.z, rot.w);
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, PhysicsEntity.figure, PhysicsEntityVariation.default);
-        this.objects[id] = obj;
+        this.objects.set(String(id), obj);
         this.loader.load(this.physicsEngine, obj, PhysicsEntity.figure, PhysicsEntityVariation.default);
         return id;
     }
@@ -177,7 +178,7 @@ export class PhysicsState extends Schema {
         const pos = new Vector(0, 10, 0);
         const quat = new Quaternion(0, 0, 0, 1);
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, PhysicsEntity.dice, PhysicsEntityVariation.default);
-        this.objects[id] = obj;
+        this.objects.set(String(id), obj);
         this.loader.load(this.physicsEngine, obj, PhysicsEntity.dice, PhysicsEntityVariation.default);
         this.diceObj = obj;
     }
