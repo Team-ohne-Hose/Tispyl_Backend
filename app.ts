@@ -12,80 +12,140 @@ import backendConfig from "./configs/backend-config.json";
 import backendConfigDev from "./configs/backend-config-dev.json";
 import * as yargs from "yargs";
 import {ErrorHandler} from "./ErrorHandler";
+import {MariaDAO} from "./MariaDAO";
+import * as http from "http";
+import {Connection} from "mariadb";
 
-const argv = yargs.options({
-    env: {
-        alias: 'e',
-        choices: ['dev', 'prod'],
-        demandOption: true,
-        description: 'app environment'
+
+
+function fetchConfig() {
+    const argv = yargs.options({
+        env: {
+            alias: 'e',
+            choices: ['dev', 'prod'],
+            demandOption: true,
+            description: 'app environment'
+        }
+    }).argv;
+
+    let config;
+    if (argv.env === 'prod') {
+        config = backendConfig;
+        config.env = 'prod'
+        console.log('Selected the production environment. This is tailored to be used on the uberspace setup.');
+    } else if (argv.env === 'dev') {
+        config = backendConfigDev;
+        config.env = 'dev'
+        console.log('Selected the development environment. Only use this environment on local setups.');
+    } else {
+        console.error('No environment was selected. The script will exit now.');
+        process.exit(-1);
     }
-}).argv;
 
-let config;
-if (argv.env === 'prod') {
-    config = backendConfig;
-    console.log('Selected the production environment. This is tailored to be used on the uberspace setup.');
-} else if (argv.env === 'dev') {
-    config = backendConfigDev;
-    console.log('Selected the development environment. Only use this environment on local setups.');
-} else {
-    console.error('No environment was selected. The script will exit now.');
-    process.exit(-1);
+    return config
 }
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Attach WebSocket Server on HTTPS Server.
-let internalServer;
-let serverProtocol;
-if (argv.env === 'prod') {
-    serverProtocol = 'https';
-    internalServer = createHttpsServer({
-        key: fs.readFileSync(backendConfig.tlsKey),
-        cert: fs.readFileSync(backendConfig.tlsCert)
-    }, app);
-} else if (argv.env === 'dev') {
-    serverProtocol = 'http';
-    internalServer = createHttpServer(app);
+/** Builds an http server that hosts the actual application depending on the current environment */
+function buildHTTPServer(config, expressApp): {server, protocol} {
+    if (config.env === 'prod') {
+        console.log(`Instantiating HTTPS Server on top of the Express base. (Cert: ${backendConfig.tlsKey}, Key: ${backendConfig.tlsCert}).`);
+        let s = createHttpsServer({
+            key: fs.readFileSync(backendConfig.tlsKey),
+            cert: fs.readFileSync(backendConfig.tlsCert)
+        }, expressApp)
+        return { server: s, protocol: 'https'};
+    } else if (config.env === 'dev') {
+        console.log(`Instantiating HTTP Server on top of the Express base. DEVELOPMENT ONLY!`);
+        return { server: createHttpServer(expressApp), protocol: 'http' };
+    }
 }
 
-const gameServer = new Server({
-    server: internalServer,
-    express: app,
-    pingInterval: 0,
-});
+/** Configures the express framework for handling http requests, routing and multipart body parsing. */
+function configureExpressApplication() {
+    const express_app = express();
+    express_app.use(cors());
+    express_app.use(express.json());
+    express_app.use(express.urlencoded({ extended: true }));
 
-gameServer.define('game', GameRoom);
+    console.log("Attaching logging callback to HTTP(S) requests on Express.");
+    express_app.use((req: Request, res, next) => {
+        const now = new Date(Date.now()).toLocaleTimeString();
+        const queries = JSON.stringify(req.query);
+        const params = JSON.stringify(req.params);
+        const body = JSON.stringify(req.body);
+        console.log(`[${now}][HTTP] Got: ${req.method} at ${req.originalUrl} with query: ${queries} params: ${params} body ${body}`);
+        next();
+    });
 
-// Logging
-app.use((req: Request, res, next) => {
-    const now = new Date(Date.now()).toLocaleTimeString();
-    const queries = JSON.stringify(req.query);
-    const params = JSON.stringify(req.params);
-    const body = JSON.stringify(req.body);
-    console.log(`[${now}][HTTP] Got: ${req.method} at ${req.originalUrl} with query: ${queries} params: ${params} body ${body}`);
-    next();
-});
+    console.log("Attaching Express routes for:\n\t/colyseus\n\t/api\n\t/");
+    express_app.use('/colyseus', monitor());
+    express_app.use('/api', new ApiRouter().router);
+    express_app.use('/', (req, res, next) => { res.sendFile(__dirname + "/views/index.html") });
 
-// Routing
-app.use('/colyseus', monitor());
-app.use('/api', new ApiRouter(config).router);
-app.use('/', (req, res, next) => {
-    res.sendFile(__dirname + "/views/index.html")
-});
+    console.log("Attaching Express fallback error handlers.");
+    express_app.use(ErrorHandler.logErrors);
+    express_app.use(ErrorHandler.handleKnownError);
+    express_app.use(ErrorHandler.handleUnexpectedError);
 
-// Error handling
-app.use(ErrorHandler.logErrors);
-app.use(ErrorHandler.handleKnownError);
-app.use(ErrorHandler.handleUnexpectedError);
+    return express_app;
+}
 
-gameServer.onShutdown(function(){
-    console.log(`game server is going down.`);
-});
+/** Establishes the connection between the static MariaDAO object and the database under the configured address.
+ * This includes waiting for potential timeouts if the database is not reachable.
+ *
+ * @param config object including parameters for the database access.
+ */
+async function connectToMariaDB(config) {
+    let c: Connection;
+    try {
+        c = await MariaDAO.init(config);
+    } catch (e) {
+        console.error(`Failed to establish MariaDB connection (code: ${e.code}). Please ensure a running database is available under the expected address. Original Issue:`, { e });
+        process.exit(1);
+    } finally {
+        if (c) await c.end();
+    }
+}
 
-gameServer.listen(config.port, config.host);
-console.log(`Listening on ${ serverProtocol }://${ config.host }:${ config.port }`);
+/** Driver code and entry point to start the backend */
+async function run() {
+    const config = fetchConfig();
+
+    await connectToMariaDB(config)
+
+    const app = configureExpressApplication();
+
+    const { server, protocol } = buildHTTPServer(config, app);
+
+    /* Building the colyseus server without the express app provided to its constructor. This is a workaround
+     * to allow us to correctly deal with startup exceptions of the server.
+     *
+     * @see https://github.com/colyseus/colyseus/issues/313
+     */
+    console.log(`Instantiating Colyseus Server.`);
+    const colyseus = new Server({noServer: true});
+    colyseus.define('game', GameRoom);
+    colyseus.onShutdown(function(){
+        console.log(`game server is going down.`);
+    });
+
+    server.on("error", err => {
+        if ( err.code === 'EADDRINUSE') {
+            console.error(`Failed to start the internal server. PORT: ${ config.port } is already in use.`);
+            console.error("Please ensure the specified port is not used by a different service or a second instance of the Brettspiel_Backend.");
+            console.error("Original issue:", { err })
+        } else {
+            console.error("The HTTP server encountered an unspecified error", { err }, err.code);
+        }
+        server.close();
+    });
+
+    server.once("listening", () => {
+        colyseus.attach( server );
+        console.info(`Listening on ${ protocol } ://${ config.host }:${ config.port }`);
+    });
+
+    server.listen(config.port);
+}
+
+run();
