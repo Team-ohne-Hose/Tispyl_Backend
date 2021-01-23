@@ -56,9 +56,21 @@ export class ApiRouter {
         js: 'application/javascript'
     };
 
-    constructor (config) {
-        MariaDAO.init(config);
+    constructor () {
+        if (!MariaDAO.isInitialized()) {
+            console.error("MariaDAO is not yet initialized. Call 'MariaDAO.init(Config);' before instantiating an ApiRouter.");
+            throw new Error("Failed to construct ApiRouter because an uninitialized MariaDAO was found.")
+        }
+
         this.router = express.Router();
+
+        this.router.use(function (req, res, next) {
+            if (!MariaDAO.isInitialized()) {
+                console.error("MariaDAO is not yet initialized. Call 'MariaDAO.init(Config);' before instantiating an ApiRouter.");
+                throw new Error("Failed to address request: " + JSON.stringify(req) + " because an uninitialized MariaDAO was found.")
+            }
+            next()
+        });
 
         this.router.get('/', async (req, res) => {
             res.sendFile(__dirname + '/views/api.html');
