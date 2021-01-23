@@ -225,32 +225,39 @@ export class PhysicsEngine {
         return this.physicsObjects.get(id);
     }
 
+    updateNetworkObject(key: String, position: Ammo.btVector3, rotation: Ammo.btQuaternion) {
+        this.networkObjects.get(key.toString()).position.set(position.x(), position.y(), position.z());
+        this.networkObjects.get(key.toString()).quaternion.set(rotation.x(), rotation.y(), rotation.z(), rotation.w());
+    }
+    checkDeletionPlane(object: PhysicsObject, objectKey: number, position: Ammo.btVector3) {
+        if (position.y() < this.deletionPlane) {
+            if (!object.onDelete || !object.onDelete.bind(this)(object)) {
+                this.physicsObjects.delete(objectKey);
+                if (this.disposeFromViewport) {
+                    this.disposeFromViewport(object);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    updatePhysicsObject(phys: PhysicsObject, key: number) {
+        if (phys === undefined) return;
+        const ms: Ammo.btMotionState = phys.physicsBody.getMotionState();
+        if (ms === undefined) return;
+
+        ms.getWorldTransform(this.tmpTrans);
+        const p = this.tmpTrans.getOrigin();
+        const q = this.tmpTrans.getRotation();
+
+        if (!this.checkDeletionPlane(phys, key, p)) {
+            this.updateNetworkObject(key.toString(), p, q);
+        }
+    }
     updatePhysics() {
         const deltaTime = this.clock.getDelta();
         this.physicsWorld.stepSimulation(deltaTime, 10);
-        this.physicsObjects.forEach((phys: PhysicsObject, key: number) => {
-            if (phys !== undefined) {
-                const ms: Ammo.btMotionState = phys.physicsBody.getMotionState();
-                if (ms) {
-                    ms.getWorldTransform(this.tmpTrans);
-                    const p = this.tmpTrans.getOrigin();
-                    const q = this.tmpTrans.getRotation();
-                    // console.log(phys.objectIdTHREE, p.x(), p.y(), p.z());
-                    if (p.y() < this.deletionPlane) {
-                        if (!phys.onDelete || !phys.onDelete.bind(this)(phys)) {
-                            this.physicsObjects.delete(key);
-                            if (this.disposeFromViewport) {
-                                this.disposeFromViewport(phys);
-                            }
-                        }
-                    } else { //  if (key >= 0)
-                        this.networkObjects.get(key.toString()).position.set(p.x(), p.y(), p.z());
-                        this.networkObjects.get(key.toString()).quaternion.set(q.x(), q.y(), q.z(), q.w());
-                        // console.log('rot: ', key, q.x(), q.y(), q.z(), q.w());
-                    }
-                }
-            }
-        });
+        this.physicsObjects.forEach(this.updatePhysicsObject.bind(this));
         this.networkObjects.triggerAll();
     }
 
@@ -266,10 +273,8 @@ export class PhysicsEngine {
 
     setKinematic(objID: number, kinematic: boolean) {
         if (kinematic) {
-            // this.getPhysicsObjectByID(objID).physicsBody.setActivationState( STATE.DISABLE_DEACTIVATION );
             this.getPhysicsObjectByID(objID).physicsBody.setCollisionFlags(FLAGS.CF_KINEMATIC_OBJECT);
         } else {
-            // this.getPhysicsObjectByID(objID).physicsBody.setActivationState(0);
             this.getPhysicsObjectByID(objID).physicsBody.setCollisionFlags(0);
         }
     }
@@ -288,7 +293,6 @@ export class PhysicsEngine {
             pBody.setWorldTransform(this.tmpTrans);
         }
     }
-
     setRotation(objID: number, x: number, y: number, z: number) {
         const ms = this.getPhysicsObjectByID(objID).physicsBody.getMotionState();
         if (ms) {
@@ -298,7 +302,6 @@ export class PhysicsEngine {
             ms.setWorldTransform(this.tmpTrans);
         }
     }
-
     setRotationQuat(objID: number, x: number, y: number, z: number, w: number) {
         console.log('setting rotation of', objID);
         const pBody = this.getPhysicsObjectByID(objID).physicsBody;
@@ -308,10 +311,8 @@ export class PhysicsEngine {
             ms.getWorldTransform(this.tmpTrans);
             this.tmpVec3 = this.tmpTrans.getOrigin();
             this.tmpTrans.setIdentity();
-            // this.tmpTrans.setOrigin(this.tmpVec3);
             this.tmpTrans.setRotation(this.tmpQuat);
             ms.setWorldTransform(this.tmpTrans);
-            // pBody.setWorldTransform(this.tmpTrans);
         }
     }
 
@@ -322,22 +323,22 @@ export class PhysicsEngine {
         this.getPhysicsObjectByID(objID).physicsBody.setAngularVelocity(new Ammo.btVector3(x, y, z));
     }
 
-    private createRigidBody(objectID: number, params: RigidBodyParams) {
-        const phys = this.getPhysicsObjectByID(objectID);
+    createTransform(params: RigidBodyParams): Ammo.btTransform {
         const transform = new Ammo.btTransform();
         transform.setIdentity();
         transform.setOrigin(new Ammo.btVector3(params.posX, params.posY, params.posZ));
         transform.setRotation(new Ammo.btQuaternion(params.quatX, params.quatY, params.quatZ, params.quatW));
+        return transform;
+    }
+    private createRigidBody(objectID: number, params: RigidBodyParams) {
+        const phys = this.getPhysicsObjectByID(objectID);
+        const transform = this.createTransform(params);
         const motionState = new Ammo.btDefaultMotionState(transform);
-
-
-        // let colShape = new Ammo.btSphereShape( 1 );
-        // colShape.setMargin( 0.05 );
 
         let localInertia = new Ammo.btVector3( 0, 0, 0 );
         params.shape.calculateLocalInertia( phys.mass, localInertia );
 
-        const rbInfo = new Ammo.btRigidBodyConstructionInfo(phys.mass, motionState, params.shape, localInertia); //  colShape); //
+        const rbInfo = new Ammo.btRigidBodyConstructionInfo(phys.mass, motionState, params.shape, localInertia);
         const body = new Ammo.btRigidBody(rbInfo);
 
         body.setFriction(0.5);
