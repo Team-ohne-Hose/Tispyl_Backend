@@ -1,5 +1,5 @@
 import {MapSchema, Schema, type} from "@colyseus/schema";
-import {PhysicsEngine, PhysicsObject} from "../PhysicsEngine";
+import {PhysicsEngine, PhysicsObject} from "../PhysicsEngineCannon";
 import {
     GameActionType,
     GameDiceRoll,
@@ -87,10 +87,10 @@ export class PhysicsObjectState extends Schema {
         if (disable !== this.disabled) {
             if (disable) {
                 this.physicsBuffer = this.physicsEngine.getPhysicsObjectByID(this.objectIDPhysics);
-                this.physicsEngine.physicsWorld.removeRigidBody(this.physicsBuffer.physicsBody);
+                this.physicsEngine.world.remove(this.physicsBuffer.physicsBody);
                 this.physicsEngine.removePhysicsObjectByID(this.objectIDPhysics);
             } else if (this.physicsBuffer !== undefined) {
-                this.physicsEngine.physicsWorld.addRigidBody(this.physicsBuffer.physicsBody);
+                this.physicsEngine.addCannonObject(this.physicsBuffer.physicsBody);
                 this.physicsEngine.addPhysicsObject(this.physicsBuffer);
             }
             this.disabled = disable;
@@ -132,8 +132,10 @@ export class PhysicsState extends Schema {
         console.log(`Gave out new physcics ID: ${this.idCounter}`);
         return this.idCounter;
     }
+    // Deprecated
     listPhysicsItems(): string {
-        return this.physicsEngine.listObjects();
+        return "";
+        //deprecated return this.physicsEngine.listObjects();
     }
     handlePhysicsCommand(cmd: PhysicsCommand) {
         // console.log('PCMD: ', cmd.subType, cmd['objectID']);
@@ -186,12 +188,12 @@ export class PhysicsState extends Schema {
         if (this.diceObj !== undefined) {
             const physObj = this.physicsEngine.getPhysicsObjectByID(this.diceObj.objectIDPhysics);
             // console.log(physObj.physicsBody.getLinearVelocity().length(), physObj.physicsBody.getAngularVelocity().length());
-            if (physObj.physicsBody.getLinearVelocity().length() < 1 && physObj.physicsBody.getAngularVelocity().length() < 1 * Math.PI) {
+            if (physObj.physicsBody.velocity.norm() < 1 && physObj.physicsBody.angularVelocity.norm() < 1 * Math.PI) {
                 if (!this.diceNoMotion) {
                     this.diceNoMotion = true;
                     return false;
                 }
-            } else if (physObj.physicsBody.getLinearVelocity().length() > 10 || physObj.physicsBody.getAngularVelocity().length() > 10 * Math.PI) {
+            } else if (physObj.physicsBody.velocity.norm() > 10 || physObj.physicsBody.angularVelocity.norm() > 10 * Math.PI) {
                 this.diceNoMotion = false;
             }
         }
@@ -260,7 +262,7 @@ export class PhysicsState extends Schema {
     }
     setRotationQuat(id: number, x: number, y: number, z: number, w: number) {
         this.objects[id].quaternion.set(x || 0, y || 0, z || 0, w || 1);
-        this.physicsEngine.setRotationQuat(id, x || 0, y || 0, z || 0, w || 1);
+        this.physicsEngine.setQuat(id, x || 0, y || 0, z || 0, w || 1);
     }
     setVelocity(objID: number, x: number, y: number, z: number) {
         this.physicsEngine.setVelocity(objID, x || 0, y || 0, z || 0);
