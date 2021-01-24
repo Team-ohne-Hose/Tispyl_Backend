@@ -35,3 +35,23 @@ After starting the container, the MariaDB is accessable for external tools on 12
 Each time a new container is build, a new database is set up. This sets up a default database called ```BrettSpiel```.
 After generating the database, a predefined script is executed to fill the database with a sensible schema 
 ( ```<project root>/docker/Dockerfile``` ). If the desired schema changes, this file needs to be altered.
+
+# Contributing
+This section deals with coding helps, remarks and auxiliary information.
+
+### Logging
+The new logging framework we added is used nearly identical to the normal logging we already did.
+However we are now able to use all log levels one would expect by calling the console like this:
+
+````
+console.debug('foo'); //  [11:46:35] [debug] foo
+console.log('foo'); //    [11:46:35] [log] foo
+console.info('foo'); //   [11:46:35] [info] foo
+console.warn('foo'); //   [11:46:35] [warn] foo
+console.error('foo'); //  [11:46:35] [error] foo
+console.line('foo'); //   foo
+````
+
+Logs will now also be saved in a directory named ``logs``. At the moment this will need to be cleaned by hand.
+
+
