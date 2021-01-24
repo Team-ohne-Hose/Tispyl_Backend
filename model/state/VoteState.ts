@@ -1,6 +1,5 @@
 import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
 import {Player} from "./Player";
-import {ReInitialization} from '../ReInitialization';
 
 
 export class VoteEntry extends Schema {
