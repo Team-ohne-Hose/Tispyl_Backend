@@ -4,6 +4,9 @@ Backend to host both CRUD operations for the databse via an HTTP-API and the Col
 Running the server will require a running database for full functionallity. The Repository uses MariaDB which is supplied
 through the docker container found under the docker directory.
 
+### Environment
+![drawIO image](resources/Brettspiel_Backend.png "Deployment and Production environment for the Brettspiel_Backend")
+
 ## Getting started
 
 Running the backend requires docker. Install ```Docker Desktop``` for windows and ```docker``` on unix.
