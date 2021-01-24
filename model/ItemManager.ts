@@ -1,4 +1,4 @@
-import {WSLogger} from "../WSLogger";
+import {WSLogger} from "../helpers/WSLogger";
 
 export class ItemManager {
 

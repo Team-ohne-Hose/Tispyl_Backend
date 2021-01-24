@@ -11,7 +11,7 @@ import { ApiRouter} from "./ApiRouter";
 import backendConfig from "./configs/backend-config.json";
 import backendConfigDev from "./configs/backend-config-dev.json";
 import * as yargs from "yargs";
-import {ErrorHandler} from "./ErrorHandler";
+import {ErrorHandler} from "./helpers/ErrorHandler";
 import {MariaDAO} from "./MariaDAO";
 import * as http from "http";
 import {Connection} from "mariadb";

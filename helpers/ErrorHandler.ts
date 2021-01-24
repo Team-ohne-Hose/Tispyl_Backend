@@ -1,4 +1,4 @@
-import {APIResponse} from "./model/APIResponse";
+import {APIResponse} from "../model/APIResponse";
 import multer from "multer";
 
 export class ErrorHandler {
