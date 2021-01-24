@@ -11,7 +11,6 @@ import {
 } from "./model/WsData";
 import {Player} from "./model/state/Player";
 import {PhysicsObjectState} from "./model/state/PhysicsState";
-import {WSLogger} from "./helpers/WSLogger";
 import {MariaDAO} from "./MariaDAO";
 import {ItemManager} from "./model/ItemManager";
 import {Link} from "./model/state/Link";
@@ -22,7 +21,7 @@ export class GameRoom extends Room<GameState> {
     createDate: Date;
 
     onCreate(options: any): void | Promise<any> {
-        WSLogger.log(`[onCreate] Room created. Options: ${JSON.stringify(options)}`);
+        console.log(`[onCreate] Room created. Options: ${JSON.stringify(options)}`);
         this.createDate = new Date();
 
         this.setState(new GameState());
@@ -64,7 +63,7 @@ export class GameRoom extends Room<GameState> {
     }
 
     onDispose(): void | Promise<any> {
-        WSLogger.log(`[onDispose] Destructing physicsState`);
+        console.log(`[onDispose] Destructing physicsState`);
         MariaDAO.insertGameLog(this.metadata.lobbyName,
           this.metadata.author,
           this.metadata.skin,
@@ -79,7 +78,7 @@ export class GameRoom extends Room<GameState> {
     }
 
     onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
-        WSLogger.log(`[onJoin] Client ID: ${client.id} DisplayName: ${options.displayName} joined. Options: ${JSON.stringify(options)}`);
+        console.log(`[onJoin] Client ID: ${client.id} DisplayName: ${options.displayName} joined. Options: ${JSON.stringify(options)}`);
 
         // find matching player object or create a new one
         const playerResult: [Player, boolean] = this.state.getOrAddPlayer(options.login, client.id, options.displayName);
@@ -125,7 +124,7 @@ export class GameRoom extends Room<GameState> {
         MariaDAO.addPlaytime(player.loginName, minPlayed);
 
 
-        WSLogger.log(`[onLeave] Client left the room: ${player.loginName}`);
+        console.log(`[onLeave] Client left the room: ${player.loginName}`);
         if (player !== undefined) {
             if (player.loginName === this.state.hostLoginName) {
                 this.broadcast(MessageType.LEFT_MESSAGE, {
@@ -182,7 +181,7 @@ export class GameRoom extends Room<GameState> {
         }
     }
     onGameMessage(client: Client, data: WsData) {
-        WSLogger.log(`got GameMessage: ${JSON.stringify(data)}`);
+        console.log(`got GameMessage: ${JSON.stringify(data)}`);
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined && data.type === MessageType.GAME_MESSAGE) {
             switch (data.action) {
@@ -196,7 +195,7 @@ export class GameRoom extends Room<GameState> {
                     this.state.nextTurn(this);
                     break;
                 case GameActionType.reverseTurnOrder:
-                    WSLogger.log('reversingTurnOrder');
+                    console.log('reversingTurnOrder');
                     this.state.reversed = !this.state.reversed;
                     break;
                 case GameActionType.setStartingCondition:
@@ -288,7 +287,7 @@ export class GameRoom extends Room<GameState> {
                     break;
                 case GameActionType.none:
                 default:
-                    WSLogger.log(`[onMessage] GAME_MESSAGE: No action found for ${JSON.stringify(data)}`);
+                    console.log(`[onMessage] GAME_MESSAGE: No action found for ${JSON.stringify(data)}`);
             }
         }
     }
@@ -363,32 +362,32 @@ export class GameRoom extends Room<GameState> {
                                 data.itemId = ItemManager.getRandomItem();
                             }
                             p.addItem(Number(data.itemId));
-                            WSLogger.log(`[onItemMessage] Player received Item: ${p.loginName}, Item:${data.itemId}`);
+                            console.log(`[onItemMessage] Player received Item: ${p.loginName}, Item:${data.itemId}`);
                             this.broadcast(MessageType.CHAT_MESSAGE, {
                                 type: MessageType.CHAT_MESSAGE,
                                 message: `Player: ${this.state.playerList[data.playerLoginName].displayName} received Item ${data.itemId}.`,
                                 authorLoginName: 'SERVER'
                             });
                         } else {
-                            WSLogger.log(`[onItemMessage] Player couldn't be found to receive Item: ${data.playerLoginName}`);
+                            console.log(`[onItemMessage] Player couldn't be found to receive Item: ${data.playerLoginName}`);
                         }
                     } else {
-                        WSLogger.log(`[onItemMessage] Client not authorized to give Item: ${client.id}`);
+                        console.log(`[onItemMessage] Client not authorized to give Item: ${client.id}`);
                     }
                     break;
                 case ItemMessageType.useItem:
                     const player = this.state.getPlayerByClientId(client.id);
                     if (player !== undefined && player.loginName === data.playerLoginName) {
-                        WSLogger.log(`[onItemMessage] Client using Item: ${data.itemId}`);
+                        console.log(`[onItemMessage] Client using Item: ${data.itemId}`);
                         if (player.useItem(Number(data.itemId))) {
                             data.itemName = ItemManager.getName(Number(data.itemId));
                             data.itemDescription = ItemManager.getDescription(Number(data.itemId));
                             this.broadcast(data.type, data);
                         } else {
-                            WSLogger.log(`[onItemMessage] Failed using Item: ${data.itemId}`);
+                            console.log(`[onItemMessage] Failed using Item: ${data.itemId}`);
                         }
                     } else {
-                        WSLogger.log(`[onItemMessage] Client not authorized to use: ${player.loginName} tried to use ${data.playerLoginName}'s Item of ${data.itemId}`);
+                        console.log(`[onItemMessage] Client not authorized to use: ${player.loginName} tried to use ${data.playerLoginName}'s Item of ${data.itemId}`);
                     }
                     break;
             }

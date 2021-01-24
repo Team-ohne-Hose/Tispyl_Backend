@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import Ammo from 'ammojs-typed';
 import {OnDeleteBehaviour, PhysicsObjectState} from "./state/PhysicsState";
 import {MapSchema} from "@colyseus/schema";
-import {WSLogger} from "../helpers/WSLogger";
 
 export interface PhysicsObject {
     physicsBody: Ammo.btRigidBody;

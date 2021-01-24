@@ -15,8 +15,11 @@ import {ErrorHandler} from "./helpers/ErrorHandler";
 import {MariaDAO} from "./MariaDAO";
 import * as http from "http";
 import {Connection} from "mariadb";
+import betterLogging, {expressMiddleware} from 'better-logging';
 
-
+betterLogging(console, {
+    saveToFile: __dirname + `/logs/${Date.now()}.log`,
+});
 
 function fetchConfig() {
     const argv = yargs.options({
@@ -48,14 +51,14 @@ function fetchConfig() {
 /** Builds an http server that hosts the actual application depending on the current environment */
 function buildHTTPServer(config, expressApp): {server, protocol} {
     if (config.env === 'prod') {
-        console.log(`Instantiating HTTPS Server on top of the Express base. (Cert: ${backendConfig.tlsKey}, Key: ${backendConfig.tlsCert}).`);
+        console.info(`Instantiating HTTPS Server on top of the Express base. (Cert: ${backendConfig.tlsKey}, Key: ${backendConfig.tlsCert}).`);
         let s = createHttpsServer({
             key: fs.readFileSync(backendConfig.tlsKey),
             cert: fs.readFileSync(backendConfig.tlsCert)
         }, expressApp)
         return { server: s, protocol: 'https'};
     } else if (config.env === 'dev') {
-        console.log(`Instantiating HTTP Server on top of the Express base. DEVELOPMENT ONLY!`);
+        console.info(`Instantiating HTTP Server on top of the Express base. DEVELOPMENT ONLY!`);
         return { server: createHttpServer(expressApp), protocol: 'http' };
     }
 }
@@ -68,14 +71,34 @@ function configureExpressApplication() {
     express_app.use(express.urlencoded({ extended: true }));
 
     console.log("Attaching logging callback to HTTP(S) requests on Express.");
-    express_app.use((req: Request, res, next) => {
-        const now = new Date(Date.now()).toLocaleTimeString();
-        const queries = JSON.stringify(req.query);
-        const params = JSON.stringify(req.params);
-        const body = JSON.stringify(req.body);
-        console.log(`[${now}][HTTP] Got: ${req.method} at ${req.originalUrl} with query: ${queries} params: ${params} body ${body}`);
-        next();
-    });
+    const chalk = require('chalk');
+    express_app.use(expressMiddleware(console, {
+        method: {
+            show: true,
+            color: chalk.grey,
+            order: 1,
+        },
+        ip: {
+            show: true,
+            color: chalk.grey,
+            order: 2,
+        },
+        path: {
+            show: true,
+            color: chalk.reset,
+            order: 3,
+        },
+        body: {
+            show: true,
+            color: chalk.reset,
+            order: 4,
+        },
+        header: {
+            show: false,
+            color: chalk.reset,
+            order: 5,
+        }
+    }));
 
     console.log("Attaching Express routes for:\n\t/colyseus\n\t/api\n\t/");
     express_app.use('/colyseus', monitor());
@@ -99,6 +122,7 @@ async function connectToMariaDB(config) {
     let c: Connection;
     try {
         c = await MariaDAO.init(config);
+        MariaDAO.setInitialized();
     } catch (e) {
         console.error(`Failed to establish MariaDB connection (code: ${e.code}). Please ensure a running database is available under the expected address. Original Issue:`, { e });
         process.exit(1);
@@ -126,7 +150,7 @@ async function run() {
     const colyseus = new Server({noServer: true});
     colyseus.define('game', GameRoom);
     colyseus.onShutdown(function(){
-        console.log(`game server is going down.`);
+        console.info(`game server is going down.`);
     });
 
     server.on("error", err => {
@@ -142,7 +166,7 @@ async function run() {
 
     server.once("listening", () => {
         colyseus.attach( server );
-        console.info(`Listening on ${ protocol } ://${ config.host }:${ config.port }`);
+        console.info(`Listening on ${ protocol }://${ config.host }:${ config.port }`);
     });
 
     server.listen(config.port);

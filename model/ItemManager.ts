@@ -1,4 +1,3 @@
-import {WSLogger} from "../helpers/WSLogger";
 
 export class ItemManager {
 
@@ -38,7 +37,7 @@ export class ItemManager {
     }
     let val = Math.floor(Math.random() * Math.floor(this.chanceTable.length));
     if (val >= this.chanceTable.length) val = 0;
-    WSLogger.log('generated random Item: ' + this.chanceTable[val]);
+    console.log('generated random Item: ' + this.chanceTable[val]);
     return this.chanceTable[val];
   }
   static getName(id: number): string {

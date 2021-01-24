@@ -11,7 +11,6 @@ import {
 } from "../WsData";
 import {EntityLoader} from "../EntityLoader";
 import * as THREE from 'three';
-import {WSLogger} from "../../helpers/WSLogger";
 
 export enum OnDeleteBehaviour {
     default
@@ -130,7 +129,7 @@ export class PhysicsState extends Schema {
     }
     private getNewId(): number {
         this.idCounter++;
-        WSLogger.log(`Gave out new physcics ID: ${this.idCounter}`);
+        console.log(`Gave out new physcics ID: ${this.idCounter}`);
         return this.idCounter;
     }
     listPhysicsItems(): string {
@@ -138,7 +137,7 @@ export class PhysicsState extends Schema {
     }
     handlePhysicsCommand(cmd: PhysicsCommand) {
         // console.log('PCMD: ', cmd.subType, cmd['objectID']);
-        WSLogger.log(`physics objects ${JSON.stringify(this.objects)}`);
+        console.log(`physics objects ${JSON.stringify(this.objects)}`);
             switch (cmd.subType) {
                 case PhysicsCommandType.remove:
                     this.removePhysicsObject(cmd.objectID);
@@ -237,7 +236,7 @@ export class PhysicsState extends Schema {
     updateDice() {
         if (!this.checkDiceMoving()) {
             const num = this.getDiceNumber();
-            WSLogger.log(`Dice roll resulted in a ${num}`);
+            console.log(`Dice roll resulted in a ${num}`);
             if (this.onDiceThrow !== undefined) {
                 this.onDiceThrow(num);
             }

@@ -13,8 +13,12 @@ export class MariaDAO {
         return MariaDAO.initialized;
     }
 
+    static setInitialized(): boolean {
+        return MariaDAO.initialized = true;
+    }
+
     static async init(config): Promise<Connection> {
-        console.log(`Initializing MariaDB connection: schemaName='${config.mariaDao.schemaName}', host=${config.mariaDao.host}, connectionLimit=${config.mariaDao.connectionLimit} ...`)
+        console.info(`Initializing MariaDB connection: schemaName='${config.mariaDao.schemaName}', host=${config.mariaDao.host}, connectionLimit=${config.mariaDao.connectionLimit} ...`)
         MariaDAO.schemaName = config.mariaDao.schemaName;
         MariaDAO.pool = mariadb.createPool({
             host: config.mariaDao.host,
