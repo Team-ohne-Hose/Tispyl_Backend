@@ -86,6 +86,7 @@ export class PhysicsEngine {
       frictionEquationRelaxation: 1e7
     });
     this.world.addContactMaterial(dice_figure);
+
   }
   updatePhysics() {
     const time = Date.now();
@@ -288,7 +289,11 @@ export class PhysicsEngine {
   }
   private respawnOnDelete(obj: PhysicsObject): boolean {
     // console.log("deleting with default: " + obj.objectIdTHREE);
+<<<<<<< HEAD
     obj.physicsBody.position.set( 0, 0.15, 0);
+=======
+    obj.physicsBody.position.set( 0, 15, 0);
+>>>>>>> added Cannon as new Physics Engine
     obj.physicsBody.velocity.set(0, 0, 0);
     return true;
   }
