@@ -1,10 +1,11 @@
 import {PhysicsEntity, PhysicsEntityVariation} from "./WsData";
-import {CollisionGroups, PhysicsEngine} from "./PhysicsEngine";
+import {PhysicsEngine} from "./PhysicsEngineCannon";
 import {PhysicsObjectState} from "./state/PhysicsState";
 import * as THREE from 'three';
 import {AnimationClip, BufferGeometry, Camera, Group} from 'three';
 import {GLTFLoader} from "./gltfLoaderLocal/GLTFLoaderLocal.js";
 import {BufferGeometryUtils} from "./BufferGeometryUtils.js";
+import CANNON from "cannon";
 
 
 interface GLTF {
@@ -24,8 +25,8 @@ interface GLTF {
     userData: any;
 }
 interface GeometryList {
-    diceDefault: number[];
-    figureDefault: number[];
+    diceDefault: CANNON.ConvexPolyhedron;
+    figureDefault: CANNON.ConvexPolyhedron;
 }
 export class EntityLoader {
 
@@ -33,8 +34,6 @@ export class EntityLoader {
         dice: {
             default: {
                 mass: 1,
-                colGroup: CollisionGroups.Dice,
-                colMask: CollisionGroups.All,
                 behavior: 0,
                 fname: 'diceDefault.gltf'
             }
@@ -42,8 +41,6 @@ export class EntityLoader {
         figure: {
             default: {
                 mass: 1,
-                colGroup: CollisionGroups.Figures,
-                colMask: CollisionGroups.All,
                 behavior: 0,
                 fname: 'figureDefaultNoTex.gltf'
             }
@@ -108,7 +105,30 @@ export class EntityLoader {
         return undefined;
     }
 
-    private async loadModel(fName: string): Promise<number[]> {
+    private createConvexPolyhedron(geometry: THREE.Geometry | THREE.BufferGeometry): CANNON.ConvexPolyhedron {
+        if (!(geometry as THREE.Geometry).vertices) {
+            geometry = new THREE.Geometry().fromBufferGeometry(
+              geometry as THREE.BufferGeometry
+            );
+            geometry.mergeVertices();
+            geometry.computeBoundingSphere();
+            geometry.computeFaceNormals();
+        }
+        const points: CANNON.Vec3[] = (<THREE.Geometry>geometry).vertices.map(
+          function(v) {
+              return new CANNON.Vec3(v.x, v.y, v.z);
+          }
+        );
+        const faces: number[][] = (<THREE.Geometry>geometry).faces.map(function(f) {
+            return [f.a, f.b, f.c];
+        });
+
+        // typedefinition of CANNON is wrong! faces has to be of type number[][].
+        // To stop Typescript complaining, cast to any
+        return new CANNON.ConvexPolyhedron(points, faces as any);
+    }
+
+    private async loadModel(fName: string): Promise<CANNON.ConvexPolyhedron> {
         console.log(`Loading new model: ${fName}`);
         const loader = new GLTFLoader(); //.setPath(this.resourcePath);
         const path = this.resourcePath + fName;
@@ -126,13 +146,18 @@ export class EntityLoader {
         // console.log('scenechildren are:', scene.children);
 
         const buffGeo: BufferGeometry = this.mergeChildrenGeo(scene);
-        return Array.from(buffGeo.getAttribute('position').array);
+        return this.createConvexPolyhedron(buffGeo);
     }
-    private async loadGeometry(entity: PhysicsEntity, variant: PhysicsEntityVariation): Promise<number[]> {
+    private async loadGeometry(entity: PhysicsEntity, variant: PhysicsEntityVariation): Promise<CANNON.Shape> {
         switch (entity) {
             case PhysicsEntity.dice:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
+                        const halfExtends = new CANNON.Vec3( // model has Scale 2x2x2 at 0
+                            1,
+                            1,
+                            1);
+                        return new CANNON.Box(halfExtends);
                         if (EntityLoader.geometries.diceDefault === undefined) {
                             EntityLoader.geometries.diceDefault = await this.loadModel(this.constantProperties.dice.default.fname);
                         }
@@ -143,6 +168,7 @@ export class EntityLoader {
             case PhysicsEntity.figure:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
+                        return new CANNON.Cylinder(1.9, 2.16, 0.64, 14);
                         if (EntityLoader.geometries.figureDefault === undefined) {
                             EntityLoader.geometries.figureDefault = await this.loadModel(this.constantProperties.figure.default.fname);
                         }
@@ -179,8 +205,6 @@ export class EntityLoader {
         engine.addShape(await this.loadGeometry(PhysicsEntity.dice, PhysicsEntityVariation.default),
             object,
             this.constantProperties.dice.default.mass,
-            this.constantProperties.dice.default.colGroup,
-            this.constantProperties.dice.default.colMask,
             this.constantProperties.dice.default.behavior);
         return;
         return;
@@ -197,8 +221,6 @@ export class EntityLoader {
         engine.addShape(await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default),
             object,
             this.constantProperties.figure.default.mass,
-            this.constantProperties.figure.default.colGroup,
-            this.constantProperties.figure.default.colMask,
             this.constantProperties.figure.default.behavior);
         return;
     }
@@ -216,8 +238,6 @@ export class EntityLoader {
         engine.addShape(await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default),
             object,
             this.constantProperties.figure.default.mass,
-            this.constantProperties.figure.default.colGroup,
-            this.constantProperties.figure.default.colMask,
             this.constantProperties.figure.default.behavior);
         return;
     }

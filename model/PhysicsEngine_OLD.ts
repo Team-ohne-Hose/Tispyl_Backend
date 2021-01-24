@@ -167,51 +167,6 @@ export class PhysicsEngine {
         this.addGameBoardBoundarys();
     }
 
-    addTestBall() {
-        let transform = new Ammo.btTransform();
-        transform.setIdentity();
-        transform.setOrigin( new Ammo.btVector3( 10, 30,10 ) );
-        transform.setRotation( new Ammo.btQuaternion( 0, 0, 0, 1 ) );
-        let motionState = new Ammo.btDefaultMotionState( transform );
-
-        let colShape = new Ammo.btSphereShape( 1 );
-        colShape.setMargin( 0.05 );
-
-        let rbInfo = new Ammo.btRigidBodyConstructionInfo( 1, motionState, colShape);
-        let body = new Ammo.btRigidBody( rbInfo );
-        // body.setFriction(friction);
-        // body.setRestitution(.9);
-        // body.setDamping(0.2, 0.2);
-
-
-        this.physicsWorld.addRigidBody( body );
-        this.physicsObjects.set(-1, {
-            mass: 1, objectIdTHREE: -1, onDelete(obj: PhysicsObject): boolean {
-                return false;
-            }, physicsBody: body
-        });
-    }
-
-    addTestPlane() {
-        const transform = new Ammo.btTransform();
-        transform.setIdentity();
-        transform.setOrigin( new Ammo.btVector3( -10, 4, -10 ) );
-        transform.setRotation( new Ammo.btQuaternion( 0, 0, 0, 1 ) );
-        let motionState = new Ammo.btDefaultMotionState( transform );
-
-        let colShape = new Ammo.btBoxShape( new Ammo.btVector3( 40, 1,40 ) );
-        colShape.setMargin( 0.05 );
-
-        let localInertia = new Ammo.btVector3( 0, 0, 0 );
-        colShape.calculateLocalInertia( 0, localInertia );
-
-        let rbInfo = new Ammo.btRigidBodyConstructionInfo( 0, motionState, colShape, localInertia );
-        let body = new Ammo.btRigidBody( rbInfo );
-
-
-        this.physicsWorld.addRigidBody( body );
-    }
-
 
     removePhysicsObjectByID(id: number): void {
         this.physicsObjects.delete(id);
