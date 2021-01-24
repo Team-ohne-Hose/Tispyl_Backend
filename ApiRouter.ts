@@ -5,7 +5,7 @@ import {DBUser} from "./model/DBUser";
 import {APIResponse} from "./model/APIResponse";
 import multer from "multer";
 import * as fs from "fs";
-import {ImagePreparer} from "./ImagePreparer";
+import {ImagePreparer} from "./helpers/ImagePreparer";
 import * as path from "path";
 
 

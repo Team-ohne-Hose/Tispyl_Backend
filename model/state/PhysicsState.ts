@@ -11,7 +11,7 @@ import {
 } from "../WsData";
 import {EntityLoader} from "../EntityLoader";
 import * as THREE from 'three';
-import {WSLogger} from "../../WSLogger";
+import {WSLogger} from "../../helpers/WSLogger";
 
 export enum OnDeleteBehaviour {
     default

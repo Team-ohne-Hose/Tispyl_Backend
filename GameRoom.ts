@@ -11,7 +11,7 @@ import {
 } from "./model/WsData";
 import {Player} from "./model/state/Player";
 import {PhysicsObjectState} from "./model/state/PhysicsState";
-import {WSLogger} from "./WSLogger";
+import {WSLogger} from "./helpers/WSLogger";
 import {MariaDAO} from "./MariaDAO";
 import {ItemManager} from "./model/ItemManager";
 import {Link} from "./model/state/Link";

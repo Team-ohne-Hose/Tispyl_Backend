@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import {AnimationClip, BufferGeometry, Camera, Group} from 'three';
 import {GLTFLoader} from "./gltfLoaderLocal/GLTFLoaderLocal.js";
 import {BufferGeometryUtils} from "./BufferGeometryUtils.js";
-import {WSLogger} from "../WSLogger";
+import {WSLogger} from "../helpers/WSLogger";
 
 
 interface GLTF {

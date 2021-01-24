@@ -2,7 +2,7 @@ import {MapSchema, Schema, type} from "@colyseus/schema";
 import {PlayerModel} from "../WsData";
 import Timeout = NodeJS.Timeout;
 import {PhysicsObjectState} from "./PhysicsState";
-import {WSLogger} from "../../WSLogger";
+import {WSLogger} from "../../helpers/WSLogger";
 
 export class Player extends Schema {
     @type('string')
