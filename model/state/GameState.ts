@@ -7,7 +7,6 @@ import {VoteState} from "./VoteState";
 import {Link} from "./Link";
 import {ItemManager} from "../ItemManager";
 import {GameRoom} from "../../GameRoom";
-import {WSLogger} from "../../helpers/WSLogger";
 
 export enum Actions {
     ROLL,
