@@ -25,22 +25,22 @@ interface GLTF {
     userData: any;
 }
 interface GeometryList {
-    diceDefault: CANNON.ConvexPolyhedron;
-    figureDefault: CANNON.ConvexPolyhedron;
+    diceDefault: {shape: CANNON.Shape, offset: CANNON.Vec3}[];
+    figureDefault: {shape: CANNON.Shape, offset: CANNON.Vec3}[];
 }
 export class EntityLoader {
 
     private readonly constantProperties = {
         dice: {
             default: {
-                mass: 1,
+                mass: 0.01,
                 behavior: 0,
                 fname: 'diceDefault.gltf'
             }
         },
         figure: {
             default: {
-                mass: 1,
+                mass: 0.008,
                 behavior: 0,
                 fname: 'figureDefaultNoTex.gltf'
             }
@@ -148,31 +148,50 @@ export class EntityLoader {
         const buffGeo: BufferGeometry = this.mergeChildrenGeo(scene);
         return this.createConvexPolyhedron(buffGeo);
     }
-    private async loadGeometry(entity: PhysicsEntity, variant: PhysicsEntityVariation): Promise<CANNON.Shape> {
+    private async loadGeometry(entity: PhysicsEntity, variant: PhysicsEntityVariation): Promise<{shape: CANNON.Shape, offset: CANNON.Vec3, orientation: CANNON.Quaternion}[]> {
         switch (entity) {
             case PhysicsEntity.dice:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
-                        const halfExtends = new CANNON.Vec3( // model has Scale 2x2x2 at 0
-                            1,
-                            1,
-                            1);
-                        return new CANNON.Box(halfExtends);
-                        if (EntityLoader.geometries.diceDefault === undefined) {
+                        const geoList: {shape: CANNON.Shape, offset: CANNON.Vec3, orientation: CANNON.Quaternion}[] = [];
+                        /*geoList.push({shape: new CANNON.Box(new CANNON.Vec3(0.01, 0.009, 0.009)),
+                            offset: new CANNON.Vec3(0, 0, 0),
+                            orientation: new CANNON.Quaternion(0, 0, 0, 1)});
+                        geoList.push({shape: new CANNON.Box(new CANNON.Vec3(0.009, 0.01, 0.009)),
+                            offset: new CANNON.Vec3(0, 0, 0),
+                            orientation: new CANNON.Quaternion(0, 0, 0, 1)});
+                        geoList.push({shape: new CANNON.Box(new CANNON.Vec3(0.009, 0.009, 0.01)),
+                            offset: new CANNON.Vec3(0, 0, 0),
+                            orientation: new CANNON.Quaternion(0, 0, 0, 1)});*/
+                        geoList.push({shape: new CANNON.Box(new CANNON.Vec3(0.01, 0.01, 0.01)),
+                            offset: new CANNON.Vec3(0, 0, 0),
+                            orientation: new CANNON.Quaternion(0, 0, 0, 1)});
+
+                        return geoList;
+                        /*if (EntityLoader.geometries.diceDefault === undefined) {
                             EntityLoader.geometries.diceDefault = await this.loadModel(this.constantProperties.dice.default.fname);
                         }
-                        return EntityLoader.geometries.diceDefault;
+                        return EntityLoader.geometries.diceDefault;*/
                         break;
                 }
                 break;
             case PhysicsEntity.figure:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
-                        return new CANNON.Cylinder(1.9, 2.16, 0.64, 14);
-                        if (EntityLoader.geometries.figureDefault === undefined) {
+                        const geoList: {shape: CANNON.Shape, offset: CANNON.Vec3, orientation: CANNON.Quaternion}[] = [];
+                        const cylinderShape = new CANNON.Cylinder(PhysicsEngine.rescaleUnit(1.9), PhysicsEngine.rescaleUnit(2.16), PhysicsEngine.rescaleUnit(0.64), 14);
+                        var q = new CANNON.Quaternion();
+                        q.setFromAxisAngle(new CANNON.Vec3(1,0,0),Math.PI / 2);
+                        // casting to any because CANNON typedef is missing the function
+                        (cylinderShape as any).transformAllPoints(new CANNON.Vec3(), q);
+                        geoList.push({shape: cylinderShape,
+                            offset: new CANNON.Vec3(0, 0, 0),
+                            orientation: new CANNON.Quaternion(0, 0, 0, 1)})
+                        return geoList;
+                        /*if (EntityLoader.geometries.figureDefault === undefined) {
                             EntityLoader.geometries.figureDefault = await this.loadModel(this.constantProperties.figure.default.fname);
                         }
-                        return EntityLoader.geometries.figureDefault;
+                        return EntityLoader.geometries.figureDefault;*/
                         break;
                 }
                 break;
