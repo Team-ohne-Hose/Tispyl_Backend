@@ -33,6 +33,9 @@ export class PhysicsEngine {
   private iterations = 0;
   private sumOfIterations = 0;
 
+  private iterations = 0;
+  private sumOfIterations = 0;
+
   constructor(objects: MapSchema<PhysicsObjectState>) {
     this.networkObjects = objects;
     this.setupPhysicsWorld();
@@ -86,10 +89,9 @@ export class PhysicsEngine {
       frictionEquationRelaxation: 1e7
     });
     this.world.addContactMaterial(dice_figure);
-
   }
   updatePhysics() {
-    const time = Date.now();
+    const time = Date.now();//performance.now(); //Date.now();
     if (this.lastTime != undefined) {
       const dt = (time - this.lastTime) / 3000;
       this.lastTime = time;
@@ -290,10 +292,14 @@ export class PhysicsEngine {
   private respawnOnDelete(obj: PhysicsObject): boolean {
     // console.log("deleting with default: " + obj.objectIdTHREE);
 <<<<<<< HEAD
+<<<<<<< HEAD
     obj.physicsBody.position.set( 0, 0.15, 0);
 =======
     obj.physicsBody.position.set( 0, 15, 0);
 >>>>>>> added Cannon as new Physics Engine
+=======
+    obj.physicsBody.position.set( 0, 0.15, 0);
+>>>>>>> tweaked Cannon Physics to match a reasonable behavior
     obj.physicsBody.velocity.set(0, 0, 0);
     return true;
   }
