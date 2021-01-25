@@ -139,7 +139,7 @@ export class PhysicsState extends Schema {
     }
     handlePhysicsCommand(cmd: PhysicsCommand) {
         // console.log('PCMD: ', cmd.subType, cmd['objectID']);
-        console.log(`physics objects ${JSON.stringify(this.objects)}`);
+        //console.log(`physics objects ${JSON.stringify(this.objects)}`);
             switch (cmd.subType) {
                 case PhysicsCommandType.remove:
                     this.removePhysicsObject(cmd.objectID);
