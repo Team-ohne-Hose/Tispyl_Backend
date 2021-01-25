@@ -28,6 +28,7 @@ export class PhysicsEngine {
   private fixedTimeStep = 10; //milliseconds
   private maxSubSteps = 10;
   private lastTime;
+  private lastLog;
 
   private iterations = 0;
   private sumOfIterations = 0;
@@ -87,21 +88,20 @@ export class PhysicsEngine {
     this.world.addContactMaterial(dice_figure);
   }
   updatePhysics() {
-    const time = Date.now();//performance.now(); //Date.now();
+    const time = Date.now();
     if (this.lastTime != undefined) {
       const dt = (time - this.lastTime) / 3000;
       this.lastTime = time;
       //this.world.step(this.fixedTimeStep / 1000, dt, this.maxSubSteps);
-      this.world.step(dt);//, undefined, this.maxSubSteps);
+      this.world.step(dt);
 
       this.sumOfIterations += dt;
       this.iterations++;
-      if (this.iterations >= 1000) {
-        console.log("last", this.iterations, "Iterations with", this.sumOfIterations / this.iterations, "s dt, ", this.fixedTimeStep / 1000, "s timestep");
-        /*console.log("Scene:");
-        this.physicsObjects.forEach((v: PhysicsObject) => {
-          console.log("Obj ", v.objectIdTHREE, v.physicsBody.position, v.physicsBody.quaternion)
-        });*/
+      if (this.lastLog === undefined) this.lastLog = Date.now();
+      const dtLog = Date.now() - this.lastLog; //in ms
+      if (this.iterations >= 1000 && dtLog >= 120000) { //every 2 minutes AND 1000 Frames, log mean time
+        this.lastLog = Date.now();
+        console.info("last", this.iterations, "Physics Iterations with", (this.sumOfIterations / this.iterations * 1000).toFixed(4), "ms dt, ", this.fixedTimeStep, "ms desired timestep");
         this.sumOfIterations = 0;
         this.iterations = 0;
       }
@@ -213,7 +213,7 @@ export class PhysicsEngine {
     if (pBody === undefined) {
       return;
     }
-    console.log("set Velocity:", objID, x, y, z);
+    //console.log("set Velocity:", objID, x, y, z);
     //pBody.velocity.set(x, y, z);
     pBody.wakeUp();
     pBody.velocity.set(
@@ -232,7 +232,7 @@ export class PhysicsEngine {
     const pBody = this.getPhysicsObjectByID(objID).physicsBody;
     pBody.angularVelocity.set(x, y, z);
     const aVelClone = pBody.angularVelocity.clone();
-    console.log("set Ang Velocity:", aVelClone, aVelClone.normalize());
+    //console.log("set Ang Velocity:", aVelClone, aVelClone.normalize());
   }
 
   addShape(geoList: {shape: CANNON.Shape, offset: CANNON.Vec3, orientation: CANNON.Quaternion}[], object: PhysicsObjectState, mass: number, onDelete?: OnDeleteBehaviour) {
@@ -264,14 +264,16 @@ export class PhysicsEngine {
       onDelete: this.getOnDelete(onDelete) || this.defaultOnDelete
     });
     this.addCannonObject(physicsBody);
-    console.log('Shape Added: ', objectID, mass, object.entity,
-      PhysicsEngine.rescaleUnit(object.position.x),
-      PhysicsEngine.rescaleUnit(object.position.y),
-      PhysicsEngine.rescaleUnit(object.position.z),
-      object.quaternion.x,
-      object.quaternion.y,
-      object.quaternion.z,
-      object.quaternion.w);
+    console.info('Shape Added: ID:', objectID,
+      ', mass:', mass.toFixed(2),
+      ', entity:', object.entity,
+      ',x:', PhysicsEngine.rescaleUnit(object.position.x).toFixed(2),
+      'y:', PhysicsEngine.rescaleUnit(object.position.y).toFixed(2),
+      'z:', PhysicsEngine.rescaleUnit(object.position.z).toFixed(2),
+      'rx:', object.quaternion.x.toFixed(2),
+      'ry:', object.quaternion.y.toFixed(2),
+      'rz:', object.quaternion.z.toFixed(2),
+      'rw:', object.quaternion.w.toFixed(2));
   }
   private getOnDelete(type: OnDeleteBehaviour): (obj: PhysicsObject) => boolean {
     switch (type) {
