@@ -165,10 +165,9 @@ export class PhysicsState extends Schema {
             }
     }
     addPlayerFigure(): number {
-        const rot = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, -Math.PI / 2));
         const id = this.getNewId();
         const pos = new Vector(this.startPoint.x, this.startPoint.y, this.startPoint.z);
-        const quat = new Quaternion(rot.x, rot.y, rot.z, rot.w);
+        const quat = new Quaternion(0, 0, 0, 1);
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, PhysicsEntity.figure, PhysicsEntityVariation.default);
         this.objects.set(String(id), obj);
         this.loader.load(this.physicsEngine, obj, PhysicsEntity.figure, PhysicsEntityVariation.default);
@@ -188,12 +187,12 @@ export class PhysicsState extends Schema {
         if (this.diceObj !== undefined) {
             const physObj = this.physicsEngine.getPhysicsObjectByID(this.diceObj.objectIDPhysics);
             // console.log(physObj.physicsBody.getLinearVelocity().length(), physObj.physicsBody.getAngularVelocity().length());
-            if (physObj.physicsBody.velocity.norm() < 1 && physObj.physicsBody.angularVelocity.norm() < 1 * Math.PI) {
+            if (physObj.physicsBody.velocity.norm() < .01 && physObj.physicsBody.angularVelocity.norm() < 1 * Math.PI) {
                 if (!this.diceNoMotion) {
                     this.diceNoMotion = true;
                     return false;
                 }
-            } else if (physObj.physicsBody.velocity.norm() > 10 || physObj.physicsBody.angularVelocity.norm() > 10 * Math.PI) {
+            } else if (physObj.physicsBody.velocity.norm() > .1 || physObj.physicsBody.angularVelocity.norm() > 10 * Math.PI) {
                 this.diceNoMotion = false;
             }
         }
