@@ -29,7 +29,6 @@ export class PhysicsEngine {
   private maxSubSteps = 10;
   private lastTime;
   private lastLog;
-
   private iterations = 0;
   private sumOfIterations = 0;
 
@@ -91,7 +90,7 @@ export class PhysicsEngine {
     this.world.addContactMaterial(dice_figure);
   }
   updatePhysics() {
-    const time = Date.now();//performance.now(); //Date.now();
+    const time = Date.now();
     if (this.lastTime != undefined) {
       const dt = (time - this.lastTime) / 3000;
       this.lastTime = time;

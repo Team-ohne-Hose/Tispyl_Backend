@@ -156,9 +156,8 @@ export class EntityLoader {
                                 offset: new CANNON.Vec3(0, 0, 0),
                                 orientation: new CANNON.Quaternion(0, 0, 0, 1)});
                             EntityLoader.geometries.diceDefault = geoList;
-
                         }
-                        return EntityLoader.geometries.diceDefault;*/
+                        return EntityLoader.geometries.diceDefault;
                         break;
                 }
                 break;
@@ -178,7 +177,7 @@ export class EntityLoader {
                                 orientation: new CANNON.Quaternion(0, 0, 0, 1)})
                             EntityLoader.geometries.figureDefault = geoList;
                         }
-                        return EntityLoader.geometries.figureDefault;*/
+                        return EntityLoader.geometries.figureDefault;
                         break;
                 }
                 break;
