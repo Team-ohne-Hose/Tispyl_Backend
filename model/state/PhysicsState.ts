@@ -141,32 +141,32 @@ export class PhysicsState extends Schema {
     handlePhysicsCommand(cmd: PhysicsCommand) {
         // console.log('PCMD: ', cmd.subType, cmd['objectID']);
         //console.log(`physics objects ${JSON.stringify(this.objects)}`);
-            switch (cmd.subType) {
-                case PhysicsCommandType.remove:
-                    this.removePhysicsObject(cmd.objectID);
-                    break;
-                case PhysicsCommandType.kinematic:
-                    this.setKinematic(cmd.objectID, cmd.kinematic);
-                    break;
-                case PhysicsCommandType.position:
-                    this.setPosition(cmd.objectID, cmd.positionX, cmd.positionY, cmd.positionZ);
-                    break;
-                case PhysicsCommandType.quaternion:
-                    this.setRotationQuat(cmd.objectID, cmd.quaternionX, cmd.quaternionY, cmd.quaternionZ, cmd.quaternionW);
-                    break;
-                case PhysicsCommandType.velocity:
-                    this.setVelocity(cmd.objectID, cmd.velX, cmd.velY, cmd.velZ);
-                    break;
-                case PhysicsCommandType.angularVelocity:
-                    this.setAngularVelocity(cmd.objectID, cmd.angularX, cmd.angularY, cmd.angularZ);
-                    break;
-                case PhysicsCommandType.wakeAll:
-                    this.physicsEngine.wakeAll();
-                    break;
-                default:
-                    console.error('PhysicsCommand not recognised', cmd);
-                    break;
-            }
+        switch (cmd.subType) {
+            case PhysicsCommandType.remove:
+                this.removePhysicsObject(cmd.objectID);
+                break;
+            case PhysicsCommandType.kinematic:
+                this.setKinematic(cmd.objectID, cmd.kinematic);
+                break;
+            case PhysicsCommandType.position:
+                this.setPosition(cmd.objectID, cmd.positionX, cmd.positionY, cmd.positionZ);
+                break;
+            case PhysicsCommandType.quaternion:
+                this.setRotationQuat(cmd.objectID, cmd.quaternionX, cmd.quaternionY, cmd.quaternionZ, cmd.quaternionW);
+                break;
+            case PhysicsCommandType.velocity:
+                this.setVelocity(cmd.objectID, cmd.velX, cmd.velY, cmd.velZ);
+                break;
+            case PhysicsCommandType.angularVelocity:
+                this.setAngularVelocity(cmd.objectID, cmd.angularX, cmd.angularY, cmd.angularZ);
+                break;
+            case PhysicsCommandType.wakeAll:
+                this.physicsEngine.wakeAll();
+                break;
+            default:
+                console.error('PhysicsCommand not recognised', cmd);
+                break;
+        }
     }
     addPlayerFigure(): number {
         const id = this.getNewId();
@@ -207,20 +207,20 @@ export class PhysicsState extends Schema {
         const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize();
         const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize();
         diceOrientationUp.applyQuaternion(new THREE.Quaternion(
-            this.diceObj.quaternion.x,
-            this.diceObj.quaternion.y,
-            this.diceObj.quaternion.z,
-            this.diceObj.quaternion.w));
+          this.diceObj.quaternion.x,
+          this.diceObj.quaternion.y,
+          this.diceObj.quaternion.z,
+          this.diceObj.quaternion.w));
         diceOrientationLeft.applyQuaternion(new THREE.Quaternion(
-            this.diceObj.quaternion.x,
-            this.diceObj.quaternion.y,
-            this.diceObj.quaternion.z,
-            this.diceObj.quaternion.w));
+          this.diceObj.quaternion.x,
+          this.diceObj.quaternion.y,
+          this.diceObj.quaternion.z,
+          this.diceObj.quaternion.w));
         diceOrientationFwd.applyQuaternion(new THREE.Quaternion(
-            this.diceObj.quaternion.x,
-            this.diceObj.quaternion.y,
-            this.diceObj.quaternion.z,
-            this.diceObj.quaternion.w));
+          this.diceObj.quaternion.x,
+          this.diceObj.quaternion.y,
+          this.diceObj.quaternion.z,
+          this.diceObj.quaternion.w));
 
         let diceNumber = -1;
         if (diceOrientationUp.y >= this.sqrtHalf) {

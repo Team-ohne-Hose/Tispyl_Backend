@@ -29,8 +29,6 @@ export class PhysicsEngine {
   private maxSubSteps = 10;
   private lastTime;
   private lastLog;
-  private iterations = 0;
-  private sumOfIterations = 0;
 
   private iterations = 0;
   private sumOfIterations = 0;
@@ -295,15 +293,7 @@ export class PhysicsEngine {
   }
   private respawnOnDelete(obj: PhysicsObject): boolean {
     // console.log("deleting with default: " + obj.objectIdTHREE);
-<<<<<<< HEAD
-<<<<<<< HEAD
     obj.physicsBody.position.set( 0, 0.15, 0);
-=======
-    obj.physicsBody.position.set( 0, 15, 0);
->>>>>>> added Cannon as new Physics Engine
-=======
-    obj.physicsBody.position.set( 0, 0.15, 0);
->>>>>>> tweaked Cannon Physics to match a reasonable behavior
     obj.physicsBody.velocity.set(0, 0, 0);
     return true;
   }

@@ -145,11 +145,6 @@ export class EntityLoader {
             case PhysicsEntity.dice:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
-                        const halfExtends = new CANNON.Vec3( // model has Scale 2x2x2 at 0
-                            1,
-                            1,
-                            1);
-                        return new CANNON.Box(halfExtends);
                         if (EntityLoader.geometries.diceDefault === undefined) {
                             const geoList: {shape: CANNON.Shape, offset: CANNON.Vec3, orientation: CANNON.Quaternion}[] = [];
                             geoList.push({shape: new CANNON.Box(new CANNON.Vec3(0.01, 0.01, 0.01)),
@@ -164,7 +159,6 @@ export class EntityLoader {
             case PhysicsEntity.figure:
                 switch (variant) {
                     case PhysicsEntityVariation.default:
-                        return new CANNON.Cylinder(1.9, 2.16, 0.64, 14);
                         if (EntityLoader.geometries.figureDefault === undefined) {
                             const geoList: {shape: CANNON.Shape, offset: CANNON.Vec3, orientation: CANNON.Quaternion}[] = [];
                             const cylinderShape = new CANNON.Cylinder(PhysicsEngine.rescaleUnit(1.9), PhysicsEngine.rescaleUnit(2.16), PhysicsEngine.rescaleUnit(0.64), 14);
@@ -208,9 +202,9 @@ export class EntityLoader {
     }
     private async loadDiceDefault(engine: PhysicsEngine, object: PhysicsObjectState): Promise<void> {
         engine.addShape(await this.loadGeometry(PhysicsEntity.dice, PhysicsEntityVariation.default),
-            object,
-            this.constantProperties.dice.default.mass,
-            this.constantProperties.dice.default.behavior);
+          object,
+          this.constantProperties.dice.default.mass,
+          this.constantProperties.dice.default.behavior);
         return;
         return;
     }
@@ -224,9 +218,9 @@ export class EntityLoader {
     }
     private async loadFigureDefault(engine: PhysicsEngine, object: PhysicsObjectState, color?: number): Promise<void> {
         engine.addShape(await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default),
-            object,
-            this.constantProperties.figure.default.mass,
-            this.constantProperties.figure.default.behavior);
+          object,
+          this.constantProperties.figure.default.mass,
+          this.constantProperties.figure.default.behavior);
         return;
     }
 
@@ -241,9 +235,9 @@ export class EntityLoader {
     }
     private async loadOtherDefault(engine: PhysicsEngine, object: PhysicsObjectState, color?: number) {
         engine.addShape(await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default),
-            object,
-            this.constantProperties.figure.default.mass,
-            this.constantProperties.figure.default.behavior);
+          object,
+          this.constantProperties.figure.default.mass,
+          this.constantProperties.figure.default.behavior);
         return;
     }
 }
