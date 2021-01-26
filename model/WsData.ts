@@ -68,12 +68,12 @@ export type GameMessage = GameAction |
   GameUpdateDrinkBuddies;
 
 type actionTypes = GameActionType.none |
-    GameActionType.advanceRound |
-    GameActionType.advanceAction |
-    GameActionType.advanceTurn |
-    GameActionType.reverseTurnOrder |
-    GameActionType.refreshData |
-    GameActionType.setStartingCondition;
+  GameActionType.advanceRound |
+  GameActionType.advanceAction |
+  GameActionType.advanceTurn |
+  GameActionType.reverseTurnOrder |
+  GameActionType.refreshData |
+  GameActionType.setStartingCondition;
 
 export interface GameAction {
   type: MessageType.GAME_MESSAGE;
@@ -87,9 +87,9 @@ export interface GameSetTile {
   tileId: number;
 }
 export interface GameShowTile {
-    type: MessageType.GAME_MESSAGE;
-    action: GameActionType.showTile;
-    tile: number;
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.showTile;
+  tile: number;
 }
 export interface GameReadyProperty {
   type: MessageType.GAME_MESSAGE;
@@ -103,9 +103,9 @@ export interface GameAddRule {
   author: string;
 }
 export interface GameDeleteRule {
-    type: MessageType.GAME_MESSAGE;
-    action: GameActionType.deleteRule;
-    id: number;
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.deleteRule;
+  id: number;
 }
 export interface GameDiceRoll {
   type: MessageType.GAME_MESSAGE;
@@ -173,14 +173,16 @@ export enum PhysicsCommandType {
   position,
   quaternion,
   velocity,
-  angularVelocity
+  angularVelocity,
+  wakeAll
 }
 export type PhysicsCommand = PhysicsCommandKinematic |
-    PhysicsCommandRemove    |
-    PhysicsCommandPosition  |
-    PhysicsCommandQuat      |
-    PhysicsCommandVelocity  |
-    PhysicsCommandAngular;
+  PhysicsCommandRemove    |
+  PhysicsCommandPosition  |
+  PhysicsCommandQuat      |
+  PhysicsCommandVelocity  |
+  PhysicsCommandAngular   |
+  PhysicsCommandWakeAll;
 export enum PhysicsEntity {
   dice,
   figure
@@ -231,6 +233,10 @@ export interface PhysicsCommandAngular {
   angularX: number;
   angularY: number;
   angularZ: number;
+}
+export interface PhysicsCommandWakeAll {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.wakeAll;
 }
 
 export type DebugCommand = ListPhysics;

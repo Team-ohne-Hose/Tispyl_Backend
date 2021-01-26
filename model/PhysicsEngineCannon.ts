@@ -234,6 +234,11 @@ export class PhysicsEngine {
     const aVelClone = pBody.angularVelocity.clone();
     //console.log("set Ang Velocity:", aVelClone, aVelClone.normalize());
   }
+  wakeAll() {
+    this.physicsObjects.forEach((pObj: PhysicsObject) => {
+      if (pObj.physicsBody.sleepState === CANNON.Body.SLEEPING) pObj.physicsBody.wakeUp();
+    });
+  }
 
   addShape(geoList: {shape: CANNON.Shape, offset: CANNON.Vec3, orientation: CANNON.Quaternion}[], object: PhysicsObjectState, mass: number, onDelete?: OnDeleteBehaviour) {
     const objectID = object.objectIDPhysics;

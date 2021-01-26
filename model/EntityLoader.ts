@@ -202,9 +202,9 @@ export class EntityLoader {
     }
     private async loadDiceDefault(engine: PhysicsEngine, object: PhysicsObjectState): Promise<void> {
         engine.addShape(await this.loadGeometry(PhysicsEntity.dice, PhysicsEntityVariation.default),
-            object,
-            this.constantProperties.dice.default.mass,
-            this.constantProperties.dice.default.behavior);
+          object,
+          this.constantProperties.dice.default.mass,
+          this.constantProperties.dice.default.behavior);
         return;
         return;
     }
@@ -218,9 +218,9 @@ export class EntityLoader {
     }
     private async loadFigureDefault(engine: PhysicsEngine, object: PhysicsObjectState, color?: number): Promise<void> {
         engine.addShape(await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default),
-            object,
-            this.constantProperties.figure.default.mass,
-            this.constantProperties.figure.default.behavior);
+          object,
+          this.constantProperties.figure.default.mass,
+          this.constantProperties.figure.default.behavior);
         return;
     }
 
@@ -235,9 +235,9 @@ export class EntityLoader {
     }
     private async loadOtherDefault(engine: PhysicsEngine, object: PhysicsObjectState, color?: number) {
         engine.addShape(await this.loadGeometry(PhysicsEntity.figure, PhysicsEntityVariation.default),
-            object,
-            this.constantProperties.figure.default.mass,
-            this.constantProperties.figure.default.behavior);
+          object,
+          this.constantProperties.figure.default.mass,
+          this.constantProperties.figure.default.behavior);
         return;
     }
 }
