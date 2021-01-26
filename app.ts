@@ -165,7 +165,7 @@ async function run() {
     });
 
     server.once("listening", () => {
-        colyseus.attach( server );
+        colyseus.attach( {server: server} );
         console.info(`Listening on ${ protocol }://${ config.host }:${ config.port }`);
     });
 
