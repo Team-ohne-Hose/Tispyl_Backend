@@ -173,14 +173,16 @@ export enum PhysicsCommandType {
   position,
   quaternion,
   velocity,
-  angularVelocity
+  angularVelocity,
+  wakeAll
 }
 export type PhysicsCommand = PhysicsCommandKinematic |
     PhysicsCommandRemove    |
     PhysicsCommandPosition  |
     PhysicsCommandQuat      |
     PhysicsCommandVelocity  |
-    PhysicsCommandAngular;
+    PhysicsCommandAngular   |
+    PhysicsCommandWakeAll;
 export enum PhysicsEntity {
   dice,
   figure
@@ -231,6 +233,10 @@ export interface PhysicsCommandAngular {
   angularX: number;
   angularY: number;
   angularZ: number;
+}
+export interface PhysicsCommandWakeAll {
+  type: MessageType.PHYSICS_MESSAGE;
+  subType: PhysicsCommandType.wakeAll;
 }
 
 export type DebugCommand = ListPhysics;

@@ -7,7 +7,8 @@ import {
     PhysicsCommand,
     PhysicsCommandType,
     PhysicsEntity,
-    PhysicsEntityVariation, WsData
+    PhysicsEntityVariation,
+    WsData
 } from "../WsData";
 import {EntityLoader} from "../EntityLoader";
 import * as THREE from 'three';
@@ -158,6 +159,9 @@ export class PhysicsState extends Schema {
                     break;
                 case PhysicsCommandType.angularVelocity:
                     this.setAngularVelocity(cmd.objectID, cmd.angularX, cmd.angularY, cmd.angularZ);
+                    break;
+                case PhysicsCommandType.wakeAll:
+                    this.physicsEngine.wakeAll();
                     break;
                 default:
                     console.error('PhysicsCommand not recognised', cmd);
