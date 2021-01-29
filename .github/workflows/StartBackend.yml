@@ -17,7 +17,7 @@ jobs:
     - name: Run SSH command for starting production backend
       uses: garygrossgarten/github-action-ssh@v0.6.3
       with:
-        command: "cd ~/BrettSpiel_Backend && nohup npm run runProd &"
+        command: "cd ~/BrettSpiel_Backend && nohup npm run runProd && echo STARTED"
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
