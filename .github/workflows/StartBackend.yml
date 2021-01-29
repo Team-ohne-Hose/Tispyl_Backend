@@ -17,7 +17,7 @@ jobs:
     - name: Run SSH command for starting production backend
       uses: garygrossgarten/github-action-ssh@v0.6.3
       with:
-        command: cd ~/BrettSpiel_Backend && kill $(netstat -atulpn | grep '41920.*LISTEN.*[0-9]*/node' | sed -rn 's/^.*\s([0-9]*)\/node.*$/\1/p') && nohup npm run runProd & && echo STARTED
+        command: cd ~/BrettSpiel_Backend && kill $(netstat -atulpn | grep '41920.*LISTEN.*[0-9]*/node' | sed -rn 's/^.*\s([0-9]*)\/node.*$/\1/p') && nohup npm run runProd &
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
