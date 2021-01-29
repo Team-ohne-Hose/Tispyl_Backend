@@ -28,11 +28,14 @@ jobs:
     # Runs a single command using the runners shell
     - name: Send greeting
       run: echo "Hello ${{ github.event.inputs.name }}"
+  remoteLS:
+    runs-on: ubuntu-latest
+    steps:
     - name: Run SSH command
       uses: garygrossgarten/github-action-ssh@v0.6.3
       with:
         command: ls -a
-        host: ${{ secrets.HOST }}
+        host: tispyl.uber.space
         username: tispyl
         passphrase: ${{ secrets.PASSPHRASE }}
         privateKey: ${{ secrets.PRIVATE_KEY}}
