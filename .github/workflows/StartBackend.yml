@@ -17,7 +17,7 @@ jobs:
     - name: Run SSH command for stopping old process
       uses: garygrossgarten/github-action-ssh@v0.6.3
       with:
-        command: $(netstat -atulpn | grep '41920.*LISTEN.*[0-9]*/node' | sed -rn 's/^.*\s([0-9]*)\/node.*$/\1/p') | kill
+        command: lsof -t -i:41920 | ifne kill $(lsof -t -i:41920)
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
