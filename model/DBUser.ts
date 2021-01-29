@@ -1,5 +1,19 @@
 
 export class DBUser {
+
+    constructor (ln, dn, ph) {
+        this.user_id = NaN;
+        this.login_name = ln;
+        this.display_name = dn;
+        this.password_hash = ph;
+
+        this.user_creation = '';
+        this.time_played = 0;
+        this.last_figure = '';
+        this.is_connected = false;
+        this.is_dev = false;
+    }
+
     user_id: number;
     login_name: string;
     display_name: string;

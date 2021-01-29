@@ -7,6 +7,7 @@ import multer from "multer";
 import * as fs from "fs";
 import {ImagePreparer} from "./helpers/ImagePreparer";
 import * as path from "path";
+import {AuthRouter} from "./AuthRouter";
 
 
 export class ApiRouter {
@@ -197,6 +198,7 @@ export class ApiRouter {
         });
 
         this.router.post('/users/login', async (req, res) => {
+            console.warn("Route /user/login is deprecated. Remove this call immediately!")
             MariaDAO.findLogin(req.body.login_name, req.body.password_hash).then( suc => {
                 if ((suc as any[]).length === 0 ) {
                     new APIResponse(res, 404, 'Credentials did not match.').send()
@@ -210,6 +212,8 @@ export class ApiRouter {
                 console.error(err)
             });
         });
+
+        this.router.use('/users', new AuthRouter().router);
     }
 }
 

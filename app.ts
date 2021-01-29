@@ -1,6 +1,7 @@
 import express from 'express';
 import {Request, Response} from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import fs from 'fs';
 import { createServer as createHttpsServer } from 'https';
 import { createServer as createHttpServer } from 'http';
@@ -16,6 +17,7 @@ import {MariaDAO} from "./MariaDAO";
 import * as http from "http";
 import {Connection} from "mariadb";
 import betterLogging, {expressMiddleware} from 'better-logging';
+import { customAuth } from "./helpers/CustomAuthMiddleware";
 
 betterLogging(console, {
     saveToFile: __dirname + `/logs/${Date.now()}.log`,
@@ -51,14 +53,12 @@ function fetchConfig() {
 /** Builds an http server that hosts the actual application depending on the current environment */
 function buildHTTPServer(config, expressApp): {server, protocol} {
     if (config.env === 'prod') {
-        console.info(`Instantiating HTTPS Server on top of the Express base. (Cert: ${backendConfig.tlsKey}, Key: ${backendConfig.tlsCert}).`);
         let s = createHttpsServer({
             key: fs.readFileSync(backendConfig.tlsKey),
             cert: fs.readFileSync(backendConfig.tlsCert)
         }, expressApp)
         return { server: s, protocol: 'https'};
     } else if (config.env === 'dev') {
-        console.info(`Instantiating HTTP Server on top of the Express base. DEVELOPMENT ONLY!`);
         return { server: createHttpServer(expressApp), protocol: 'http' };
     }
 }
@@ -66,6 +66,7 @@ function buildHTTPServer(config, expressApp): {server, protocol} {
 /** Configures the express framework for handling http requests, routing and multipart body parsing. */
 function configureExpressApplication() {
     const express_app = express();
+    express_app.use(cookieParser());
     express_app.use(cors());
     express_app.use(express.json());
     express_app.use(express.urlencoded({ extended: true }));
@@ -99,6 +100,8 @@ function configureExpressApplication() {
             order: 5,
         }
     }));
+
+    express_app.use(customAuth);
 
     console.log("Attaching Express routes for:\n\t/colyseus\n\t/api\n\t/");
     express_app.use('/colyseus', monitor());
