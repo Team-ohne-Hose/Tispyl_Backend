@@ -87,7 +87,7 @@ export class MariaDAO {
     }
 
     static async findLogin(login_name: string, password_hash: string): Promise<any> {
-        return MariaDAO.withConnection(c => c.query(
+        return MariaDAO.withConnection( (c: Connection) => c.query(
             {
                 namedPlaceholders: true,
                 sql: `SELECT * FROM ${MariaDAO.schemaName}.User WHERE login_name=:ln AND password_hash=:ph`
