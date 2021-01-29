@@ -39,6 +39,5 @@ jobs:
         command: ls -a
         host: tispyl.uber.space
         username: tispyl
-        passphrase: ${{ secrets.PASSPHRASE }}
-        privateKey: ${{ secrets.PRIVATE_KEY}}
+        privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
         tryKeyboard : true 
