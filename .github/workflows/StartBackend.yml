@@ -33,6 +33,6 @@ jobs:
       with:
         command: ls -a
         host: ${{ secrets.HOST }}
-        username: garygrossgarten
+        username: tispyl
         passphrase: ${{ secrets.PASSPHRASE }}
         privateKey: ${{ secrets.PRIVATE_KEY}}
