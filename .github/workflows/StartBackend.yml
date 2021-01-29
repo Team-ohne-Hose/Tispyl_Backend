@@ -27,7 +27,9 @@ jobs:
     steps:
     # Runs a single command using the runners shell
     - name: Send greeting
-      run: echo "Hello ${{ github.event.inputs.name }}"
+      env:
+      - HOSTNAME: ${{ secrets.HOSTNAME }}
+      run: echo "Hello ${{ github.event.inputs.name }}, host is $"
   remoteLS:
     runs-on: ubuntu-latest
     steps:
