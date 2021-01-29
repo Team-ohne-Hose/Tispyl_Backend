@@ -36,3 +36,4 @@ jobs:
         username: tispyl
         passphrase: ${{ secrets.PASSPHRASE }}
         privateKey: ${{ secrets.PRIVATE_KEY}}
+        tryKeyboard : true 
