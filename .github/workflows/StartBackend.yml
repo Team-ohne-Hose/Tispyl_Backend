@@ -17,7 +17,7 @@ jobs:
     - name: Run SSH command for stopping old process
       uses: garygrossgarten/github-action-ssh@v0.6.3
       with:
-        command: 'lsof -t -i:41920 | ifne kill $(lsof -t -i:41920)'
+        command: $(lsof -t -i:41920 | ifne kill $(lsof -t -i:41920)) # launch in subbash to make sure it runs on the remote
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
