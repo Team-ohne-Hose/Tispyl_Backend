@@ -25,7 +25,7 @@ jobs:
     - name: Run SSH command for starting production backend
       uses: garygrossgarten/github-action-ssh@release
       with:
-        command: $(~/BrettSpiel_Backend/deployment/startServer.sh)
+        command: ~/BrettSpiel_Backend/deployment/startServer.sh
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
