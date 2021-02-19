@@ -13,11 +13,20 @@ on:
 jobs:
   startRemote:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - name: Run SSH command for stopping old process
       uses: garygrossgarten/github-action-ssh@release
       with:
         command: ~/BrettSpiel_Backend/deployment/shutdownServer.sh
+        host: tispyl.uber.space
+        username: tispyl
+        privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
+        
+    - name: Run SSH command for updating and building backend
+      uses: garygrossgarten/github-action-ssh@release
+      with:
+        command: ~/BrettSpiel_Backend/deployment/buildServer.sh
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
