@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Run SSH command for stopping old process
-      uses: garygrossgarten/github-action-ssh@v0.6.3
+      uses: garygrossgarten/github-action-ssh@release
       with:
         command: ~/BrettSpiel_Backend/deployment/shutdownServer.sh
         host: tispyl.uber.space
@@ -23,9 +23,9 @@ jobs:
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
         
     - name: Run SSH command for starting production backend
-      uses: garygrossgarten/github-action-ssh@v0.6.3
+      uses: garygrossgarten/github-action-ssh@release
       with:
-        command: ~/BrettSpiel_Backend/deployment/startServer.sh
+        command: $(~/BrettSpiel_Backend/deployment/startServer.sh)
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
