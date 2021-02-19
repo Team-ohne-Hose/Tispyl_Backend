@@ -17,14 +17,15 @@ jobs:
     - name: Run SSH command for stopping old process
       uses: garygrossgarten/github-action-ssh@v0.6.3
       with:
-        command: $(lsof -t -i:41920 | ifne kill $(lsof -t -i:41920)) # launch in subbash to make sure it runs on the remote
+        command: ~/BrettSpiel_Backend/deployment/shutdownServer.sh
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
+        
     - name: Run SSH command for starting production backend
       uses: garygrossgarten/github-action-ssh@v0.6.3
       with:
-        command: cd ~/BrettSpiel_Backend && nohup npm run runProd &
+        command: ~/BrettSpiel_Backend/deployment/startServer.sh
         host: tispyl.uber.space
         username: tispyl
         privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
