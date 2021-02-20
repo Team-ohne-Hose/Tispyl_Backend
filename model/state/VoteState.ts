@@ -34,6 +34,11 @@ export class VoteEntry extends Schema {
     }
 }
 
+export enum VoteStage {
+    IDLE = 1,
+    CREATION,
+    VOTE
+}
 export class VoteConfiguration extends Schema {
 
     @type('string')
@@ -48,9 +53,6 @@ export class VoteConfiguration extends Schema {
     @type( [ VoteEntry ] )
     votingOptions = new ArraySchema<VoteEntry>();
 
-    @type('boolean')
-    hasConcluded: boolean = false;
-
     build(title: string, author: string, eligibilities: Map<string, boolean>, options: VoteEntry[]): VoteConfiguration {
         const config = new VoteConfiguration();
         config.title = title;
@@ -64,13 +66,13 @@ export class VoteConfiguration extends Schema {
         return config;
     }
 
-    static fromObject(obj: VoteConfiguration): VoteConfiguration {
-        const conf = new VoteConfiguration();
-        conf.title = obj.title;
-        conf.author = obj.author;
-        obj.ineligibles.map(i => conf.ineligibles.push(i));
-        obj.votingOptions.map(e => conf.votingOptions.push(VoteEntry.fromObject(e)));
-        return conf;
+    fromObject(obj: VoteConfiguration) {
+        this.title = obj.title;
+        this.author = obj.author;
+        this.ineligibles.clear();
+        obj.ineligibles.map(i => this.ineligibles.push(i));
+        this.votingOptions.clear();
+        obj.votingOptions.map(e => this.votingOptions.push(VoteEntry.fromObject(e)));
     }
 
 }
@@ -94,17 +96,17 @@ export class VoteResult {
 
 export class VoteState extends Schema {
 
-  @type('boolean')
-  creationInProgress: boolean = false;
+    @type('string')
+    author: string = '';
 
-  @type('string')
-  author: string = '';
+    @type('number')
+    voteStage: number = VoteStage.IDLE;
 
-  @type( VoteConfiguration )
-  activeVoteConfiguration: VoteConfiguration = undefined;
+    @type( VoteConfiguration )
+    activeVoteConfiguration: VoteConfiguration = new VoteConfiguration();
 
-  @type('number')
-  closingIn: number = -1;
+    @type('number')
+    closingIn: number = -1;
 }
 
 

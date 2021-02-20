@@ -14,7 +14,7 @@ import {PhysicsObjectState} from "./model/state/PhysicsState";
 import {MariaDAO} from "./MariaDAO";
 import {ItemManager} from "./model/ItemManager";
 import {Link} from "./model/state/Link";
-import {VoteConfiguration, VoteEntry} from "./model/state/VoteState";
+import {VoteConfiguration, VoteEntry, VoteStage} from "./model/state/VoteState";
 
 export class GameRoom extends Room<GameState> {
 
@@ -251,7 +251,7 @@ export class GameRoom extends Room<GameState> {
                         if (this.state.voteState.closingIn <= 0) {
                             this.state.voteState.activeVoteConfiguration.votingOptions
                                 .sort((a: VoteEntry, b: VoteEntry) => { return b.castVotes.length - a.castVotes.length });
-                            this.state.voteState.activeVoteConfiguration.hasConcluded = true;
+                            this.state.voteState.voteStage = VoteStage.IDLE;
                             this.state.voteState.author = '';
                             clearInterval(intervalId);
                         }
@@ -260,20 +260,20 @@ export class GameRoom extends Room<GameState> {
                     break;
                 case GameActionType.startVoteCreation:
                     if (data.author === player.displayName) {
-                        this.state.voteState.activeVoteConfiguration = undefined;
-                        this.state.voteState.creationInProgress = true;
+                        this.state.voteState.voteStage = VoteStage.CREATION;
                         this.state.voteState.author = data.author;
                     }
                     break;
                 case GameActionType.beginVotingSession:
-                    this.state.voteState.activeVoteConfiguration = VoteConfiguration.fromObject(data.config);
-                    this.state.voteState.creationInProgress = false;
+                    this.state.voteState.activeVoteConfiguration.fromObject(data.config);
+                    this.state.voteState.voteStage = VoteStage.VOTE;
                     break;
                 case GameActionType.playerCastVote:
                     this.state.voteState.activeVoteConfiguration.votingOptions.forEach((ve: VoteEntry, i: number) => {
                         ve.castVotes = ve.castVotes.filter( e => !(e === player.displayName) );
                         if ( i === data.elementIndex) { ve.castVotes.push(player.displayName) }
                     });
+                    this.state.voteState.activeVoteConfiguration.triggerAll();
                     break;
                 case GameActionType.addDrinkbuddies:
                     let l = new Link();
