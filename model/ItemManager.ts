@@ -5,7 +5,7 @@ export class ItemManager {
     0: {id: 0, weight: 1, name: 'Wirt', desc: 'Verteile 3 Rationen', executeType: 0},
     1: {id: 1, weight: 1, name: 'Diplomat', desc: 'Stelle eine Regel auf', executeType: 0},
     2: {id: 2, weight: 1, name: 'Klon', desc: 'Ein anderer Mitspieler muss deine Aufgabe auch machen', executeType: 0},
-    3: {id: 3, weight: 1, name: 'Beste Freunde Gulasch', desc: 'Suche dir einen Trinkbuddy', executeType: 0},
+    3: {id: 3, weight: 1, name: 'Beste Freunde Gulasch', desc: 'Wähle einen Trinkbuddy', executeType: 0},
     4: {id: 4, weight: 1, name: 'Todfeind', desc: 'Löse eine Trinkbuddy Verbindung auf', executeType: 0},
     5: {id: 5, weight: 1, name: 'Joker', desc: 'Führe ein beliebiges Feld aus', executeType: 0},
     6: {id: 6, weight: 1, name: 'MOAB', desc: 'Alle rücken 10 Felder zurück', executeType: 0},

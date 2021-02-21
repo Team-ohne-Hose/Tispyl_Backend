@@ -36,8 +36,8 @@ export class VoteEntry extends Schema {
 
 export enum VoteStage {
     IDLE = 1,
-    CREATION,
-    VOTE
+    CREATION = 2,
+    VOTE = 3
 }
 export class VoteConfiguration extends Schema {
 
@@ -97,13 +97,13 @@ export class VoteResult {
 export class VoteState extends Schema {
 
     @type('string')
-    author: string = '';
+    author: string = 'undefined';
 
     @type('number')
     voteStage: number = VoteStage.IDLE;
 
     @type( VoteConfiguration )
-    activeVoteConfiguration: VoteConfiguration = new VoteConfiguration();
+    voteConfiguration: VoteConfiguration = new VoteConfiguration();
 
     @type('number')
     closingIn: number = -1;

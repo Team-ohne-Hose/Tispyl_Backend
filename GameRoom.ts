@@ -249,7 +249,7 @@ export class GameRoom extends Room<GameState> {
                     this.state.voteState.closingIn = 5;
                     const intervalId = setInterval(() => {
                         if (this.state.voteState.closingIn <= 0) {
-                            this.state.voteState.activeVoteConfiguration.votingOptions
+                            this.state.voteState.voteConfiguration.votingOptions
                                 .sort((a: VoteEntry, b: VoteEntry) => { return b.castVotes.length - a.castVotes.length });
                             this.state.voteState.voteStage = VoteStage.IDLE;
                             this.state.voteState.author = '';
@@ -265,15 +265,15 @@ export class GameRoom extends Room<GameState> {
                     }
                     break;
                 case GameActionType.beginVotingSession:
-                    this.state.voteState.activeVoteConfiguration.fromObject(data.config);
+                    this.state.voteState.voteConfiguration.fromObject(data.config);
                     this.state.voteState.voteStage = VoteStage.VOTE;
                     break;
                 case GameActionType.playerCastVote:
-                    this.state.voteState.activeVoteConfiguration.votingOptions.forEach((ve: VoteEntry, i: number) => {
+                    this.state.voteState.voteConfiguration.votingOptions.forEach((ve: VoteEntry, i: number) => {
                         ve.castVotes = ve.castVotes.filter( e => !(e === player.displayName) );
                         if ( i === data.elementIndex) { ve.castVotes.push(player.displayName) }
                     });
-                    this.state.voteState.activeVoteConfiguration.triggerAll();
+                    this.state.voteState.voteConfiguration.triggerAll();
                     break;
                 case GameActionType.addDrinkbuddies:
                     let l = new Link();
