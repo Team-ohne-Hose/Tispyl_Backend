@@ -1,5 +1,5 @@
-import {Schema, ArraySchema, MapSchema, type} from '@colyseus/schema';
-import {Player} from "./Player";
+import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { Player } from "./Player";
 
 
 export class VoteEntry extends Schema {
@@ -13,7 +13,7 @@ export class VoteEntry extends Schema {
     @type('string')
     text: string = undefined;
 
-    @type([ 'string' ])
+    @type(['string'])
     castVotes = new ArraySchema<string>();
 
     static fromPlayer(p: Player): VoteEntry {
@@ -42,10 +42,10 @@ export class VoteConfiguration extends Schema {
     @type('string')
     title: string;
 
-    @type( [ 'string' ] )
-    ineligibles =  new ArraySchema<string>();
+    @type(['string'])
+    ineligibles = new ArraySchema<string>();
 
-    @type( [ VoteEntry ] )
+    @type([VoteEntry])
     votingOptions = new ArraySchema<VoteEntry>();
 
     @type('boolean')
@@ -83,7 +83,7 @@ export class VoteResult {
     readonly ineligibles: string[];
     readonly timestamp: Date;
 
-    constructor( title: string, author: string, options: VoteEntry[], ineligibles: string[] = [] ) {
+    constructor(title: string, author: string, options: VoteEntry[], ineligibles: string[] = []) {
         this.title = title;
         this.author = author;
         this.entries = options;
@@ -94,17 +94,17 @@ export class VoteResult {
 
 export class VoteState extends Schema {
 
-  @type('boolean')
-  creationInProgress: boolean = false;
+    @type('boolean')
+    creationInProgress: boolean = false;
 
-  @type('string')
-  author: string = '';
+    @type('string')
+    author: string = '';
 
-  @type( VoteConfiguration )
-  activeVoteConfiguration: VoteConfiguration = undefined;
+    @type(VoteConfiguration)
+    activeVoteConfiguration: VoteConfiguration = undefined;
 
-  @type('number')
-  closingIn: number = -1;
+    @type('number')
+    closingIn: number = -1;
 }
 
 
