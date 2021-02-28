@@ -170,7 +170,7 @@ export class GameRoom extends Room<GameState> {
             const msg: ChatMessage = {
                 type: MessageType.CHAT_MESSAGE,
                 message: data.message,
-                authorLoginName: player.displayName
+                authorLoginName: player.loginName
             };
             this.broadcast(msg.type, msg);
         }
