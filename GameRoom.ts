@@ -1,5 +1,5 @@
-import {Client, Room} from "colyseus";
-import {Actions, GameState} from "./model/state/GameState";
+import { Client, Room } from "colyseus";
+import { Actions, GameState } from "./model/state/GameState";
 import {
     AchievementMessageType,
     ChatMessage,
@@ -9,12 +9,12 @@ import {
     PlayerMessageType,
     WsData
 } from "./model/WsData";
-import {Player} from "./model/state/Player";
-import {PhysicsObjectState} from "./model/state/PhysicsState";
-import {MariaDAO} from "./MariaDAO";
-import {ItemManager} from "./model/ItemManager";
-import {Link} from "./model/state/Link";
-import {VoteConfiguration, VoteEntry} from "./model/state/VoteState";
+import { Player } from "./model/state/Player";
+import { PhysicsObjectState } from "./model/state/PhysicsState";
+import { MariaDAO } from "./MariaDAO";
+import { ItemManager } from "./model/ItemManager";
+import { Link } from "./model/state/Link";
+import { VoteConfiguration, VoteEntry } from "./model/state/VoteState";
 
 export class GameRoom extends Room<GameState> {
 
@@ -65,13 +65,13 @@ export class GameRoom extends Room<GameState> {
     onDispose(): void | Promise<any> {
         console.log(`[onDispose] Destructing physicsState`);
         MariaDAO.insertGameLog(this.metadata.lobbyName,
-          this.metadata.author,
-          this.metadata.skin,
-          this.metadata.randomizeTiles,
-          this.createDate.toISOString().slice(0, 19).replace('T', ' '),
-          new Date().toISOString().slice(0, 19).replace('T', ' '),
-          this.state.playerList.size,
-          this.state.round);
+            this.metadata.author,
+            this.metadata.skin,
+            this.metadata.randomizeTiles,
+            this.createDate.toISOString().slice(0, 19).replace('T', ' '),
+            new Date().toISOString().slice(0, 19).replace('T', ' '),
+            this.state.playerList.size,
+            this.state.round);
 
         this.state.physicsState.destructState();
         return undefined;
@@ -91,16 +91,16 @@ export class GameRoom extends Room<GameState> {
 
         let joinedMsg: string = '';
         if (isNewPlayer) {
-            joinedMsg = `${this.state.playerList[options.login].displayName}(${client.id}) joined the game`;
+            joinedMsg = `${this.state.playerList[options.login].displayName} joined the game`;
             player.figureId = this.state.physicsState.addPlayerFigure();
 
         } else {
-            joinedMsg = `${this.state.playerList[options.login].displayName}(${client.id}) reconnected to the game`;
+            joinedMsg = `${this.state.playerList[options.login].displayName} reconnected to the game`;
 
             // remove potential timeout
             if (player.gracePeriodTimeout !== undefined) {
-              global.clearTimeout(player.gracePeriodTimeout);
-              player.gracePeriodTimeout = undefined;
+                global.clearTimeout(player.gracePeriodTimeout);
+                player.gracePeriodTimeout = undefined;
             }
 
             // re-enable figure old game
@@ -113,7 +113,7 @@ export class GameRoom extends Room<GameState> {
         }
 
         player.isConnected = true;
-        this.broadcast(MessageType.JOIN_MESSAGE, { type: MessageType.JOIN_MESSAGE, message: joinedMsg});
+        this.broadcast(MessageType.JOIN_MESSAGE, { type: MessageType.JOIN_MESSAGE, message: joinedMsg });
         return undefined;
     }
 
@@ -175,11 +175,12 @@ export class GameRoom extends Room<GameState> {
             this.broadcast(msg.type, msg);
         }
     }
-    onJoinMessage(client: Client, data: WsData) {
-        if (data.type === MessageType.JOIN_MESSAGE) {
 
-        }
+    onJoinMessage(client: Client, data: WsData) {
+        if (data.type === MessageType.JOIN_MESSAGE) {}
     }
+
+
     onGameMessage(client: Client, data: WsData) {
         console.log(`got GameMessage: ${JSON.stringify(data)}`);
         const player = this.state.getPlayerByClientId(client.id);
@@ -271,8 +272,8 @@ export class GameRoom extends Room<GameState> {
                     break;
                 case GameActionType.playerCastVote:
                     this.state.voteState.activeVoteConfiguration.votingOptions.forEach((ve: VoteEntry, i: number) => {
-                        ve.castVotes = ve.castVotes.filter( e => !(e === player.displayName) );
-                        if ( i === data.elementIndex) { ve.castVotes.push(player.displayName) }
+                        ve.castVotes = ve.castVotes.filter(e => !(e === player.displayName));
+                        if (i === data.elementIndex) { ve.castVotes.push(player.displayName) }
                     });
                     break;
                 case GameActionType.addDrinkbuddies:
@@ -302,7 +303,7 @@ export class GameRoom extends Room<GameState> {
                     }
                     this.state.playerList.triggerAll();
                     this.state.playerList.forEach(p => {
-                       p.triggerAll();
+                        p.triggerAll();
                     });
                     console.log('got Figure: ', player.figureModel, data.playerModel, data.playerId);
                     break;
