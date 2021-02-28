@@ -1,7 +1,7 @@
-import {MapSchema, Schema, type} from "@colyseus/schema";
-import {PlayerModel} from "../WsData";
+import { MapSchema, Schema, type } from "@colyseus/schema";
+import { PlayerModel } from "../WsData";
 import Timeout = NodeJS.Timeout;
-import {PhysicsObjectState} from "./PhysicsState";
+import { PhysicsObjectState } from "./PhysicsState";
 
 export class Player extends Schema {
     @type('string')
@@ -24,7 +24,7 @@ export class Player extends Schema {
     isConnected: boolean;
     @type('boolean')
     hasLeft: boolean;
-    @type( {map: 'number'} )
+    @type({ map: 'number' })
     itemList: MapSchema<number> = new MapSchema<number>();
 
     gracePeriodTimeout: Timeout;
@@ -47,7 +47,8 @@ export class Player extends Schema {
         this.currentTile = tile;
     }
 
-    addItem(itemId: number) {;
+    addItem(itemId: number) {
+        ;
         this.itemList[itemId] = this.itemList[itemId] + 1 || 1;
     }
     useItem(itemId: number): boolean {

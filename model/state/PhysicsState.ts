@@ -1,5 +1,5 @@
-import {MapSchema, Schema, type} from "@colyseus/schema";
-import {PhysicsEngine, PhysicsObject} from "../PhysicsEngineCannon";
+import { MapSchema, Schema, type } from "@colyseus/schema";
+import { PhysicsEngine, PhysicsObject } from "../PhysicsEngineCannon";
 import {
     GameActionType,
     GameDiceRoll,
@@ -10,7 +10,7 @@ import {
     PhysicsEntityVariation,
     WsData
 } from "../WsData";
-import {EntityLoader} from "../EntityLoader";
+import { EntityLoader } from "../EntityLoader";
 import * as THREE from 'three';
 
 export enum OnDeleteBehaviour {
@@ -100,7 +100,7 @@ export class PhysicsObjectState extends Schema {
 
 }
 export class PhysicsState extends Schema {
-    @type({ map: PhysicsObjectState})
+    @type({ map: PhysicsObjectState })
     objects = new MapSchema<PhysicsObjectState>();
 
     private diceObj: PhysicsObjectState;
@@ -111,7 +111,7 @@ export class PhysicsState extends Schema {
     private readonly physicsEngine: PhysicsEngine;
     private idCounter = 1;
     private loader: EntityLoader;
-    private readonly startPoint = {x: 38.708, y: 10, z: -36.776};
+    private readonly startPoint = { x: 38.708, y: 10, z: -36.776 };
     private broadcastNewMessage: (type: MessageType, cmd: WsData) => void;
     private onDiceThrow: (number: number) => void;
 
@@ -207,20 +207,20 @@ export class PhysicsState extends Schema {
         const diceOrientationLeft = new THREE.Vector3(1, 0, 0).normalize();
         const diceOrientationFwd = new THREE.Vector3(0, 0, 1).normalize();
         diceOrientationUp.applyQuaternion(new THREE.Quaternion(
-          this.diceObj.quaternion.x,
-          this.diceObj.quaternion.y,
-          this.diceObj.quaternion.z,
-          this.diceObj.quaternion.w));
+            this.diceObj.quaternion.x,
+            this.diceObj.quaternion.y,
+            this.diceObj.quaternion.z,
+            this.diceObj.quaternion.w));
         diceOrientationLeft.applyQuaternion(new THREE.Quaternion(
-          this.diceObj.quaternion.x,
-          this.diceObj.quaternion.y,
-          this.diceObj.quaternion.z,
-          this.diceObj.quaternion.w));
+            this.diceObj.quaternion.x,
+            this.diceObj.quaternion.y,
+            this.diceObj.quaternion.z,
+            this.diceObj.quaternion.w));
         diceOrientationFwd.applyQuaternion(new THREE.Quaternion(
-          this.diceObj.quaternion.x,
-          this.diceObj.quaternion.y,
-          this.diceObj.quaternion.z,
-          this.diceObj.quaternion.w));
+            this.diceObj.quaternion.x,
+            this.diceObj.quaternion.y,
+            this.diceObj.quaternion.z,
+            this.diceObj.quaternion.w));
 
         let diceNumber = -1;
         if (diceOrientationUp.y >= this.sqrtHalf) {
@@ -248,7 +248,8 @@ export class PhysicsState extends Schema {
             const msg: GameDiceRoll = {
                 type: MessageType.GAME_MESSAGE,
                 action: GameActionType.diceRolled,
-                roll: num };
+                roll: num
+            };
             this.broadcastNewMessage(msg.type, msg);
         }
     }
