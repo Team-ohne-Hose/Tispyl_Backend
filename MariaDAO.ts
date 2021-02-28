@@ -2,6 +2,7 @@ import * as mariadb from 'mariadb'
 import {DBUser} from "./model/DBUser";
 import credentials from "./configs/credentials.json";
 import {Connection, Pool, PoolConnection} from "mariadb";
+import { deprecate } from 'util';
 
 export class MariaDAO {
 
