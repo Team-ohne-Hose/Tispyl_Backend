@@ -1,9 +1,11 @@
 import { getRepository, Repository } from "typeorm"
 import express, { Request, Response } from 'express';
+import { validate, ValidationError } from "class-validator";
 import User from "../entities/user"
 import { LoginOptions } from "../types/LoginOptions";
 import Authentication from "../module/authentication";
 import { JwtToken } from "../types/JwtToken";
+import { RegisterOptions } from "../types/RegisterOptions";
 
 class UserController {
 
@@ -31,6 +33,79 @@ class UserController {
         res.send({ status: "ok", data: users });
     }
 
+    public static async createUser(req: Request, res: Response): Promise<void> {
+        const registerOptions: RegisterOptions = req.body;
+        const userRepository: Repository<User> = getRepository(User)
+
+        let user = await userRepository.findOne({ where: [{ login_name: registerOptions.username }] })
+
+        /** 
+         * Check if user with given loginname already exists. Send a bad
+         * request (400) if the validation fails.
+         */
+        if (user) {
+            res.status(400).send({
+                status: 'bad_request',
+                error: 'The username is already in use.'
+            });
+            return;
+        }
+
+        /** 
+         * Validate if given parameters are all given. Send a bad
+         * request (400) if the validation fails.
+         */
+        if (!registerOptions.displayname || !registerOptions.password || !registerOptions.username) {
+            res.status(400).send({
+                status: 'bad_request',
+                error: 'The request body is missing some attributes.'
+            });
+            return;
+        }
+
+        const hashedPassword: string = await Authentication.hashPassword(registerOptions.password);
+
+        user = new User(registerOptions.username, registerOptions.displayname, hashedPassword)
+
+        /** 
+         * Validate if the new user object is correct. Send a bad
+         * request (400) if the validation fails.
+         */
+        const validationErrors: ValidationError = await validate(user)
+        if (validationErrors.length > 0) {
+            // Delete unnecessary error information.
+            delete validationErrors[0].target;
+
+            console.error("Validation failed. Errors: ", validationErrors);
+            res.status(400).send({
+                status: "bad_request",
+                errors: validationErrors
+            });
+            return;
+        }
+
+        /**
+         * Try to save the user inside the database. Send a internal
+         * server error (500) if something goes wrong.
+         */
+        try {
+            await userRepository.save(user);
+        } catch (error) {
+            console.error("Data couldn't be saved into the database. Error: ", error);
+            res.status(500).send({
+                status: "internal_server_error",
+                error: "Error while saving the user inside the database."
+            });
+            return;
+        }
+
+        // Delete the hashed password from the response.
+        delete user.password_hash;
+
+        res.send({ status: "ok", data: user });
+
+    }
+
     public static async deleteUser(req: Request, res: Response): Promise<void> {
 
         const jwtToken: JwtToken = await Authentication.getJwtToken(req)
@@ -50,10 +125,12 @@ class UserController {
             });
             return;
         }
-
-        // Check if user is the user of the token
         
-        if(user.user_id !== jwtToken.id) {
+        /** 
+         * Validate the owner of the jwt-token. Send a forbidden
+         * (403) if the validation fails.
+         */
+        if (user.user_id !== jwtToken.id) {
             res.status(403).send({
                 status: 'forbidden',
                 error: 'Wrong JWT token was provided.'
