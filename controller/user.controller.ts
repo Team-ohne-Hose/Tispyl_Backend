@@ -2,7 +2,8 @@ import { getRepository, Repository } from "typeorm"
 import express, { Request, Response } from 'express';
 import User from "../entities/user"
 import { LoginOptions } from "../types/LoginOptions";
-import Authorization from "../module/authentication";
+import Authentication from "../module/authentication";
+import { JwtToken } from "../types/JwtToken";
 
 class UserController {
 
@@ -31,7 +32,8 @@ class UserController {
     }
 
     public static async deleteUser(req: Request, res: Response): Promise<void> {
-        //TODO: JWT-Token
+
+        const jwtToken: JwtToken = await Authentication.getJwtToken(req)
 
         const user_id: number = Number(req.params.user_id)
         const userRepository: Repository<User> = getRepository(User);
@@ -41,14 +43,21 @@ class UserController {
         try {
             user = await userRepository.findOneOrFail(user_id)
         } catch (error) {
-            console.error(
-                "Couldn't find the requested user. Error: ", error
-            );
+            console.error("Couldn't find the requested user. Error: ", error);
             res.status(404).send({
                 status: "not_found",
                 error: "Couldn't find a user with the user id: " + user_id + "!"
             });
             return;
+        }
+
+        // Check if user is the user of the token
+        
+        if(user.user_id !== jwtToken.id) {
+            res.status(403).send({
+                status: 'forbidden',
+                error: 'Wrong JWT token was provided.'
+            })
         }
 
         //TODO: Delete Avatar
@@ -62,7 +71,7 @@ class UserController {
 
         let loginOptions: LoginOptions = req.body
 
-        
+
         try {
             user = await userRepository.findOneOrFail({
                 select: ["user_id", "display_name", "login_name", "password_hash"],
@@ -83,7 +92,7 @@ class UserController {
 
         // Create JwtToken
         console.log(user)
-        const jwtToken: string = await Authorization.generateJwtToken({
+        const jwtToken: string = await Authentication.generateJwtToken({
             id: user.user_id,
             username: user.login_name
         });

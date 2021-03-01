@@ -3,7 +3,7 @@ import { JwtToken, JwtUserData } from "../types/JwtToken"
 import jwt from "jsonwebtoken";
 import * as hash from 'object-hash';
 
-class Authorization {
+class Authentication {
 
     /** Number of salt rounds for hashing the password. */
     private static SALT_ROUNDS: number = 10
@@ -13,12 +13,12 @@ class Authorization {
     }
 
     public static async generateJwtToken(userData: JwtUserData): Promise<string> {
-        return jwt.sign(userData, process.env.JWT_SECRET, Authorization.JWT_OPTIONS);
+        return jwt.sign(userData, process.env.JWT_SECRET, Authentication.JWT_OPTIONS);
     }
 
     public static async verifyJwtToken(token: string): Promise<JwtToken | null> {
         try {
-            return jwt.verify(token, process.env.JTW_SECRET) as JwtToken
+            return jwt.verify(token, process.env.JWT_SECRET) as JwtToken
         } catch (error) {
             console.warn("JWT token couldn't be verified!");
             return null;
@@ -47,6 +47,8 @@ class Authorization {
     public static async verifyAccess(req: Request, res: Response, next: NextFunction): Promise<any> {
         const jwtToken: string = req.get("Authorization");
 
+        console.log(jwtToken)
+
         // Check if a authorization header is set.
         if (jwtToken === undefined) {
             return res.status(401).send({
@@ -55,7 +57,7 @@ class Authorization {
         }
 
         // If the header exists check the JWT token.
-        const validToken: JwtToken = await Authorization.verifyJwtToken(jwtToken);
+        const validToken: JwtToken = await Authentication.verifyJwtToken(jwtToken);
 
         if (!validToken) {
             return res.status(401).send({status: "unauthorized"});
@@ -67,4 +69,4 @@ class Authorization {
 
 }
 
-export default Authorization;
+export default Authentication;

@@ -190,6 +190,14 @@ const startServer = () => {
     // JSON body parser
     requestHandler.use(express.json());
     requestHandler.use("/api", globalRouter);
+    requestHandler.use('/', (req, res, next) => { res.sendFile(__dirname + "/views/index.html") });
+
+    
+    // FALLBACK ERROR HANDLERS
+
+    requestHandler.use(ErrorHandler.logErrors);
+    requestHandler.use(ErrorHandler.handleKnownError);
+    requestHandler.use(ErrorHandler.handleUnexpectedError);
 
     DatabaseConnection.connect()
         .then((connection: Connection) => {
