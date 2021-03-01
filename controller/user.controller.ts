@@ -34,33 +34,25 @@ class UserController {
     }
 
     public static async getSingleUser(req: Request, res: Response): Promise<void> {
-        const reqBody = req.body
+        const loginName = req.params.login_name
         const userRepository: Repository<User> = getRepository(User)
 
-        if (reqBody.login_name === undefined) {
-            res.status(400).send({
-                status: 'bad_request',
-                error: 'Empty username.'
-            });
-            return;
-        }
-
+        let user: User = null;
 
         try {
-            let user = await userRepository.findOneOrFail({ where: [{ login_name: reqBody.login_name }] })
-            // Delete the hashed password from the response.
-            delete user.password_hash;
-
-            res.send({ status: "ok", data: user });
-
+            user = await userRepository.findOneOrFail({ where: [{ login_name: loginName }] })
         } catch (error) {
-            console.log("There is no user with login_name" + reqBody.login_name)
-            res.status(400).send({
-                status: "bad_request",
+            console.log("There is no user with login_name" + loginName)
+            res.status(404).send({
+                status: "not_found",
                 error: "No user found."
             });
             return;
         }
+        
+        // Delete the hashed password from the response.
+        delete user.password_hash;
+        res.send({ status: "ok", data: user });
     }
 
     public static async createUser(req: Request, res: Response): Promise<void> {
