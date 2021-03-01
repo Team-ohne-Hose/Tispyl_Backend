@@ -33,6 +33,36 @@ class UserController {
         res.send({ status: "ok", data: users });
     }
 
+    public static async getSingleUser(req: Request, res: Response): Promise<void> {
+        const reqBody = req.body
+        const userRepository: Repository<User> = getRepository(User)
+
+        if (reqBody.login_name === undefined) {
+            res.status(400).send({
+                status: 'bad_request',
+                error: 'Empty username.'
+            });
+            return;
+        }
+
+
+        try {
+            let user = await userRepository.findOneOrFail({ where: [{ login_name: reqBody.login_name }] })
+            // Delete the hashed password from the response.
+            delete user.password_hash;
+
+            res.send({ status: "ok", data: user });
+
+        } catch (error) {
+            console.log("There is no user with login_name" + reqBody.login_name)
+            res.status(400).send({
+                status: "bad_request",
+                error: "No user found."
+            });
+            return;
+        }
+    }
+
     public static async createUser(req: Request, res: Response): Promise<void> {
         const registerOptions: RegisterOptions = req.body;
         const userRepository: Repository<User> = getRepository(User)
@@ -71,7 +101,7 @@ class UserController {
          * Validate if the new user object is correct. Send a bad
          * request (400) if the validation fails.
          */
-        const validationErrors: ValidationError = await validate(user)
+        const validationErrors: ValidationError[] = await validate(user)
         if (validationErrors.length > 0) {
             // Delete unnecessary error information.
             delete validationErrors[0].target;
@@ -125,7 +155,7 @@ class UserController {
             });
             return;
         }
-        
+
         /** 
          * Validate the owner of the jwt-token. Send a forbidden
          * (403) if the validation fails.

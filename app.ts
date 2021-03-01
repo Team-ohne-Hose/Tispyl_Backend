@@ -188,7 +188,9 @@ const startServer = () => {
     const requestHandler: express.Application = express();
 
     // JSON body parser
+
     requestHandler.use(express.json());
+    requestHandler.use(cors());
     requestHandler.use("/api", globalRouter);
     requestHandler.use('/', (req, res, next) => { res.sendFile(__dirname + "/views/index.html") });
 
