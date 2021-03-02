@@ -117,9 +117,56 @@ class UserController {
 
     }
 
-    public static async deleteUser(req: Request, res: Response): Promise<void> {
+    public static async updateUser(req: Request, res: Response): Promise<void> {
+        const jwtToken: JwtToken = await Authentication.getJwtToken(req);
+        const loginName: string = String(req.query.login_name);
+        const userRepository: Repository<User> = getRepository(User);
 
-        const jwtToken: JwtToken = await Authentication.getJwtToken(req)
+        let user: User = null;
+
+        try {
+            user = await userRepository.findOneOrFail({ where: { login_name: loginName } })
+        } catch (error) {
+            console.log(`Couldn't find the requested user. Error: ${error}`)
+            new APIResponse(res, 404, {}, [{
+                'userMessage': "Sorry, the requested resource does not exist",
+                'internalMessage': 'No user found in the database',
+            }]).send()
+            return;
+        }
+
+        if (!jwtToken || !UserController.verifyUser(req, user)) {
+            new APIResponse(res, 403, {}, [{
+                'userMessage': "Permission not granted.",
+                'internalMessage': 'Wrong JWT token was provided.',
+            }]).send();
+            return;
+        }
+
+        const { display_name, last_figure } = req.body
+
+        if (display_name !== undefined)
+            user.display_name = display_name
+
+        if (last_figure !== undefined)
+            user.last_figure = last_figure
+
+        try {
+            await userRepository.save(user);
+        } catch (error) {
+            console.error("User couldn't be saved into the database. Error: ", error);
+            new APIResponse(res, 500, {}, [{
+                'userMessage': "Save user is not possible.",
+                'internalMessage': 'User can not save into the database.',
+            }]).send();
+            return;
+        }
+
+        delete user.password_hash;
+        new APIResponse(res, 200, { user: user }).send();
+    }
+
+    public static async deleteUser(req: Request, res: Response): Promise<void> {
 
         const user_id: number = Number(req.params.user_id)
         const userRepository: Repository<User> = getRepository(User);
@@ -134,12 +181,11 @@ class UserController {
             return;
         }
 
-        /** 
-         * Validate the owner of the jwt-token. Send a forbidden
-         * (403) if the validation fails.
-         */
-        if (user.user_id !== jwtToken.id) {
-            new APIResponse(res, 403, {}, ['Wrong JWT token was provided.']).send()
+        if (!UserController.verifyUser(req, user)) {
+            new APIResponse(res, 403, {}, [{
+                'userMessage': "Permission not granted.",
+                'internalMessage': 'Wrong JWT token was provided.',
+            }]);
             return;
         }
 
@@ -176,19 +222,23 @@ class UserController {
             username: user.login_name
         });
 
-        new APIResponse(res, 200, {jwtToken}).send()
+        new APIResponse(res, 200, { jwtToken }).send()
     }
 
     public static async addPlaytime(login_name: string, minutes: number) {
         const userRepository: Repository<User> = getRepository(User)
         try {
-            let userToUpdate = await userRepository.findOne({ where: [{ login_name: login_name }]})
+            let userToUpdate = await userRepository.findOne({ where: [{ login_name: login_name }] })
             userToUpdate.time_played += minutes
             await userRepository.save(userToUpdate);
         } catch (error) {
             console.log("Error:", error);
         }
+    }
 
+    private static async verifyUser(req: Request, user: User) {
+        const jwtToken: JwtToken = await Authentication.getJwtToken(req)
+        return (user.user_id === jwtToken.id)
     }
 }
 

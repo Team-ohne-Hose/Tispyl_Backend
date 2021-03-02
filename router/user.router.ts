@@ -8,8 +8,10 @@ const userRouter: Router = Router({mergeParams: true});
 
 userRouter.get("/", UserController.getSingleUser);
 userRouter.get("/all", Authentication.verifyAccess, UserController.getAllUsers);
-userRouter.post("/", UserController.createUser)
-userRouter.delete("/:userId", UserController.deleteUser)
-userRouter.post("/token", UserController.loginUser)
+userRouter.post("/", UserController.createUser);
+userRouter.patch("/", UserController.updateUser);
+
+userRouter.delete("/:userId", UserController.deleteUser);
+userRouter.post("/token", UserController.loginUser);
 
 export default userRouter;
