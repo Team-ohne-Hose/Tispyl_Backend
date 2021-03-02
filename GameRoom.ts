@@ -15,6 +15,9 @@ import { MariaDAO } from "./MariaDAO";
 import { ItemManager } from "./model/ItemManager";
 import { Link } from "./model/state/Link";
 import { VoteConfiguration, VoteEntry } from "./model/state/VoteState";
+import UserController from "./controller/user.controller";
+import GameController from "./controller/game.controller";
+import Game from "./entities/game";
 
 export class GameRoom extends Room<GameState> {
 
@@ -64,14 +67,19 @@ export class GameRoom extends Room<GameState> {
 
     onDispose(): void | Promise<any> {
         console.log(`[onDispose] Destructing physicsState`);
-        MariaDAO.insertGameLog(this.metadata.lobbyName,
+
+        const game = new Game(
+            this.metadata.lobbyName,
             this.metadata.author,
             this.metadata.skin,
             this.metadata.randomizeTiles,
-            this.createDate.toISOString().slice(0, 19).replace('T', ' '),
-            new Date().toISOString().slice(0, 19).replace('T', ' '),
+            this.createDate,
+            new Date(),
             this.state.playerList.size,
-            this.state.round);
+            this.state.round
+        )
+
+        GameController.saveGameLog(game)
 
         this.state.physicsState.destructState();
         return undefined;
@@ -120,9 +128,8 @@ export class GameRoom extends Room<GameState> {
     onLeave(client: Client, consented?: boolean): void | Promise<any> {
         const player = this.state.getPlayerByClientId(client.id);
 
-        const minPlayed = (new Date().getTime() - player.joined.getTime()) / 60000;
-        MariaDAO.addPlaytime(player.loginName, minPlayed);
-
+        const minutesToAdd = (new Date().getTime() - player.joined.getTime()) / 60000;
+        UserController.addPlaytime(player.loginName, minutesToAdd)
 
         console.log(`[onLeave] Client left the room: ${player.loginName}`);
         if (player !== undefined) {
@@ -177,7 +184,7 @@ export class GameRoom extends Room<GameState> {
     }
 
     onJoinMessage(client: Client, data: WsData) {
-        if (data.type === MessageType.JOIN_MESSAGE) {}
+        if (data.type === MessageType.JOIN_MESSAGE) { }
     }
 
 

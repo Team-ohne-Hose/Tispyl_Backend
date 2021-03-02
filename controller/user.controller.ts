@@ -6,6 +6,7 @@ import { LoginOptions } from "../types/LoginOptions";
 import Authentication from "../module/authentication";
 import { JwtToken } from "../types/JwtToken";
 import { RegisterOptions } from "../types/RegisterOptions";
+import { APIResponse } from "../model/APIResponse";
 
 class UserController {
 
@@ -34,7 +35,7 @@ class UserController {
     }
 
     public static async getSingleUser(req: Request, res: Response): Promise<void> {
-        const loginName = req.params.login_name
+        const loginName = req.query.login_name
         const userRepository: Repository<User> = getRepository(User)
 
         let user: User = null;
@@ -43,21 +44,28 @@ class UserController {
             user = await userRepository.findOneOrFail({ where: [{ login_name: loginName }] })
         } catch (error) {
             console.log("There is no user with login_name" + loginName)
-            res.status(404).send({
-                status: "not_found",
-                error: "No user found."
-            });
+            new APIResponse(res, 404, {}, ['There is no user with given username.']).send();
             return;
         }
-        
+
         // Delete the hashed password from the response.
         delete user.password_hash;
-        res.send({ status: "ok", data: user });
+        new APIResponse(res, 200, user).send()
+        //res.send({ status: "ok", data: user });
     }
 
     public static async createUser(req: Request, res: Response): Promise<void> {
         const registerOptions: RegisterOptions = req.body;
         const userRepository: Repository<User> = getRepository(User)
+
+        /** 
+         * Validate if given parameters are all given. Send a bad
+         * request (400) if the validation fails.
+         */
+        if (!registerOptions.displayname || !registerOptions.password || !registerOptions.username) {
+            new APIResponse(res, 400, {}, ['Invalid request body.']).send();
+            return;
+        }
 
         let user = await userRepository.findOne({ where: [{ login_name: registerOptions.username }] })
 
@@ -66,26 +74,11 @@ class UserController {
          * request (400) if the validation fails.
          */
         if (user) {
-            res.status(400).send({
-                status: 'bad_request',
-                error: 'The username is already in use.'
-            });
+            new APIResponse(res, 400, {}, ['The given username is already in use.']).send();
             return;
         }
 
-        /** 
-         * Validate if given parameters are all given. Send a bad
-         * request (400) if the validation fails.
-         */
-        if (!registerOptions.displayname || !registerOptions.password || !registerOptions.username) {
-            res.status(400).send({
-                status: 'bad_request',
-                error: 'The request body is missing some attributes.'
-            });
-            return;
-        }
-
-        const hashedPassword: string = await Authentication.hashPassword(registerOptions.password);
+        const hashedPassword: string = Authentication.hashPassword(registerOptions.password);
 
         user = new User(registerOptions.username, registerOptions.displayname, hashedPassword)
 
@@ -95,14 +88,13 @@ class UserController {
          */
         const validationErrors: ValidationError[] = await validate(user)
         if (validationErrors.length > 0) {
+
             // Delete unnecessary error information.
             delete validationErrors[0].target;
 
             console.error("Validation failed. Errors: ", validationErrors);
-            res.status(400).send({
-                status: "bad_request",
-                errors: validationErrors
-            });
+            new APIResponse(res, 400, {}, validationErrors).send();
+
             return;
         }
 
@@ -113,18 +105,15 @@ class UserController {
         try {
             await userRepository.save(user);
         } catch (error) {
-            console.error("Data couldn't be saved into the database. Error: ", error);
-            res.status(500).send({
-                status: "internal_server_error",
-                error: "Error while saving the user inside the database."
-            });
+            console.error("User couldn't be saved into the database. Error: ", error);
+            new APIResponse(res, 500, {}, ['Error while saving the user inside the database.']).send();
             return;
         }
 
         // Delete the hashed password from the response.
         delete user.password_hash;
 
-        res.send({ status: "ok", data: user });
+        new APIResponse(res, 200, user).send();
 
     }
 
@@ -141,10 +130,7 @@ class UserController {
             user = await userRepository.findOneOrFail(user_id)
         } catch (error) {
             console.error("Couldn't find the requested user. Error: ", error);
-            res.status(404).send({
-                status: "not_found",
-                error: "Couldn't find a user with the user id: " + user_id + "!"
-            });
+            new APIResponse(res, 404, {}, ["Couldn't find a user with given id."]).send()
             return;
         }
 
@@ -153,15 +139,13 @@ class UserController {
          * (403) if the validation fails.
          */
         if (user.user_id !== jwtToken.id) {
-            res.status(403).send({
-                status: 'forbidden',
-                error: 'Wrong JWT token was provided.'
-            })
+            new APIResponse(res, 403, {}, ['Wrong JWT token was provided.']).send()
+            return;
         }
 
         //TODO: Delete Avatar
 
-        res.send({ status: "ok" });
+        new APIResponse(res, 200, {}).send()
     }
 
     public static async loginUser(req: Request, res: Response): Promise<void> {
@@ -179,11 +163,7 @@ class UserController {
 
         } catch (error) {
             console.error("Couldn't find a user with the following username: " + loginOptions.username + "\n" + "Error: ", error);
-
-            res.status(404).send({
-                status: "not_found",
-                error: "Couldn't find a user with the provided username."
-            });
+            new APIResponse(res, 404, {}, ["Couldn't find a user with the provided username."]).send();
             return;
         }
 
@@ -196,7 +176,18 @@ class UserController {
             username: user.login_name
         });
 
-        res.send({ status: "ok", data: jwtToken });
+        new APIResponse(res, 200, {jwtToken}).send()
+    }
+
+    public static async addPlaytime(login_name: string, minutes: number) {
+        const userRepository: Repository<User> = getRepository(User)
+        try {
+            let userToUpdate = await userRepository.findOne({ where: [{ login_name: login_name }]})
+            userToUpdate.time_played += minutes
+            await userRepository.save(userToUpdate);
+        } catch (error) {
+            console.log("Error:", error);
+        }
 
     }
 }
