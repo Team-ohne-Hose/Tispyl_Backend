@@ -12,9 +12,9 @@
         "experimentalDecorators": true,
         "sourceMap": false,
         "resolveJsonModule": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "emitDecoratorMetadata": true
     },
-    "include": [
-      "**/*.ts"
-    ]
+    "include": [ "**/*.ts" ],
+    "exclude": [ "node_modules" ]
 }

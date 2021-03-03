@@ -95,7 +95,6 @@ export class VoteResult {
 }
 
 export class VoteState extends Schema {
-
     @type('string')
     author: string = 'undefined';
 

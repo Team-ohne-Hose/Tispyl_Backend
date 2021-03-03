@@ -1,5 +1,4 @@
 import express from 'express';
-import {Request, Response} from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import fs from 'fs';
@@ -7,17 +6,20 @@ import { createServer as createHttpsServer } from 'https';
 import { createServer as createHttpServer } from 'http';
 import { Server } from 'colyseus';
 import { monitor } from '@colyseus/monitor';
-import { GameRoom} from "./GameRoom";
-import { ApiRouter} from "./ApiRouter";
+import { GameRoom } from "./GameRoom";
+import { ApiRouter } from "./ApiRouter";
 import backendConfig from "./configs/backend-config.json";
 import backendConfigDev from "./configs/backend-config-dev.json";
 import * as yargs from "yargs";
-import {ErrorHandler} from "./helpers/ErrorHandler";
-import {MariaDAO} from "./MariaDAO";
+import { ErrorHandler } from "./helpers/ErrorHandler";
+import { MariaDAO } from "./MariaDAO";
 import * as http from "http";
-import {Connection} from "mariadb";
-import betterLogging, {expressMiddleware} from 'better-logging';
+import betterLogging, { expressMiddleware } from 'better-logging';
 import { customAuth } from "./helpers/CustomAuthMiddleware";
+import DatabaseConnection from './module/database';
+import { Connection } from 'typeorm';
+import Environment from './module/environment';
+import globalRouter from './router/global.router';
 
 betterLogging(console, {
     saveToFile: __dirname + `/logs/${Date.now()}.log`,
@@ -51,14 +53,23 @@ function fetchConfig() {
 }
 
 /** Builds an http server that hosts the actual application depending on the current environment */
-function buildHTTPServer(config, expressApp): {server, protocol} {
-    if (config.env === 'prod') {
+function buildHTTPServer(config, expressApp): { server, protocol } {
+    // if (config.env === 'prod') {
+    //     let s = createHttpsServer({
+    //         key: fs.readFileSync(backendConfig.tlsKey),
+    //         cert: fs.readFileSync(backendConfig.tlsCert)
+    //     }, expressApp)
+    //     return { server: s, protocol: 'https' };
+    // } else if (config.env === 'dev') {
+    //     return { server: createHttpServer(expressApp), protocol: 'http' };
+    // }
+    if (process.env.NODE_ENV === 'production') {
         let s = createHttpsServer({
             key: fs.readFileSync(backendConfig.tlsKey),
             cert: fs.readFileSync(backendConfig.tlsCert)
         }, expressApp)
-        return { server: s, protocol: 'https'};
-    } else if (config.env === 'dev') {
+        return { server: s, protocol: 'https' };
+    } else if (process.env.NODE_ENV === 'development') {
         return { server: createHttpServer(expressApp), protocol: 'http' };
     }
 }
@@ -116,63 +127,145 @@ function configureExpressApplication() {
     return express_app;
 }
 
-/** Establishes the connection between the static MariaDAO object and the database under the configured address.
- * This includes waiting for potential timeouts if the database is not reachable.
- *
- * @param config object including parameters for the database access.
- */
-async function connectToMariaDB(config) {
-    let c: Connection;
-    try {
-        c = await MariaDAO.init(config);
-        MariaDAO.setInitialized();
-    } catch (e) {
-        console.error(`Failed to establish MariaDB connection (code: ${e.code}). Please ensure a running database is available under the expected address. Original Issue:`, { e });
-        process.exit(1);
-    } finally {
-        if (c) await c.end();
-    }
-}
+// /** Establishes the connection between the static MariaDAO object and the database under the configured address.
+//  * This includes waiting for potential timeouts if the database is not reachable.
+//  *
+//  * @param config object including parameters for the database access.
+//  */
+// async function connectToMariaDB(config) {
+//     let c: Connection;
+//     try {
+//         c = await MariaDAO.init(config);
+//         MariaDAO.setInitialized();
+//     } catch (e) {
+//         console.error(`Failed to establish MariaDB connection (code: ${e.code}). Please ensure a running database is available under the expected address. Original Issue:`, { e });
+//         process.exit(1);
+//     } finally {
+//         if (c) await c.end();
+//     }
+// }
 
 /** Driver code and entry point to start the backend */
-async function run() {
+// async function run() {
+// const config = fetchConfig();
+
+//     await connectToMariaDB(config)
+
+//     const app = configureExpressApplication();
+
+//     const { server, protocol } = buildHTTPServer(config, app);
+
+//     /* Building the colyseus server without the express app provided to its constructor. This is a workaround
+//      * to allow us to correctly deal with startup exceptions of the server.
+//      *
+//      * @see https://github.com/colyseus/colyseus/issues/313
+//      */
+//     console.log(`Instantiating Colyseus Server.`);
+//     const colyseus = new Server({noServer: true});
+//     colyseus.define('game', GameRoom);
+//     colyseus.onShutdown(function(){
+//         console.info(`game server is going down.`);
+//     });
+
+//     server.on("error", err => {
+//         if ( err.code === 'EADDRINUSE') {
+//             console.error(`Failed to start the internal server. PORT: ${ config.port } is already in use.`);
+//             console.error("Please ensure the specified port is not used by a different service or a second instance of the Brettspiel_Backend.");
+//             console.error("Original issue:", { err })
+//         } else {
+//             console.error("The HTTP server encountered an unspecified error", { err }, err.code);
+//         }
+//         server.close();
+//     });
+
+//     server.once("listening", () => {
+//         colyseus.attach( {server: server} );
+//         console.info(`Listening on ${ protocol }://${ config.host }:${ config.port }`);
+//     });
+
+//     server.listen(config.port);
+// }
+
+require('dotenv').config();
+console.log(process.env.DB_USER)
+
+const startServer = () => {
+
     const config = fetchConfig();
 
-    await connectToMariaDB(config)
+    // The express object which provides all server functionalities.
+    const requestHandler: express.Application = express();
 
-    const app = configureExpressApplication();
+    // JSON body parser
 
-    const { server, protocol } = buildHTTPServer(config, app);
+    requestHandler.use(express.json());
+    requestHandler.use(cors());
+    requestHandler.use("/api", globalRouter);
+    requestHandler.use('/', (req, res, next) => { res.sendFile(__dirname + "/views/index.html") });
 
-    /* Building the colyseus server without the express app provided to its constructor. This is a workaround
-     * to allow us to correctly deal with startup exceptions of the server.
-     *
-     * @see https://github.com/colyseus/colyseus/issues/313
-     */
-    console.log(`Instantiating Colyseus Server.`);
-    const colyseus = new Server({noServer: true});
-    colyseus.define('game', GameRoom);
-    colyseus.onShutdown(function(){
-        console.info(`game server is going down.`);
-    });
 
-    server.on("error", err => {
-        if ( err.code === 'EADDRINUSE') {
-            console.error(`Failed to start the internal server. PORT: ${ config.port } is already in use.`);
-            console.error("Please ensure the specified port is not used by a different service or a second instance of the Brettspiel_Backend.");
-            console.error("Original issue:", { err })
-        } else {
-            console.error("The HTTP server encountered an unspecified error", { err }, err.code);
-        }
-        server.close();
-    });
+    // FALLBACK ERROR HANDLERS
 
-    server.once("listening", () => {
-        colyseus.attach( {server: server} );
-        console.info(`Listening on ${ protocol }://${ config.host }:${ config.port }`);
-    });
+    requestHandler.use(ErrorHandler.logErrors);
+    requestHandler.use(ErrorHandler.handleKnownError);
+    requestHandler.use(ErrorHandler.handleUnexpectedError);
 
-    server.listen(config.port);
+    DatabaseConnection.connect()
+    .then((connection: Connection) => {
+        console.info("Connected to the database.");
+
+        // const httpServer: http.Server = http.createServer(
+        //     requestHandler
+        // );
+
+        const { server, protocol } = buildHTTPServer(config, requestHandler);   
+        console.log(`Instantiating Colyseus Server.`);
+        const colyseus = new Server({ noServer: true });
+        colyseus.define('game', GameRoom);
+        colyseus.onShutdown(function () {
+            console.info(`game server is going down.`);
+        });
+    
+        server.on("error", err => {
+            if (err.code === 'EADDRINUSE') {
+                console.error(`Failed to start the internal server. PORT: ${config.port} is already in use.`);
+                console.error("Please ensure the specified port is not used by a different service or a second instance of the Brettspiel_Backend.");
+                console.error("Original issue:", { err })
+            } else {
+                console.error("The HTTP server encountered an unspecified error", { err }, err.code);
+            }
+            server.close();
+        });
+    
+        server.once("listening", () => {
+            colyseus.attach({ server: server });
+            console.info(`Listening on ${protocol}://${config.host}:${config.port}`);
+        });
+    
+        server.listen(config.port);
+
+        // httpServer.listen(Environment.SERVER_PORT);
+        // console.info(
+        //     "Successfully started the server.\n" +
+        //     "Server is running on port: " +
+        //     Environment.SERVER_PORT
+        // );
+
+        // SignalHandler.registerSignalHandler(
+        //     connection, httpServer
+        // );
+    })
+    .catch((error: Error) => {
+        console.error(error);
+    }
+    );
 }
 
-run();
+if (require.main === module) {
+    //Environment.setup(); //TODO: Need some more attention
+    startServer();
+}
+
+
+
+//run();

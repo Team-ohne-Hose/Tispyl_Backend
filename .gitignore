@@ -42,5 +42,6 @@ lib/
 filestash/img_*
 
 configs/credentials.json
+.env
 
 logs/

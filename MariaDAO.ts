@@ -2,6 +2,7 @@ import * as mariadb from 'mariadb'
 import {DBUser} from "./model/DBUser";
 import credentials from "./configs/credentials.json";
 import {Connection, Pool, PoolConnection} from "mariadb";
+import { deprecate } from 'util';
 
 export class MariaDAO {
 
@@ -105,7 +106,6 @@ export class MariaDAO {
             {ln: login_name, ph: password_hash, pp: picture_path}
         ));
     }
-
 
     static async getProfilePicture(login_name: string): Promise<any> {
         return await this.withConnection(c => c.query(
