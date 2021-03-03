@@ -1,17 +1,17 @@
-import {Router} from 'express'
+import { Router } from 'express'
 import UserController from '../controller/user.controller'
 import Authentication from '../module/authentication';
 
-const userRouter: Router = Router({mergeParams: true});
+const userRouter: Router = Router({ mergeParams: true });
 
 /** ALL USER ROUTES. */
 
-userRouter.get("/", UserController.getSingleUser);
+userRouter.get("/", Authentication.verifyAccess, UserController.getSingleUser);
 userRouter.get("/all", Authentication.verifyAccess, UserController.getAllUsers);
-userRouter.post("/", UserController.createUser);
-userRouter.patch("/", UserController.updateUser);
+userRouter.post("/", Authentication.verifyAccess, UserController.createUser);
+userRouter.patch("/", Authentication.verifyAccess, UserController.updateUser);
 
-userRouter.delete("/:userId", UserController.deleteUser);
+userRouter.delete("/:userId", Authentication.verifyAccess, UserController.deleteUser);
 userRouter.post("/token", UserController.loginUser);
 
 export default userRouter;

@@ -5,6 +5,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { ImagePreparer } from '../helpers/ImagePreparer';
 import multer from 'multer';
+import { APIResponse } from '../model/APIResponse';
 
 class ProfileController {
 
@@ -50,32 +51,39 @@ class ProfileController {
     }
 
     public static async updateProfilePicture(req: Request, res: Response): Promise<void> {
-
-        // TODO: JwtToken eval
-
-        const loginName = req.query.login_name
+        const loginName = req.body.login_name
 
         const userRepository: Repository<User> = getRepository(User)
-        const user: User | undefined = await userRepository.findOne({ where: [{ login_name: loginName }] })
+        
+        let user: User = null
 
-        const preparedImagePath = await ImagePreparer.prepare(req.file.path)
-        console.log(preparedImagePath)
+        try {
+                user = await userRepository.findOneOrFail({ where: [{ login_name: loginName }] });
+            } catch (error) {
+                console.error("Couldn't find the requested user. Error: ", error);
+                new APIResponse(res, 404, {}, ["Couldn't find a user with the username: " + loginName + "!"]).send()
+                return;
+            }
 
-        ImagePreparer.prepare(req.file.path).then(async (preparedImagePath: string) => {
+        ImagePreparer.prepare(req.file.path).then((preparedImagePath: string) => {
 
             if (user?.profile_picture) {
                 fs.unlink(user.profile_picture, () => { });
             }
 
             user.profile_picture = preparedImagePath;
+            delete user.password_hash
 
-            try {
-                await userRepository.save(user)
-            } catch (error) {
-                fs.unlink(req.file.path, () => { });
-                console.error("User couldn't be saved into the database. Error: ", error)
-                res.status(500).send({ status: 'internal_server_error', error: "User couldn't be saved into the database." })
-            }
+            userRepository.save(user)
+                .then(() =>
+                    new APIResponse(res, 200, user).send()
+                )
+                .catch((error) => {
+                    fs.unlink(req.file.path, () => { })
+                    console.error("User couldn't be saved into the database. Error: ", error)
+                    res.status(500).send({ status: 'internal_server_error', error: "User couldn't be saved into the database." })
+                });
+
         });
     }
 
@@ -123,15 +131,15 @@ class ProfileController {
 
     private static multerStorage = multer.diskStorage({
         destination: (req, file, cb) => {
-            cb( null, 'fileStash' )
+            cb(null, 'fileStash')
         },
-        filename: ( req, file, cb ) => {
-            cb( null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
+        filename: (req, file, cb) => {
+            cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
         }
     });
 
     private static multerLimits = {
-        fileSize: 1*1024*1024,
+        fileSize: 1 * 1024 * 1024,
         files: 5,
         parts: 10
     };

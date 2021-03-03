@@ -2,18 +2,18 @@ import { Request, Response, NextFunction } from "express";
 import { JwtToken, JwtUserData } from "../types/JwtToken"
 import jwt from "jsonwebtoken";
 import * as hash from 'object-hash';
+import { APIResponse } from "../model/APIResponse";
 
 class Authentication {
 
     /** Number of salt rounds for hashing the password. */
     private static SALT_ROUNDS: number = 10
 
-    private static JWT_OPTIONS: jwt.SignOptions = {
-        expiresIn: 3600 // Time given in seconds.
+    static JWT_OPTIONS: jwt.SignOptions = {
+        expiresIn: 3600*12 // Time given in seconds.
     }
-
-    public static async generateJwtToken(userData: JwtUserData): Promise<string> {
-        return jwt.sign(userData, process.env.JWT_SECRET, Authentication.JWT_OPTIONS);
+    public static async generateJwtToken(userData: JwtUserData, jwtOptions: {}): Promise<string> {
+        return jwt.sign(userData, process.env.JWT_SECRET, jwtOptions);
     }
 
     public static async verifyJwtToken(token: string): Promise<JwtToken | null> {
@@ -47,20 +47,24 @@ class Authentication {
     public static async verifyAccess(req: Request, res: Response, next: NextFunction): Promise<any> {
         const jwtToken: string = req.get("Authorization");
 
-        console.log(jwtToken)
-
         // Check if a authorization header is set.
         if (jwtToken === undefined) {
-            return res.status(401).send({
-                status: "unauthorized"
-            });
+            new APIResponse(res, 401, {}, [{
+                'userMessage': "Permission not granted.",
+                'internalMessage': 'Wrong JWT token was provided.',
+            }]);
+            return;
         }
 
         // If the header exists check the JWT token.
         const validToken: JwtToken = await Authentication.verifyJwtToken(jwtToken);
 
         if (!validToken) {
-            return res.status(401).send({status: "unauthorized"});
+            new APIResponse(res, 401, {}, [{
+                'userMessage': "Permission not granted.",
+                'internalMessage': 'Wrong JWT token was provided.',
+            }]);
+            return;
         }
 
         // If the token is valid follow the next route.

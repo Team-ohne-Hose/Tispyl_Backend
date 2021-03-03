@@ -193,8 +193,6 @@ const startServer = () => {
 
     const config = fetchConfig();
 
-
-
     // The express object which provides all server functionalities.
     const requestHandler: express.Application = express();
 

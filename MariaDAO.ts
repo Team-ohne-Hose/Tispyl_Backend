@@ -107,7 +107,6 @@ export class MariaDAO {
         ));
     }
 
-
     static async getProfilePicture(login_name: string): Promise<any> {
         return await this.withConnection(c => c.query(
             {namedPlaceholders: true, sql: `SELECT profile_picture FROM ${this.schemaName}.User WHERE login_name=:ln`}, //  AND password_hash=:ph

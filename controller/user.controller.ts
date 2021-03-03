@@ -216,13 +216,15 @@ class UserController {
         //TODO: Password validation
 
         // Create JwtToken
-        console.log(user)
         const jwtToken: string = await Authentication.generateJwtToken({
             id: user.user_id,
             username: user.login_name
-        });
+        }, Authentication.JWT_OPTIONS);
 
-        new APIResponse(res, 200, { jwtToken }).send()
+        res.cookie("SESSIONID", jwtToken, { httpOnly: true, secure: true })
+
+        new APIResponse(res, 200, { jwtToken: jwtToken, expiresIn: Authentication.JWT_OPTIONS.expiresIn }).send()
+        console.info('User:', user.login_name,"\t" ,'Token:', jwtToken);
     }
 
     public static async addPlaytime(login_name: string, minutes: number) {
