@@ -38,7 +38,7 @@
     "object-hash": "^2.1.1",
     "serve-index": "^1.8.0",
     "superagent": "^3.8.1",
-    "three": "^0.115.0",
+    "three": "^0.125.0",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
