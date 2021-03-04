@@ -15,7 +15,7 @@ import { PhysicsObjectState } from "./model/state/PhysicsState";
 import { MariaDAO } from "./MariaDAO";
 import { ItemManager } from "./model/ItemManager";
 import { Link } from "./model/state/Link";
-import { VoteConfiguration, VoteEntry } from "./model/state/VoteState";
+import {VoteConfiguration, VoteEntry, VoteStage} from "./model/state/VoteState";
 import UserController from "./controller/user.controller";
 import GameController from "./controller/game.controller";
 import Game from "./entities/game";
