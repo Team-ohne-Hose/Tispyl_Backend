@@ -12,15 +12,22 @@ import {
 
 import { Player } from "./model/state/Player";
 import { PhysicsObjectState } from "./model/state/PhysicsState";
-import { MariaDAO } from "./MariaDAO";
 import { ItemManager } from "./model/ItemManager";
 import { Link } from "./model/state/Link";
-import {VoteConfiguration, VoteEntry, VoteStage} from "./model/state/VoteState";
+import { VoteConfiguration, VoteEntry, VoteStage } from "./model/state/VoteState";
 import UserController from "./controller/user.controller";
 import GameController from "./controller/game.controller";
 import Game from "./entities/game";
 
-
+export type createRoomOptions = {
+    roomName: string;
+    author: string;
+    loginName: string;
+    displayName: string;
+    skin: string;
+    randomizeTiles: boolean
+  }
+  
 export class GameRoom extends Room<GameState> {
 
     createDate: Date;
@@ -31,11 +38,12 @@ export class GameRoom extends Room<GameState> {
 
         this.setState(new GameState());
         this.setMetadata({
-            lobbyName: options['name'],
+            roomName: options['name'],
             author: options['author'],
             skin: options['skin'],
             randomizeTiles: options['randomizeTiles']
         });
+
         if (options['randomizeTiles']) {
             this.state.boardLayout.generateRandomLayout();
             console.log('generated random Layout');
@@ -301,6 +309,7 @@ export class GameRoom extends Room<GameState> {
             }
         }
     }
+
     onPlayerMessage(client: Client, data: WsData) {
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined && data.type === MessageType.PLAYER_MESSAGE) {
@@ -319,6 +328,7 @@ export class GameRoom extends Room<GameState> {
             }
         }
     }
+
     onPhysicsMessage(client: Client, data: WsData) {
         if (data.type === MessageType.PHYSICS_MESSAGE) {
             switch (data.subType) {
@@ -328,6 +338,7 @@ export class GameRoom extends Room<GameState> {
             }
         }
     }
+
     onDebugMessage(client: Client, data: WsData) {
         if (data.type === MessageType.DEBUG_COMMAND) {
             switch (data.subType) {
@@ -337,21 +348,25 @@ export class GameRoom extends Room<GameState> {
             }
         }
     }
+
     onLeftMessage(client: Client, data: WsData) {
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined && data.type === MessageType.LEFT_MESSAGE) {
 
         }
     }
+
     onOtherMessage(client: Client, data: WsData) {
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined && data.type === MessageType.OTHER) {
 
         }
     }
+
     onRefreshMessage(client: Client, data: WsData) {
         this.broadcast(data.type, data);
     }
+
     onAchievementMessage(client: Client, data: WsData) {
         if (data.type === MessageType.ACHIEVEMENT_MESSAGE) {
             switch (data.subType) {
@@ -361,6 +376,7 @@ export class GameRoom extends Room<GameState> {
             }
         }
     }
+
     onItemMessage(client: Client, data: WsData) {
         if (data.type === MessageType.ITEM_MESSAGE) {
             switch (data.subType) {
@@ -403,6 +419,7 @@ export class GameRoom extends Room<GameState> {
             }
         }
     }
+
     private isHost(client: Client) {
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined) {
