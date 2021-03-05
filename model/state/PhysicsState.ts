@@ -1,5 +1,5 @@
-import { MapSchema, Schema, type } from "@colyseus/schema";
-import { PhysicsEngine, PhysicsObject } from "../PhysicsEngineCannon";
+import {MapSchema, Schema, type} from "@colyseus/schema";
+import {PhysicsEngine, PhysicsObject} from "../PhysicsEngineCannon";
 import {
     GameActionType,
     GameDiceRoll,
@@ -10,7 +10,7 @@ import {
     PhysicsEntityVariation,
     WsData
 } from "../WsData";
-import { EntityLoader } from "../EntityLoader";
+import {EntityLoader} from "../EntityLoader";
 import * as THREE from 'three';
 
 export enum OnDeleteBehaviour {
@@ -111,7 +111,7 @@ export class PhysicsState extends Schema {
     private readonly physicsEngine: PhysicsEngine;
     private idCounter = 1;
     private loader: EntityLoader;
-    private readonly startPoint = { x: 38.708, y: 10, z: -36.776 };
+    private readonly startPoint = { x: 40, y: 10, z: -35 };
     private broadcastNewMessage: (type: MessageType, cmd: WsData) => void;
     private onDiceThrow: (number: number) => void;
 
@@ -168,9 +168,14 @@ export class PhysicsState extends Schema {
                 break;
         }
     }
+    getStartPoint(): Vector {
+        return new Vector(this.startPoint.x + ((Math.random() - 0.5) * 6),
+          this.startPoint.y,
+          this.startPoint.z + ((Math.random() - 0.5) * 6));
+    }
     addPlayerFigure(): number {
         const id = this.getNewId();
-        const pos = new Vector(this.startPoint.x, this.startPoint.y, this.startPoint.z);
+        const pos = this.getStartPoint();
         const quat = new Quaternion(0, 0, 0, 1);
         const obj = new PhysicsObjectState(id, this.physicsEngine, pos, quat, PhysicsEntity.figure, PhysicsEntityVariation.default);
         this.objects.set(String(id), obj);
@@ -190,7 +195,6 @@ export class PhysicsState extends Schema {
     checkDiceMoving(): boolean {
         if (this.diceObj !== undefined) {
             const physObj = this.physicsEngine.getPhysicsObjectByID(this.diceObj.objectIDPhysics);
-            // console.log(physObj.physicsBody.getLinearVelocity().length(), physObj.physicsBody.getAngularVelocity().length());
             if (physObj.physicsBody.velocity.norm() < .01 && physObj.physicsBody.angularVelocity.norm() < 1 * Math.PI) {
                 if (!this.diceNoMotion) {
                     this.diceNoMotion = true;

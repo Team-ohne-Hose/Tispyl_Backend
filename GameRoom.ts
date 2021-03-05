@@ -1,7 +1,7 @@
 import { Client, Room } from "colyseus";
 import { Actions, GameState } from "./model/state/GameState";
 import {
-    AchievementMessageType,
+    AchievementMessageType, ChatCommandType,
     ChatMessage,
     DebugCommandType,
     GameActionType, ItemMessageType,
@@ -71,6 +71,7 @@ export class GameRoom extends Room<GameState> {
         this.onMessage(MessageType.REFRESH_COMMAND, this.onRefreshMessage.bind(this));
         this.onMessage(MessageType.ACHIEVEMENT_MESSAGE, this.onAchievementMessage.bind(this));
         this.onMessage(MessageType.ITEM_MESSAGE, this.onItemMessage.bind(this));
+        this.onMessage(MessageType.CHAT_COMMAND, this.onChatCommand.bind(this));
 
         return undefined;
     }
@@ -150,22 +151,24 @@ export class GameRoom extends Room<GameState> {
                 });
                 this.state.removePlayer(player.loginName);
                 // only way to access 'first' element...
-                const pList: [string, Player][] = Array.from(this.state.playerList.entries());
-                if (pList.length > 0) {
-                    const login: string = pList[0][0];
-                    const player: Player = pList[0][1];
+                const newHostPlayer: [string, Player] = Array.from(this.state.playerList.entries()).find((val: [string, Player]) => {
+                    return val[1].isConnected;
+                });
+                if (newHostPlayer !== undefined) {
+                    const login: string = newHostPlayer[0];
+                    const player: Player = newHostPlayer[1];
                     this.state.setHost(login);
-                    this.broadcast(MessageType.CHAT_MESSAGE, {
-                        type: MessageType.CHAT_MESSAGE,
+                    this.broadcast(MessageType.SERVER_MESSAGE, {
+                        type: MessageType.SERVER_MESSAGE,
                         message: `Player: ${player.displayName} is now host of the game.`,
-                        authorLoginName: 'SERVER'
+                        origin: 'SERVER'
                     });
                 }
             } else {
-                this.broadcast(MessageType.CHAT_MESSAGE, {
-                    type: MessageType.CHAT_MESSAGE,
+                this.broadcast(MessageType.SERVER_MESSAGE, {
+                    type: MessageType.SERVER_MESSAGE,
                     message: `Player: ${this.state.playerList[player.loginName].displayName} left the game.`,
-                    authorLoginName: 'SERVER'
+                    origin: 'SERVER'
                 });
                 this.state.removePlayer(player.loginName);
             }
@@ -196,7 +199,6 @@ export class GameRoom extends Room<GameState> {
     onJoinMessage(client: Client, data: WsData) {
         if (data.type === MessageType.JOIN_MESSAGE) { }
     }
-
 
     onGameMessage(client: Client, data: WsData) {
         console.log(`got GameMessage: ${JSON.stringify(data)}`);
@@ -389,10 +391,10 @@ export class GameRoom extends Room<GameState> {
                             }
                             p.addItem(Number(data.itemId));
                             console.log(`[onItemMessage] Player received Item: ${p.loginName}, Item:${data.itemId}`);
-                            this.broadcast(MessageType.CHAT_MESSAGE, {
-                                type: MessageType.CHAT_MESSAGE,
+                            this.broadcast(MessageType.SERVER_MESSAGE, {
+                                type: MessageType.SERVER_MESSAGE,
                                 message: `Player: ${this.state.playerList[data.playerLoginName].displayName} received Item ${data.itemId}.`,
-                                authorLoginName: 'SERVER'
+                                origin: 'SERVER'
                             });
                         } else {
                             console.log(`[onItemMessage] Player couldn't be found to receive Item: ${data.playerLoginName}`);
@@ -419,7 +421,41 @@ export class GameRoom extends Room<GameState> {
             }
         }
     }
+    onChatCommand(client: Client, data: WsData) {
+        if (data.type === MessageType.CHAT_COMMAND) {
+            switch (data.subType) {
+                case ChatCommandType.commandAsk:
+                    let answer = true;
+                    if (data.question.includes('not') ||
+                      data.question.includes('nicht') ||
+                      data.question.includes('überspringen') ||
+                      data.question.includes('skip')) {
+                        answer = false;
+                    }
+                    const msg = data.authorDisplayName + ' asked: ' + data.question + '\n' + 'Tispyl says: ' + (answer ? 'YES' : 'NO');
 
+                    this.broadcast(MessageType.SERVER_MESSAGE, {
+                        type: MessageType.SERVER_MESSAGE,
+                        message: msg,
+                        origin: 'Tispyl'
+                    });
+
+                    break;
+                case ChatCommandType.commandRandom:
+                    if (data.limit === undefined || data.limit < 1) {
+                        data.limit = 10;
+                    }
+                    const rand = Math.min(Math.floor(Math.random() * data.limit + 1), data.limit);
+
+                    this.broadcast(MessageType.SERVER_MESSAGE, {
+                        type: MessageType.SERVER_MESSAGE,
+                        message: `The random number between 1 and ${data.limit} is ${rand}`,
+                        origin: 'SERVER'
+                    });
+                    break;
+            }
+        }
+    }
     private isHost(client: Client) {
         const player = this.state.getPlayerByClientId(client.id);
         if (player !== undefined) {
