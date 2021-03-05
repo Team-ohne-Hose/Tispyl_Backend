@@ -158,6 +158,10 @@ export class GameState extends Schema {
     setHost(login: string) {
         const hostCandidate: Player = this.playerList[login];
         if (hostCandidate !== undefined) {
+            const currentHost = this.playerList[this.hostLoginName]
+            if (currentHost !== undefined) {
+              currentHost.isCurrentHost = false;
+            }
             hostCandidate.isCurrentHost = true;
             this.hostLoginName = login;
         }

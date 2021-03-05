@@ -126,7 +126,8 @@ export class PhysicsEngine {
     netObj.quaternion.set(quat.x, quat.y, quat.z, quat.w);
   }
   checkDeletionPlane(object: PhysicsObject, objectKey: number, position: CANNON.Vec3) {
-    if (position.y < this.deletionPlane) {
+    if (position.y < this.deletionPlane ||
+      (position.y < 0 && Math.abs(position.x) < PhysicsEngine.rescaleUnit(49) && Math.abs(position.z) < PhysicsEngine.rescaleUnit(49))) {
       if (!object.onDelete || !object.onDelete.bind(this)(object)) {
         this.physicsObjects.delete(objectKey);
         if (this.disposeFromViewport) {
