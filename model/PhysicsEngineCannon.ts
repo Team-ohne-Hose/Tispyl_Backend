@@ -88,27 +88,35 @@ export class PhysicsEngine {
     this.world.addContactMaterial(dice_figure);
   }
   updatePhysics() {
-    const time = Date.now();
-    if (this.lastTime != undefined) {
-      const dt = (time - this.lastTime) / 3000;
-      this.lastTime = time;
-      //this.world.step(this.fixedTimeStep / 1000, dt, this.maxSubSteps);
-      this.world.step(dt);
+    try {
+      const time = Date.now();
+      if (this.lastTime != undefined) {
+        const dt = (time - this.lastTime) / 3000;
+        if (dt <= 0) {
+          return;
+        }
+        this.lastTime = time;
+        //this.world.step(this.fixedTimeStep / 1000, dt, this.maxSubSteps);
+        this.world.step(dt);
 
-      this.sumOfIterations += dt;
-      this.iterations++;
-      if (this.lastLog === undefined) this.lastLog = Date.now();
-      const dtLog = Date.now() - this.lastLog; //in ms
-      if (this.iterations >= 1000 && dtLog >= 120000) { //every 2 minutes AND 1000 Frames, log mean time
-        this.lastLog = Date.now();
-        console.info("last", this.iterations, "Physics Iterations with", (this.sumOfIterations / this.iterations * 1000).toFixed(4), "ms dt, ", this.fixedTimeStep, "ms desired timestep");
-        this.sumOfIterations = 0;
-        this.iterations = 0;
+        this.sumOfIterations += dt;
+        this.iterations++;
+        if (this.lastLog === undefined) this.lastLog = Date.now();
+        const dtLog = Date.now() - this.lastLog; //in ms
+        if (this.iterations >= 1000 && dtLog >= 120000) { //every 2 minutes AND 1000 Frames, log mean time
+          this.lastLog = Date.now();
+          console.info("last", this.iterations, "Physics Iterations with", (this.sumOfIterations / this.iterations * 1000).toFixed(4), "ms dt, ", this.fixedTimeStep, "ms desired timestep");
+          this.sumOfIterations = 0;
+          this.iterations = 0;
+        }
+      } else {
+        this.lastTime = time;
       }
-    } else {
-      this.lastTime = time;
+      this.physicsObjects.forEach(this.updatePhysicsObject.bind(this));
+    } catch (exception) {
+      console.error('got an Exception in Physics Loop', exception);
+      // Todo: close game
     }
-    this.physicsObjects.forEach(this.updatePhysicsObject.bind(this));
   }
   updatePhysicsObject(phys: PhysicsObject, key: number) {
     if (phys === undefined || phys.physicsBody === undefined) return;
