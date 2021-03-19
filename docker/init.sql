@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `BrettSpiel`.`User` (
   UNIQUE KEY (`user_id`),
   UNIQUE KEY (`login_name`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 6
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf16;
 
 CREATE TABLE IF NOT EXISTS `BrettSpiel`.`Games` (
@@ -54,8 +54,34 @@ CREATE TABLE IF NOT EXISTS `BrettSpiel`.`Games` (
  PRIMARY KEY (`game_id`),
  UNIQUE KEY (`game_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 6
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf16;
 -- SET SQL_MODE=@OLD_SQL_MODE;
 -- SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 -- SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+-- -----------------------------------------------------
+-- Table: Role
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `role` (
+  `role_id` int(11) NOT NULL COMMENT 'primary key',
+  `create_time` datetime DEFAULT NULL COMMENT 'create time',
+  `update_time` datetime DEFAULT NULL COMMENT 'update time',
+  `description` varchar(65) DEFAULT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf16;
+
+-- -----------------------------------------------------
+-- Table: Role_assignment
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `role_assignment` (
+  `role_id` int(11) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `create_time` date DEFAULT NULL,
+  `update_time` date DEFAULT NULL,
+  PRIMARY KEY (`role_id`,`user_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `role_assignment_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`),
+  CONSTRAINT `role_assignment_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf16;

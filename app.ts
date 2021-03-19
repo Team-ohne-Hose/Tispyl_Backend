@@ -87,41 +87,45 @@ const startServer = () => {
     requestHandler.use(ErrorHandler.handleKnownError);
     requestHandler.use(ErrorHandler.handleUnexpectedError);
 
-    DatabaseConnection.connect()
-    .then((connection: Connection) => {
+    DatabaseConnection.connect().then(async (connection: Connection) => {
 
-        console.info("Connected to the database.");
-        const { server, protocol } = buildHTTPServer(config, requestHandler);   
-
-        console.info(`Instantiating Colyseus Server.`);
-        const colyseus = new Server({ noServer: true });
-        colyseus.define('game', GameRoom);
-        colyseus.onShutdown(function () {
-            console.info(`Game server is going down.`);
-        });
-    
-        server.on("error", err => {
-            if (err.code === 'EADDRINUSE') {
-                console.error(`Failed to start the internal server. PORT: ${config.port} is already in use.`);
-                console.error("Please ensure the specified port is not used by a different service or a second instance of the Brettspiel_Backend.");
-                console.error("Original issue:", { err })
-            } else {
-                console.error("The HTTP server encountered an unspecified error", { err }, err.code);
-            }
-            server.close();
-        });
-    
-        server.once("listening", () => {
-            colyseus.attach({ server: server });
-            console.info(`Listening on ${protocol}://${config.host}:${config.port}`);
-        });
-    
-        server.listen(config.port);
+        if (process.env.NODE_ENV === 'development') { await connection.synchronize(); }
+        return connection
     })
-    .catch((error: Error) => {
-        console.error(error);
-    }
-    );
+        .then((connection: Connection) => {
+
+            console.info("Connected to the database.");
+            const { server, protocol } = buildHTTPServer(config, requestHandler);
+
+            console.info(`Instantiating Colyseus Server.`);
+            const colyseus = new Server({ noServer: true });
+            colyseus.define('game', GameRoom);
+            colyseus.onShutdown(function () {
+                console.info(`Game server is going down.`);
+            });
+
+            server.on("error", err => {
+                if (err.code === 'EADDRINUSE') {
+                    console.error(`Failed to start the internal server. PORT: ${config.port} is already in use.`);
+                    console.error("Please ensure the specified port is not used by a different service or a second instance of the Brettspiel_Backend.");
+                    console.error("Original issue:", { err })
+                } else {
+                    console.error("The HTTP server encountered an unspecified error", { err }, err.code);
+                }
+                server.close();
+            });
+
+            server.once("listening", () => {
+                colyseus.attach({ server: server });
+                console.info(`Listening on ${protocol}://${config.host}:${config.port}`);
+            });
+
+            server.listen(config.port);
+        })
+        .catch((error: Error) => {
+            console.error(error);
+        }
+        );
 }
 
 if (require.main === module) {
