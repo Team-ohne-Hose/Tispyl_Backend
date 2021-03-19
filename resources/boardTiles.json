@@ -469,7 +469,7 @@
         },
         {
           "id": 58,
-          "description": "DER JÜNGST TRINKT.",
+          "description": "DER JÜNGSTE TRINKT.",
           "translationKey": "boardField_junior",
           "imageUrl": "/assets/board/junior.png",
           "restrictToRing": -1,

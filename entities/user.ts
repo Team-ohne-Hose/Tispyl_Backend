@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import Role from "./role";
+import UserStatistic from "./userStatistic";
 
 
 @Entity("User")
@@ -22,7 +24,7 @@ class User {
     @Column({ type: "varchar", length: 45, nullable: false })
     public password_hash: string;
 
-    @Column({ type: "varchar", length: 45 })
+    @Column({ type: "varchar", length: 45, nullable: true })
     public profile_picture: string;
 
     @Column({ type: "int" })
@@ -34,6 +36,13 @@ class User {
     @Column({ type: 'tinyint', nullable: false })
     public is_dev: number;
 
+    @ManyToMany(type => Role, role => role.users)
+    @JoinTable()
+    public roles: Role[];
+
+    @ManyToMany(type => UserStatistic, userStatistic => userStatistic.users)
+    @JoinTable()
+    public userStatistic: UserStatistic[];
 
     constructor(loginname: string, displayname: string, passwordHash: string) {
         this.login_name = loginname;

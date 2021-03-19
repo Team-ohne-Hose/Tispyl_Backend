@@ -284,6 +284,9 @@ export class GameRoom extends Room<GameState> {
                         this.state.voteState.author = data.author;
                     }
                     break;
+                case GameActionType.stopVoteCreation:
+                    this.state.voteState.voteStage = VoteStage.IDLE;
+                    break;
                 case GameActionType.beginVotingSession:
                     this.state.voteState.voteConfiguration.fromObject(data.config);
                     this.state.voteState.voteStage = VoteStage.VOTE;
