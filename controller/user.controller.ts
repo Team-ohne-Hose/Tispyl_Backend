@@ -213,8 +213,6 @@ class UserController {
             return;
         }
 
-        //TODO: Password validation
-
         // Create JwtToken
         const jwtToken: string = await Authentication.generateJwtToken({
             id: user.user_id,
