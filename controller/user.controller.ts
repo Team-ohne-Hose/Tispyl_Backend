@@ -204,7 +204,7 @@ class UserController {
         try {
             user = await userRepository.findOneOrFail({
                 select: ["user_id", "display_name", "login_name", "password_hash"],
-                where: { login_name: loginOptions.username }
+                where: { login_name: loginOptions.username, password_hash: loginOptions.password  }
             });
 
         } catch (error) {
