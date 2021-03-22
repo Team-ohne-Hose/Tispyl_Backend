@@ -42,7 +42,7 @@ class User {
 
     @ManyToMany(type => UserStatistic, userStatistic => userStatistic.users)
     @JoinTable()
-    public userStatistic: UserStatistic[];
+    public userStatistics: UserStatistic[];
 
     constructor(loginname: string, displayname: string, passwordHash: string) {
         this.login_name = loginname;

@@ -1,12 +1,12 @@
-import {PhysicsState} from "./PhysicsState";
-import {MessageType, PlayerModel} from "../WsData";
-import {Schema, ArraySchema, MapSchema, type} from "@colyseus/schema"
-import {Player} from "./Player";
-import {BoardLayoutState} from "./BoardLayoutState";
-import {VoteState} from "./VoteState";
-import {Link} from "./Link";
-import {ItemManager} from "../ItemManager";
-import {GameRoom} from "../../GameRoom";
+import { PhysicsState } from "./PhysicsState";
+import { MessageType, PlayerModel } from "../WsData";
+import { Schema, ArraySchema, MapSchema, type } from "@colyseus/schema"
+import { Player } from "./Player";
+import { BoardLayoutState } from "./BoardLayoutState";
+import { VoteState } from "./VoteState";
+import { Link } from "./Link";
+import { ItemManager } from "../ItemManager";
+import { GameRoom } from "../../GameRoom";
 
 export enum Actions {
     ROLL,
@@ -31,13 +31,13 @@ export class GameState extends Schema {
     @type(PhysicsState)
     physicsState = new PhysicsState();
 
-    @type({map: Player})
+    @type({ map: Player })
     playerList = new MapSchema<Player>();
 
-    @type([ 'string' ])
+    @type(['string'])
     rules = new ArraySchema<string>();
 
-    @type([ Link ])
+    @type([Link])
     drinkBuddyLinks = new ArraySchema<Link>();
 
     @type('string')
@@ -114,9 +114,9 @@ export class GameState extends Schema {
             return p.loginName === login;
         });
         if (playerRef !== undefined) {
-            return[playerRef, false];
+            return [playerRef, false];
         } else {
-            return[this.addPlayer(login, id, name), true];
+            return [this.addPlayer(login, id, name), true];
         }
     }
 
@@ -134,11 +134,13 @@ export class GameState extends Schema {
     getPlayer(loginName: string): Player {
         return this.playerList[loginName];
     }
+
     getPlayerByClientId(clientId: string): Player {
         return this.asArray(this.playerList).find((p: Player, i: number) => {
             return p.clientId === clientId;
         });
     }
+    
     getPlayerByFigure(id: number): Player {
         const player = Array.from(this.playerList.values()).find(p => {
             return p.figureId === id;
@@ -160,7 +162,7 @@ export class GameState extends Schema {
         if (hostCandidate !== undefined) {
             const currentHost = this.playerList[this.hostLoginName]
             if (currentHost !== undefined) {
-              currentHost.isCurrentHost = false;
+                currentHost.isCurrentHost = false;
             }
             hostCandidate.isCurrentHost = true;
             this.hostLoginName = login;

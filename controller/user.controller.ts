@@ -204,7 +204,7 @@ class UserController {
         try {
             user = await userRepository.findOneOrFail({
                 select: ["user_id", "display_name", "login_name", "password_hash"],
-                where: { login_name: loginOptions.username, password_hash: loginOptions.password  }
+                where: { login_name: loginOptions.username, password_hash: loginOptions.password }
             });
 
         } catch (error) {
@@ -222,7 +222,7 @@ class UserController {
         res.cookie("SESSIONID", jwtToken, { httpOnly: true, secure: true })
 
         new APIResponse(res, 200, { jwtToken: jwtToken, expiresIn: Authentication.JWT_OPTIONS.expiresIn }).send()
-        console.info('User:', user.login_name,"\t" ,'Token:', jwtToken);
+        console.info('User:', user.login_name, "\t", 'Token:', jwtToken);
     }
 
     public static async addPlaytime(login_name: string, minutes: number) {
@@ -239,6 +239,11 @@ class UserController {
     private static async verifyUser(req: Request, user: User) {
         const jwtToken: JwtToken = await Authentication.getJwtToken(req)
         return (user.user_id === jwtToken.id)
+    }
+
+    public static async getUserEntity(loginname: string): Promise<User | null> {
+        const userRepository: Repository<User> = getRepository(User)
+        return await userRepository.findOne({ where: [{ login_name: loginname }] }) ?? null
     }
 }
 
