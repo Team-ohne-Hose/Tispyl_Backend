@@ -1,0 +1,22 @@
+# This is a basic workflow that is manually triggered
+
+name: getLatestLogs
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  startRemote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Run SSH command for reading latest logs
+        uses: garygrossgarten/github-action-ssh@release
+        with:
+          command: ~/BrettSpiel_Backend/deployment/catLatestLog.sh
+          host: tispyl.uber.space
+          username: tispyl
+          privateKey: ${{ secrets.PRIVATE_KEY_RSA}}
