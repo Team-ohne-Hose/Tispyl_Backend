@@ -314,10 +314,11 @@ export interface UseItem {
   itemDescription: string;
 }
 
-export type ChatCommand = AskCommand | RandomCommand;
+export type ChatCommand = AskCommand | RandomCommand | CoinFlipCommand;
 export enum ChatCommandType {
   commandAsk,
-  commandRandom
+  commandRandom,
+  commandCoinFlip
 }
 export interface AskCommand {
   type: MessageType.CHAT_COMMAND;
@@ -329,4 +330,8 @@ export interface RandomCommand {
   type: MessageType.CHAT_COMMAND;
   subType: ChatCommandType.commandRandom;
   limit: number;
+}
+export interface CoinFlipCommand {
+  type: MessageType.CHAT_COMMAND;
+  subType: ChatCommandType.commandCoinFlip;
 }

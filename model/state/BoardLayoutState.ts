@@ -3,6 +3,7 @@ import boardTiles from '../../resources/boardTiles.json';
 
 interface TileSetEntry {
     id: number;
+    title: string;
     description: string;
     translationKey: string;
     imageUrl: string;
@@ -30,13 +31,16 @@ export class Tile extends Schema {
     @type('string')
     translationKey: string;
     @type('string')
+    title: string;
+    @type('string')
     description: string;
 
-    constructor(tileId: number, imageUrl: string, translationKey: string, description: string) {
+    constructor(tileId: number, imageUrl: string, translationKey: string, title: string, description: string) {
         super();
         this.tileId = tileId;
         this.imageUrl = imageUrl;
         this.translationKey = translationKey;
+        this.title = title;
         this.description = description;
     }
 }
@@ -173,7 +177,7 @@ export class BoardLayoutState extends Schema {
 
         for (let i = 0; i < 64; i++) {
             const tsEntry = tiles[permutation[i]];
-            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.translationKey, tsEntry.description);
+            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.translationKey, tsEntry.title, tsEntry.description);
         }
     }
     generateDefaultLayout(tileset?: string) {
@@ -181,7 +185,7 @@ export class BoardLayoutState extends Schema {
         const tiles: TileSetEntry[] = ts.base;
         for (let i = 0; i < 64; i++) {
             const tsEntry = tiles[i];
-            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.translationKey, tsEntry.description);
+            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.translationKey, tsEntry.title, tsEntry.description);
         }
     }
 
