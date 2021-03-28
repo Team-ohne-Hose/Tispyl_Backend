@@ -456,6 +456,15 @@ export class GameRoom extends Room<GameState> {
                         origin: 'SERVER'
                     });
                     break;
+                case ChatCommandType.commandCoinFlip:
+                    const coin = Math.random() >= 0.5;
+
+                    this.broadcast(MessageType.SERVER_MESSAGE, {
+                        type: MessageType.SERVER_MESSAGE,
+                        message: `The coin landed on ${coin ? "HEADS (KOPF)" : "TAILS (ZAHL)"}`,
+                        origin: 'SERVER'
+                    });
+                    break;
             }
         }
     }

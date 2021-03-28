@@ -5,7 +5,8 @@
       "base": [
         {
           "id": 0,
-          "description": "FÜLLET DIE GLÄSER!",
+          "title": "Start",
+          "description": "Füllt die Gläser!",
           "translationKey": "boardField_start",
           "imageUrl": "/assets/board/start.png",
           "restrictToRing": -1,
@@ -13,7 +14,8 @@
         },
         {
           "id": 1,
-          "description": "ENTSCHEIDET WER TRINKEN MUSS. BEI GLEICH-STAND TRINKEN BEIDE.",
+          "title": "Demokratie",
+          "description": "Entscheidet wer trinken muss. Bei Gleichstand trinken beide.",
           "translationKey": "boardField_democracy",
           "imageUrl": "/assets/board/democracy.png",
           "restrictToRing": -1,
@@ -21,7 +23,8 @@
         },
         {
           "id": 2,
-          "description": "SUCH DIR EINEN DRINKBUDDY.",
+          "title": "Drinkbuddy",
+          "description": "Such dir einen Drinkbuddy.",
           "translationKey": "boardField_buddy",
           "imageUrl": "/assets/board/buddy.png",
           "restrictToRing": 12,
@@ -29,7 +32,8 @@
         },
         {
           "id": 3,
-          "description": "ALLE SINGLES ODER DIE DIE ES GERNE WÄREN TRINKEN.",
+          "title": "4 Ever Alone",
+          "description": "Alle Singles oder die, die es gerne wären, trinken.",
           "translationKey": "boardField_alone",
           "imageUrl": "/assets/board/alone.png",
           "restrictToRing": -1,
@@ -37,7 +41,8 @@
         },
         {
           "id": 4,
-          "description": "SUCH DIR EINEN GEGNER. SPIELTEINE RUNDE SCHERE, STEIN, PAPIER, DER VERLIERER TRINKT.",
+          "title": "Schere, Stein, paar Bier...",
+          "description": "Suche dir einen Gegner. Spielt eine Runde Schere, Stein, Papier. Der Verlierer trinkt.",
           "translationKey": "boardField_paperScissor",
           "imageUrl": "/assets/board/paperScissor.png",
           "restrictToRing": -1,
@@ -45,7 +50,8 @@
         },
         {
           "id": 5,
-          "description": "STELLE EINE ICH HABE NOCH NIE… AUSSAGE, WER DOCH SCHONMAL HAT TRINKT.",
+          "title": "Ich hab noch nie...",
+          "description": "Stelle eine ICH HAB NOCH NIE.. Aussage. Wer doch schonmal hat trinkt.",
           "translationKey": "boardField_neverHIE",
           "imageUrl": "/assets/board/neverHIE.png",
           "restrictToRing": -1,
@@ -53,7 +59,8 @@
         },
         {
           "id": 6,
-          "description": "BESCHLIEßE EINE REGEL. DU DARFST GGF. SCHON BESTEHENDE REGELN GLEICHZEITIG AUFLÖSEN.",
+          "title": "Regel",
+          "description": "Beschließe eine Regel. Du darfst ggf. schon bestehende Regeln auflösen.",
           "translationKey": "boardField_rule",
           "imageUrl": "/assets/board/rule.png",
           "restrictToRing": -1,
@@ -61,7 +68,8 @@
         },
         {
           "id": 7,
-          "description": "ALLE TRINKEN.",
+          "title": "Gemeinschaft",
+          "description": "Alle trinken.",
           "translationKey": "boardField_community",
           "imageUrl": "/assets/board/community.png",
           "restrictToRing": -1,
@@ -69,7 +77,8 @@
         },
         {
           "id": 8,
-          "description": "TRINKE SO VIELE RATIONEN, WIE DU AUGEN AUF DEM WÜRFEL HAST. WÜRFEL NICHT NOCHMAL.",
+          "title": "Würfelglück",
+          "description": "Trinke so viele Rationen, wie du Augen auf dem Würfel hast. Würfel nicht nochmal.",
           "translationKey": "boardField_diceLuck",
           "imageUrl": "/assets/board/diceLuck.png",
           "restrictToRing": -1,
@@ -77,7 +86,8 @@
         },
         {
           "id": 9,
-          "description": "ALLE FRAUEN UN DIE DIE SICH ALS SOLCHE FÜH-LEN TRINKEN.",
+          "title": "Titties",
+          "description": "Alle Frauen und die, die sich als solche fühlen, trinken.",
           "translationKey": "boardField_titties",
           "imageUrl": "/assets/board/titties.png",
           "restrictToRing": -1,
@@ -85,7 +95,8 @@
         },
         {
           "id": 10,
-          "description": "DEIN LINKER NACHBAR TRINKT.",
+          "title": "Linksextrem",
+          "description": "Dein linker Nachbar trinkt.",
           "translationKey": "boardField_leftExtremism",
           "imageUrl": "/assets/board/leftExtremism.png",
           "restrictToRing": -1,
@@ -93,7 +104,8 @@
         },
         {
           "id": 11,
-          "description": "WÜRFEL NOCH EINMAL, FÜHRE DIE NÄCHSTE AUF-GABE TROTZDEM AUS.",
+          "title": "Glückspilz",
+          "description": "Würfel noch einmal. Führe die nächste Aufgabe trotzdem aus.",
           "translationKey": "boardField_lucky",
           "imageUrl": "/assets/board/lucky.png",
           "restrictToRing": -1,
@@ -101,7 +113,8 @@
         },
         {
           "id": 12,
-          "description": "WIRF EINE MÜNZE. BEI KOPF TRINKST DU, BEI ZAHL DARFST DU VERTEILEN.",
+          "title": "Münzwurf",
+          "description": "Wirf eine Münze. Bei Kopf trinkst du, bei Zahl darfst du verteilen. (Tipp: /coinflip)",
           "translationKey": "boardField_coinflip",
           "imageUrl": "/assets/board/coinflip.png",
           "restrictToRing": -1,
@@ -109,7 +122,8 @@
         },
         {
           "id": 13,
-          "description": "LEERE DEIN GETRÄNK AUF EX.",
+          "title": "Ex & Hopp",
+          "description": "Leere dein Getränk auf Ex.",
           "translationKey": "boardField_exHopp",
           "imageUrl": "/assets/board/exHopp.png",
           "restrictToRing": -1,
@@ -117,7 +131,8 @@
         },
         {
           "id": 14,
-          "description": "VERTEILE ZWEI RATIONEN.",
+          "title": "Spendabel",
+          "description": "Verteile zwei Rationen.",
           "translationKey": "boardField_donor",
           "imageUrl": "/assets/board/donor.png",
           "restrictToRing": -1,
@@ -125,7 +140,8 @@
         },
         {
           "id": 15,
-          "description": "ALLE KERLE TRINKEN.",
+          "title": "Schwänze",
+          "description": "Alle Kerle trinken.",
           "translationKey": "boardField_dicks",
           "imageUrl": "/assets/board/dicks.png",
           "restrictToRing": -1,
@@ -133,7 +149,8 @@
         },
         {
           "id": 16,
-          "description": "ALLE SETZEN GLEICHZEITIG IHR GETRÄNK AN UND TRINKEN. WENN DU AUFHÖRST DARF DER NÄCHSTE IN DER REIHE ABSETZEN USW.",
+          "title": "Wasserfall",
+          "description": "Alle setzen gleichzeitig ihr Getränk an und trinken. Wenn du aufhörst darf der nächst in der Reihe absetzen usw.",
           "translationKey": "boardField_waterfall",
           "imageUrl": "/assets/board/waterfall.png",
           "restrictToRing": -1,
@@ -141,7 +158,8 @@
         },
         {
           "id": 17,
-          "description": "SUCHE DIR EIN OPFER. STELLE EIN WAHR-HEIT ODER PFLICHT AUFGABE.",
+          "title": "Wahrheit oder Dicht",
+          "description": "Suche dir ein Opfer. Stelle eine Wahrheit oder Pflicht Aufgabe.",
           "translationKey": "boardField_truth",
           "imageUrl": "/assets/board/truth.png",
           "restrictToRing": -1,
@@ -149,7 +167,8 @@
         },
         {
           "id": 18,
-          "description": "SUCH DIR EIN KATEGORIE AUS. JEDER SAGT REI-HUM EINEN DAZU PASSENDEN BEGRIFF, DU FÄNGST AN. WER ZÖGERT ODER NICHTS WEIß TRINKT.",
+          "title": "Kategorie",
+          "description": "Suche dir eine Kategorie aus. Jeder sagt reihum einen dazu passenden Begriff. Wer zögert oder nichts weiß, trinkt. Du fängst an.",
           "translationKey": "boardField_category",
           "imageUrl": "/assets/board/category.png",
           "restrictToRing": -1,
@@ -157,7 +176,8 @@
         },
         {
           "id": 19,
-          "description": "GÖNN DIR EINE RATION.",
+          "title": "Alleingang",
+          "description": "Gönn dir eine Ration.",
           "translationKey": "boardField_loneSurvivor",
           "imageUrl": "/assets/board/loneSurvivor.png",
           "restrictToRing": -1,
@@ -165,7 +185,8 @@
         },
         {
           "id": 20,
-          "description": "DER ÄLTESTE TRINKT.",
+          "title": "Senior",
+          "description": "Der Älteste trinkt.",
           "translationKey": "boardField_senior",
           "imageUrl": "/assets/board/senior.png",
           "restrictToRing": -1,
@@ -173,7 +194,8 @@
         },
         {
           "id": 21,
-          "description": "AUF DIESEM FELD KANNST DU RAUSGEWORFEN WERDEN. STARTE DANN VON NEU.",
+          "title": "Heimweg",
+          "description": "Auf diesem Feld kannst du rausgeworfen werden. Starte dann von neu.",
           "translationKey": "boardField_wayHome",
           "imageUrl": "/assets/board/wayHome.png",
           "restrictToRing": -1,
@@ -181,7 +203,8 @@
         },
         {
           "id": 22,
-          "description": "ENTSCHEIDET AUF WESSEN SCHOß DU DICH FÜR EINE RUNDE SETZEN MUSST.",
+          "title": "Aufsitzen",
+          "description": "Entscheidet auf wessen Schoß du dich für eine Runde setzen musst.",
           "translationKey": "boardField_mountUp",
           "imageUrl": "/assets/board/mountUp.png",
           "restrictToRing": -1,
@@ -189,7 +212,8 @@
         },
         {
           "id": 23,
-          "description": "REIHUM SAGT JEDER EIN ZUSAMMENGESETZ-TES NOMEN WELCHES MIT DEM NOMEN AN-FÄNGT MIT DEM DEIN VORDERMANN GEENDET HAT. DU BEGINNST.",
+          "title": "Doppelwort",
+          "description": "Reihum sagt jeder eine zusammengesetztes Nomen, welches mit dem Nomen anfängt, mit dem dein Vordermann geendet hat. Du beginnst.",
           "translationKey": "boardField_doubleWord",
           "imageUrl": "/assets/board/doubleWord.png",
           "restrictToRing": -1,
@@ -197,7 +221,8 @@
         },
         {
           "id": 24,
-          "description": "VERTEILE FÜR JEDES SCHWARZE KLEIDUNGSSTÜCK DAS DU TRÄGST UND ZEIGST EINE RATION. UNTER-WÄSCHE ZÄHLT DOPPELT.",
+          "title": "Blackout",
+          "description": "Verteile für jedes schwarze Kleidungsstück, das du trägst und zeigst, eine Ration. Unterwäsche zählt doppelt.",
           "translationKey": "boardField_blackOut",
           "imageUrl": "/assets/board/blackOut.png",
           "restrictToRing": -1,
@@ -205,7 +230,8 @@
         },
         {
           "id": 25,
-          "description": "ALLE TRINKEN, AUßER DIR.",
+          "title": "Diktatur",
+          "description": "Alle trinken, außer dir.",
           "translationKey": "boardField_dictator",
           "imageUrl": "/assets/board/dictator.png",
           "restrictToRing": -1,
@@ -213,7 +239,8 @@
         },
         {
           "id": 26,
-          "description": "GUTEN FREUNDEN GIBT MAN EIN KÜSSCHEN. DEIN RECHTER NACHBAR IST EIN GUTER FREUND. GIBST DU EIN KÜSSCHEN AUFS NÜSSCHEN TRINKEN ALLE UNBETEILIGTEN DREI RATIO-NEN.",
+          "title": "Küsschen (aufs Nüsschen)",
+          "description": "Guten Freunden gibt man ein Küsschen. Dein rechter Nachbar ist ein guter Freund. Gibst du ein Küsschen aufs Nüsschen, trinken alle Unbeteiligte drei Rationen.",
           "translationKey": "boardField_kisses",
           "imageUrl": "/assets/board/kisses.png",
           "restrictToRing": -1,
@@ -221,7 +248,8 @@
         },
         {
           "id": 27,
-          "description": "BEGIB DICH ZURÜCK ZUM START.",
+          "title": "Neustart",
+          "description": "Begib dich zurück zum Start.",
           "translationKey": "boardField_restart",
           "imageUrl": "/assets/board/restart.png",
           "restrictToRing": -1,
@@ -229,7 +257,8 @@
         },
         {
           "id": 28,
-          "description": "TANZE ETWAS VOR. ALLEIN ODER ZU ZWEIT ….WIE WÄRS MIT DEINEM NAMEN?",
+          "title": "Dancing Queen",
+          "description": "Tanze etwas vor. Allein oder zu zweit.. Wie wärs mit deinem Namen?",
           "translationKey": "boardField_dancingQueen",
           "imageUrl": "/assets/board/dancingQueen.png",
           "restrictToRing": -1,
@@ -237,7 +266,8 @@
         },
         {
           "id": 29,
-          "description": "AUFGEPASST! DER NÄCHSTE DER EINE SECHS WÜRFELT ZIEHT EINE RING NACH OBEN.",
+          "title": "Aufstieg",
+          "description": "Aufgepasst! Der nächste, der eine Sechs würfelt, zieht einen Ring nach oben.",
           "translationKey": "boardField_stepUp",
           "imageUrl": "/assets/board/stepUp.png",
           "restrictToRing": -1,
@@ -245,7 +275,8 @@
         },
         {
           "id": 30,
-          "description": "ENTSCHEIDET WELCHES LIED IHR GEMEINSAM SINGT.",
+          "title": "Hobbyghor",
+          "description": "Entscheidet welches Lied ihr gemeinsam singt.",
           "translationKey": "boardField_choir",
           "imageUrl": "/assets/board/choir.png",
           "restrictToRing": -1,
@@ -253,7 +284,8 @@
         },
         {
           "id": 31,
-          "description": "SETZ EINE RUNDE AUS. LEERE IN DER ZWISCHEN-ZEIT DEIN GETRÄNK. LEISTET DIR JEMAND GE-SELLSCHAFT GELINGT EUCH DER AUSBRUCH.",
+          "title": "Gefängnis",
+          "description": "Setze eine Runde aus. Leere in der Zwischenzeit dein Getränk. Leistet dir jemand Gesellschaft, gelingt euch der Ausbruch sofort.",
           "translationKey": "boardField_jail",
           "imageUrl": "/assets/board/jail.png",
           "restrictToRing": -1,
@@ -261,7 +293,8 @@
         },
         {
           "id": 32,
-          "description": "WENN DU EINE UNGERADE ZAHL WÜRFELST IM NÄCHSTEN ZUG SETZE SIE RÜCKWÄRTS.",
+          "title": "50% Chance",
+          "description": "Wenn im nächsten Zug eine ungerade Zahl würfelst, setze sie rückwärts.",
           "translationKey": "boardField_chance",
           "imageUrl": "/assets/board/chance.png",
           "restrictToRing": -1,
@@ -269,7 +302,8 @@
         },
         {
           "id": 33,
-          "description": "GIB JEMANDEM EINE BROFIST, DANN TRINK MIT IHM.",
+          "title": "Fist'n'Sauf",
+          "description": "Gib jemandem eine Brofist. Trink dann mit ihm/ihr.",
           "translationKey": "boardField_fistBuddy",
           "imageUrl": "/assets/board/fistBuddy.png",
           "restrictToRing": -1,
@@ -277,7 +311,8 @@
         },
         {
           "id": 34,
-          "description": "BEDIENE ALLE BIS ENDE DES PSIELS ODER BIS JEMAND NEUES DIESES FELD BETRITT MIT GETRÄN-KEN. BIST DU SCHWARZ WIRD DIE AUFGABE AUF DEINEN GEGENÜBER REFLEKTIERT.",
+          "title": "DJ",
+          "description": "Bediene die Musik(Musikbot) bis Ende des Spiels oder bis jemand neues dieses Feld betritt.",
           "translationKey": "boardField_butler",
           "imageUrl": "/assets/board/butler.png",
           "restrictToRing": -1,
@@ -285,7 +320,8 @@
         },
         {
           "id": 35,
-          "description": "ALLE TRINKEN EINE RATION FÜR JEDE SECHS IN IHREM GEBURSDATUM.",
+          "title": "Sechser im Lotto",
+          "description": "Alle trinken eine Ration für jede Sechs in ihrem Geburtsdatum.",
           "translationKey": "boardField_sixes",
           "imageUrl": "/assets/board/sixes.png",
           "restrictToRing": -1,
@@ -293,7 +329,8 @@
         },
         {
           "id": 36,
-          "description": "WECHSELT DIE SPIELRICHTUNG.",
+          "title": "Perspektivwechsel",
+          "description": "Wechselt die Spielrichtung. (Tipp: /persperciveChange)",
           "translationKey": "boardField_perspective",
           "imageUrl": "/assets/board/perspective.png",
           "restrictToRing": -1,
@@ -301,7 +338,8 @@
         },
         {
           "id": 37,
-          "description": "DER LETZTE TRINKT.",
+          "title": "Schlusslicht",
+          "description": "Der letzte trinkt.",
           "translationKey": "boardField_tailLight",
           "imageUrl": "/assets/board/tailLight.png",
           "restrictToRing": -1,
@@ -309,7 +347,8 @@
         },
         {
           "id": 38,
-          "description": "BEGIB DICH EIN FELD NACH UNTEN, FÜHRE DIE NÄCHSTE AUFGABE TROTZDEM AUS.",
+          "title": "Abgang",
+          "description": "Begib dich ein Feld nach unten. Führe diese Aufgabe trotzdem aus.",
           "translationKey": "boardField_descent",
           "imageUrl": "/assets/board/descent.png",
           "restrictToRing": 234,
@@ -317,7 +356,8 @@
         },
         {
           "id": 39,
-          "description": "ENTLEDIGIE DICH EINES PRIMÄREN KLEIDUNGS-STÜCKS.",
+          "title": "Striptease",
+          "description": "Entledige dich eines primären Kleidungsstücks.",
           "translationKey": "boardField_striptease",
           "imageUrl": "/assets/board/striptease.png",
           "restrictToRing": -1,
@@ -325,7 +365,8 @@
         },
         {
           "id": 40,
-          "description": "ERSTE UND LETZTE SPIELFIGUR TAUSCHEN DEN PLATZ.",
+          "title": "Wechsel dich",
+          "description": "Erste und letzte Spielfigur tauschen den Platz.",
           "translationKey": "boardField_swapPlaces",
           "imageUrl": "/assets/board/swapPlaces.png",
           "restrictToRing": -1,
@@ -333,7 +374,8 @@
         },
         {
           "id": 41,
-          "description": "SUCH DIR EINEN GEGENSTAND, STÜTZE DEINEN KOPF DARAUF, DREHE DICH ZEHN RUNDEN UM DEN GEGENSTAND.",
+          "title": "Dehwurm-r",
+          "description": "Suche dir einen Gegenstand. Stütze deinen Kopf darauf und drehe dich zehn Runden um den Gegenstand.",
           "translationKey": "boardField_dehwurmr",
           "imageUrl": "/assets/board/dehwurmr.png",
           "restrictToRing": -1,
@@ -341,7 +383,8 @@
         },
         {
           "id": 42,
-          "description": "BETRITTST DU DIESES FELD WERDEN DU UND ALLE SPIELER AUF DEN UMLIEGENDEN VIER FEL-DER ZUM START ZURÜCK TELEPORTIERT.",
+          "title": "Schwarzes Loch",
+          "description": "Betrittst du dieses Feld, werden du und alle Spieler auf den umliegenden vier Feldern zum Start zurück teleportiert.",
           "translationKey": "boardField_blackHole",
           "imageUrl": "/assets/board/blackHole.png",
           "restrictToRing": 234,
@@ -349,7 +392,8 @@
         },
         {
           "id": 43,
-          "description": "SCHIEßT EIN FOTO VON ALLEN SPIELERN UND DEM SPIEL.",
+          "title": "Fotoshooting",
+          "description": "Schießt ein Foto von allen Spielern und dem Spiel.",
           "translationKey": "boardField_fotoshooting",
           "imageUrl": "/assets/board/fotoshooting.png",
           "restrictToRing": -1,
@@ -357,7 +401,8 @@
         },
         {
           "id": 44,
-          "description": "ALLE SPIELER STRECKEN IHRE HÄNDE NACH OBEN, DER LETZTE TRINKT.",
+          "title": "7 to Heaven",
+          "description": "Alle Spieler strecken ihre Hännde nach oben. Der letzte trinkt.",
           "translationKey": "boardField_heaven",
           "imageUrl": "/assets/board/heaven.png",
           "restrictToRing": -1,
@@ -365,7 +410,8 @@
         },
         {
           "id": 45,
-          "description": "ALLE DIE EINE JEANS TRAGEN TRINKEN.",
+          "title": "Jeansparty",
+          "description": "Alle die eine Jeans tragen trinken.",
           "translationKey": "boardField_jeans",
           "imageUrl": "/assets/board/jeans.png",
           "restrictToRing": -1,
@@ -373,7 +419,8 @@
         },
         {
           "id": 46,
-          "description": "GÖNNE DIR UND DEINEM ZWEITEM ICH EINE RATION.",
+          "title": "Multiple Persönlichkeitsstörung",
+          "description": "Gönne dir und deinem zweitem ich eine Ration.",
           "translationKey": "boardField_multiple",
           "imageUrl": "/assets/board/multiple.png",
           "restrictToRing": -1,
@@ -381,7 +428,8 @@
         },
         {
           "id": 47,
-          "description": "FISCHERS FRITZ FISCHT FRISCHE FISCHE, FRISCHE FISCHE FISCHT FISCHERS FRITZ.",
+          "title": "BLGRHÄ - Zungenbrecher",
+          "description": "Fischers Fritz fischt frische Fische, frische Fische fischt Fischers Fritz.",
           "translationKey": "boardField_blgrha",
           "imageUrl": "/assets/board/blgrha.png",
           "restrictToRing": -1,
@@ -389,7 +437,8 @@
         },
         {
           "id": 48,
-          "description": "DU WIRST ZUR SCHILDKRÖTE. DEINE AUGENANZAHL WIRD DURCH ZWEI GETEILT GGF. AUFGERUNDET.",
+          "title": "Schildkröte",
+          "description": "Du wirst zur Schildkröte. Deine Augenanzahl wird durch zwei geteilt und ggf. aufgerundet.",
           "translationKey": "boardField_turtle",
           "imageUrl": "/assets/board/turtle.png",
           "restrictToRing": -1,
@@ -397,7 +446,8 @@
         },
         {
           "id": 49,
-          "description": "MACHE EINEN HANDSTAND ODER EIN RAD.",
+          "title": "Akrobatik",
+          "description": "Mache einen Handstand oder ein Rad.",
           "translationKey": "boardField_acrobatics",
           "imageUrl": "/assets/board/acrobatics.png",
           "restrictToRing": -1,
@@ -405,7 +455,8 @@
         },
         {
           "id": 50,
-          "description": "SETZE DEINEN NÄCHSTEN ZUG ZURÜCK.",
+          "title": "Rückzug",
+          "description": "Setze deinen nächsten Zug zurück.",
           "translationKey": "boardField_retreat",
           "imageUrl": "/assets/board/retreat.png",
           "restrictToRing": -1,
@@ -413,7 +464,8 @@
         },
         {
           "id": 51,
-          "description": "TUE NICHTS. MUSST DU DOCH ETWAS TUN GILT DAS ALS REGELVERSTOß.",
+          "title": "Auszeit",
+          "description": "Tue nichts. Musst du doch etwas tun gilt das als Regelverstoß.",
           "translationKey": "boardField_timeout",
           "imageUrl": "/assets/board/timeout.png",
           "restrictToRing": -1,
@@ -421,7 +473,8 @@
         },
         {
           "id": 52,
-          "description": "ERZÄHL EINE GESCHICHTE. FINDEN DIE ANDEREN SIE NICHT GUT TRINK EINE STRAFRATION.",
+          "title": "Storytime",
+          "description": "Erzähle eine Geschichte. Finden die Anderen sie nicht gut trinkst du eine Strafration.",
           "translationKey": "boardField_story",
           "imageUrl": "/assets/board/story.png",
           "restrictToRing": -1,
@@ -429,7 +482,8 @@
         },
         {
           "id": 53,
-          "description": "LEERE BIS ZUM ENDE DES SPIELS DAS GETRÄNK EINES ANDEREN. WIRST DU VOM GETRÄNKBESITZER ERWISCHT TRINKST DU DEINS UND SEINS AUS.",
+          "title": "Secret Agent",
+          "description": "Leere bis zum Ende dees Spiels das Getränk eines anderen. Wirst du vom Getränkebesitzer erwischt trinkst du deins und seins aus.",
           "translationKey": "boardField_secretAgent",
           "imageUrl": "/assets/board/secretAgent.png",
           "restrictToRing": -1,
@@ -437,7 +491,8 @@
         },
         {
           "id": 54,
-          "description": "DU WIRST ZUM DENKER UND REIMST FÜR EINE RUNDE. SUCH DIR EINEN DICHTER, DIESER TRINKT DEINE SCHLÜCKE FÜR EINE RUNDE",
+          "title": "Goethe",
+          "description": "Du wirst zum Denker und reimst für eine Runde. Such dir einen Dichter. Dieser trinkt deine Schlücke für eine Runde.",
           "translationKey": "boardField_goethe",
           "imageUrl": "/assets/board/goethe.png",
           "restrictToRing": -1,
@@ -445,7 +500,8 @@
         },
         {
           "id": 55,
-          "description": "DREHT EIN FLASCHE, DER AUSERWÄHLTE TRINKT.",
+          "title": "Flaschendrehen",
+          "description": "Dreht eine Flasche. Der Auserwählte trinkt. (Tipp: /random <x>)",
           "translationKey": "boardField_bottle",
           "imageUrl": "/assets/board/bottle.png",
           "restrictToRing": -1,
@@ -453,7 +509,8 @@
         },
         {
           "id": 56,
-          "description": "ULF EIN GETRÄNKT. IST KEIN ULF VORHADEN TRINKE ZWEI RATIONEN.",
+          "title": "Ulf",
+          "description": "Ulf ein Getränk. Ist kein Ulf vorhanden trinkst du zwei Rationen.",
           "translationKey": "boardField_ulf",
           "imageUrl": "/assets/board/ulf.png",
           "restrictToRing": -1,
@@ -461,7 +518,8 @@
         },
         {
           "id": 57,
-          "description": "ALLE TRINKEN: DER DER AM MEISTEN TRINKT DARF SEINE GETRUNKENE ANZAHL AN RATIONEN VERTEILEN.",
+          "title": "Quallantität",
+          "description": "Alle trinken. Der, der am meisten getrunken hat, darf seine getrunkene Anzahl an Rationen verteilen.",
           "translationKey": "boardField_jellyfish",
           "imageUrl": "/assets/board/jellyfish.png",
           "restrictToRing": -1,
@@ -469,7 +527,8 @@
         },
         {
           "id": 58,
-          "description": "DER JÜNGSTE TRINKT.",
+          "title": "Junior",
+          "description": "Der Jüngste trinkt.",
           "translationKey": "boardField_junior",
           "imageUrl": "/assets/board/junior.png",
           "restrictToRing": -1,
@@ -477,7 +536,8 @@
         },
         {
           "id": 59,
-          "description": "SUCH DIR EIN FELD AUS DESSEN AUFGABE ER-FÜLLT WERDEN SOLL.",
+          "title": "Joker",
+          "description": "Suche dir ein Feld aus. Führe die Aktion dieses Feldes aus.",
           "translationKey": "boardField_joker",
           "imageUrl": "/assets/board/joker.png",
           "restrictToRing": -1,
@@ -485,7 +545,8 @@
         },
         {
           "id": 60,
-          "description": "DER DÜNNSTE TRINKT.",
+          "title": "Lauch",
+          "description": "Der Dünnste trinkt.",
           "translationKey": "boardField_leek",
           "imageUrl": "/assets/board/leek.png",
           "restrictToRing": -1,
@@ -493,7 +554,8 @@
         },
         {
           "id": 61,
-          "description": "STELLE EINE THESE ÜBER DICH AUF. BEI DREI MELDEN SICH ALLE DIE SIE FÜR WAHR HALTEN, WER FALSCH LIEGT TRINKT. FÜR JEDEN DER RICHTIG LIEGT TRINKST DU.",
+          "title": "Fake News",
+          "description": "Stelle eine These über dich auf. Bei Drei melden sich Alle, die sie für wahr halten. Wer falsch liegt, trinkt. Für Jeden, der richtig liegt, trinkst du.",
           "translationKey": "boardField_fakeNews",
           "imageUrl": "/assets/board/fakeNews.png",
           "restrictToRing": -1,
@@ -501,7 +563,8 @@
         },
         {
           "id": 62,
-          "description": "DU BEKOMMST EIN GETRÄNK AN JEDE HAND GE-KLEBT. SIE WERDEN ERST WIEDER ABGEMACHT, WENN DU SIE GELEERT HAST.",
+          "title": "Edward Fortyhands",
+          "description": "Du bekommst ein Getränk an jede Hand geklebt. Sie werden erst wieder abgemacht, wenn du sie geleert hast.",
           "translationKey": "boardField_edward",
           "imageUrl": "/assets/board/edward.png",
           "restrictToRing": -1,
@@ -509,7 +572,8 @@
         },
         {
           "id": 63,
-          "description": "TRINKET AUS!",
+          "title": "Ziel",
+          "description": "Trinket aus!!",
           "translationKey": "boardField_goal",
           "imageUrl": "/assets/board/goal.png",
           "restrictToRing": -1,
