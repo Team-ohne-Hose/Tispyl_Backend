@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { getRepository, Repository } from 'typeorm';
-import User from '../entities/user';
+import User from '../src/entity/User';
 import * as path from "path";
 import * as fs from "fs";
 import { ImagePreparer } from '../helpers/ImagePreparer';

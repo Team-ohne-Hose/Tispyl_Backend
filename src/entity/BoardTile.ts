@@ -1,7 +1,6 @@
-import { type } from "node:os";
-import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import Language from "./language";
-import User from "./user";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import Language from "./Language";
+import User from "./User";
 
 @Entity()
 class BoardTile {

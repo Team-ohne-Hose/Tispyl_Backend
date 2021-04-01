@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
-import User from "./user";
+import User from "./User";
 
 @Entity()
 class UserStatistic {

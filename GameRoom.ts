@@ -17,8 +17,8 @@ import { Link } from "./model/state/Link";
 import { VoteEntry, VoteStage } from "./model/state/VoteState";
 import UserController from "./controller/user.controller";
 import GameController from "./controller/game.controller";
-import Game from "./entities/game";
-import User from "./entities/user";
+import Game from "./src/entity/Game";
+import User from "./src/entity/User";
 
 export type createRoomOptions = {
     roomName: string;

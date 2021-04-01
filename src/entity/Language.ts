@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import BoardTile from "./boardTile";
+import BoardTile from "./BoardTile";
 
 
 @Entity()

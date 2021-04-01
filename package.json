@@ -6,6 +6,8 @@
   "scripts": {
     "runDev": "ts-node app.ts -e dev",
     "runProd": "ts-node app.ts -e prod",
+    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
+    "migrate": "typeorm migration:generate -n",
     "updateRemote": "deployment\\updateRemote.cmd deployment_rsa",
     "startRemote": "deployment\\startRemote.cmd deployment_rsa",
     "shutDownRemote": "deployment\\shutDownRemote.cmd deployment_rsa"
@@ -44,7 +46,7 @@
   "devDependencies": {
     "@types/cannon": "^0.1.5",
     "browserify": "^14.4.0",
-    "ts-node": "^8.10.2",
+    "ts-node": "^9.1.1",
     "typescript": "^3.9.7",
     "typeorm": "^0.2.31"
   }

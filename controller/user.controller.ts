@@ -1,7 +1,7 @@
 import { getRepository, Repository } from "typeorm"
 import express, { Request, Response } from 'express';
 import { validate, ValidationError } from "class-validator";
-import User from "../entities/user"
+import User from "../src/entity/User"
 import { LoginOptions } from "../types/LoginOptions";
 import Authentication from "../module/authentication";
 import { JwtToken } from "../types/JwtToken";

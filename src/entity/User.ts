@@ -1,6 +1,6 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import BoardTile from "./boardTile";
-import Role from "./role";
+import BoardTile from "./BoardTile";
+import Role from "./Role";
 import UserStatistic from "./userStatistic";
 
 

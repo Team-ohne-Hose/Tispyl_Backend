@@ -14,7 +14,7 @@ import { ErrorHandler } from "./helpers/ErrorHandler";
 import betterLogging from 'better-logging';
 import DatabaseConnection from './module/database';
 import { Connection } from 'typeorm';
-import Environment from './module/environment';
+import {createConnection} from "typeorm";
 import globalRouter from './router/global.router';
 
 require('dotenv').config();
@@ -87,7 +87,7 @@ const startServer = () => {
     requestHandler.use(ErrorHandler.handleKnownError);
     requestHandler.use(ErrorHandler.handleUnexpectedError);
 
-    DatabaseConnection.connect().then(async (connection: Connection) => {
+    createConnection().then(async (connection: Connection) => {
 
         if (process.env.NODE_ENV === 'development') { await connection.synchronize(); }
         return connection
