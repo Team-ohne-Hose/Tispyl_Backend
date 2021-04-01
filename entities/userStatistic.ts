@@ -5,7 +5,7 @@ import User from "./user";
 class UserStatistic {
 
     @PrimaryGeneratedColumn()
-    public user_statistic_id: number;
+    public id: number;
 
     @Column({ type: "int", nullable: false })
     public duration: number;

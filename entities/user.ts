@@ -1,4 +1,5 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import BoardTile from "./boardTile";
 import Role from "./role";
 import UserStatistic from "./userStatistic";
 
@@ -7,7 +8,7 @@ import UserStatistic from "./userStatistic";
 class User {
 
     @PrimaryGeneratedColumn()
-    public user_id: number;
+    public id: number;
 
     @Column({ type: "varchar", length: 45, unique: true, nullable: false })
     public login_name: string;
@@ -35,6 +36,9 @@ class User {
 
     @Column({ type: 'tinyint', nullable: false })
     public is_dev: number;
+
+    @OneToMany(() => BoardTile, boardTile => boardTile.user)
+    public board_tile: BoardTile[];
 
     @ManyToMany(type => Role, role => role.users)
     @JoinTable()

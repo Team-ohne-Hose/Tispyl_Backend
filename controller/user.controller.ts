@@ -203,7 +203,7 @@ class UserController {
 
         try {
             user = await userRepository.findOneOrFail({
-                select: ["user_id", "display_name", "login_name", "password_hash"],
+                select: ["id", "display_name", "login_name", "password_hash"],
                 where: { login_name: loginOptions.username, password_hash: loginOptions.password }
             });
 
@@ -215,7 +215,7 @@ class UserController {
 
         // Create JwtToken
         const jwtToken: string = await Authentication.generateJwtToken({
-            id: user.user_id,
+            id: user.id,
             username: user.login_name
         }, Authentication.JWT_OPTIONS);
 
@@ -238,7 +238,7 @@ class UserController {
 
     private static async verifyUser(req: Request, user: User) {
         const jwtToken: JwtToken = await Authentication.getJwtToken(req)
-        return (user.user_id === jwtToken.id)
+        return (user.id === jwtToken.id)
     }
 
     public static async getUserEntity(loginname: string): Promise<User | null> {

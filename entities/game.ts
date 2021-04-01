@@ -4,10 +4,10 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 class Game {
 
     @PrimaryGeneratedColumn()
-    public game_id: number;
+    public id: number;
 
     @Column({ type: 'varchar', length: 45, nullable: false })
-    public game_name: string;
+    public name: string;
 
     @Column({ type: 'varchar', length: 45, nullable: true })
     public author: string;
@@ -31,7 +31,7 @@ class Game {
     public maxRound: number;
 
     constructor(gameName: string, author: string, skin: string, randomizeTiles: number, startTime: Date, endTime: Date, maxPlayers: number, maxRound: number) { 
-        this.game_name = gameName;
+        this.name = gameName;
         this.author = author;
         this.skin = skin;
         this.randomizeTiles = randomizeTiles;
