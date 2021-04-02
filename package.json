@@ -10,7 +10,11 @@
     "migrate": "typeorm migration:generate -n",
     "updateRemote": "deployment\\updateRemote.cmd deployment_rsa",
     "startRemote": "deployment\\startRemote.cmd deployment_rsa",
-    "shutDownRemote": "deployment\\shutDownRemote.cmd deployment_rsa"
+    "shutDownRemote": "deployment\\shutDownRemote.cmd deployment_rsa",
+    "migration:generate": "npm run typeorm migration:generate -- -n",
+    "migration:run": "npm run typeorm migration:run",
+    "migration:revert": "npm run typeorm migration:revert",
+    "migration:show": "npm run typeorm migration:show"
   },
   "engines": {
     "node": "8.9.1"

@@ -89,6 +89,8 @@ const startServer = () => {
 
     createConnection().then(async (connection: Connection) => {
 
+        await connection.runMigrations();
+
         if (process.env.NODE_ENV === 'development') { await connection.synchronize(); }
         return connection
     })

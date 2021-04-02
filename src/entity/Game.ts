@@ -9,10 +9,10 @@ class Game {
     @Column({ type: 'varchar', length: 45, nullable: false })
     public name: string;
 
-    @Column({ type: 'varchar', length: 45, nullable: true })
+    @Column({ type: 'varchar', length: 45, nullable: false })
     public author: string;
 
-    @Column({ type: 'varchar', length: 45, nullable: true })
+    @Column({ type: 'varchar', length: 45, nullable: false })
     public skin: string;
 
     @Column({ type: "tinyint" })
