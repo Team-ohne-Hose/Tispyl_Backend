@@ -15,8 +15,8 @@ import { PhysicsObjectState } from "./model/state/PhysicsState";
 import { ItemManager } from "./model/ItemManager";
 import { Link } from "./model/state/Link";
 import { VoteEntry, VoteStage } from "./model/state/VoteState";
-import UserController from "./controller/user.controller";
-import GameController from "./controller/game.controller";
+import UserController from "./src/controller/user.controller";
+import GameController from "./src/controller/game.controller";
 import Game from "./src/entity/Game";
 import User from "./src/entity/User";
 

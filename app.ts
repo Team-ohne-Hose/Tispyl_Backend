@@ -14,7 +14,7 @@ import { ErrorHandler } from "./helpers/ErrorHandler";
 import betterLogging from 'better-logging';
 import { Connection } from 'typeorm';
 import {createConnection} from "typeorm";
-import globalRouter from './router/global.router';
+import globalRouter from './src/router/global.router';
 
 require('dotenv').config();
 

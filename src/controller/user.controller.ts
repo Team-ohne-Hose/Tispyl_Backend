@@ -1,12 +1,12 @@
 import { getRepository, Repository } from "typeorm"
 import express, { Request, Response } from 'express';
 import { validate, ValidationError } from "class-validator";
-import User from "../src/entity/User"
-import { LoginOptions } from "../types/LoginOptions";
-import Authentication from "../module/authentication";
-import { JwtToken } from "../types/JwtToken";
-import { RegisterOptions } from "../types/RegisterOptions";
-import { APIResponse } from "../model/APIResponse";
+import User from "../entity/User"
+import { LoginOptions } from "../../types/LoginOptions";
+import Authentication from "../../module/authentication";
+import { JwtToken } from "../../types/JwtToken";
+import { RegisterOptions } from "../../types/RegisterOptions";
+import { APIResponse } from "../../model/APIResponse";
 
 class UserController {
 
@@ -50,8 +50,8 @@ class UserController {
 
         // Delete the hashed password from the response.
         delete user.password_hash;
+        
         new APIResponse(res, 200, user).send()
-        //res.send({ status: "ok", data: user });
     }
 
     public static async createUser(req: Request, res: Response): Promise<void> {
@@ -106,7 +106,7 @@ class UserController {
             await userRepository.save(user);
         } catch (error) {
             console.error("User couldn't be saved into the database. Error: ", error);
-            new APIResponse(res, 500, {}, ['Error while saving the user inside the database.']).send();
+            new APIResponse(res, 500, {}, ['Error while saving the user to the database.']).send();
             return;
         }
 
@@ -165,6 +165,8 @@ class UserController {
         delete user.password_hash;
         new APIResponse(res, 200, { user: user }).send();
     }
+
+    //TODO: Delete User
 
     public static async deleteUser(req: Request, res: Response): Promise<void> {
 

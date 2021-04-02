@@ -1,7 +1,7 @@
 import { getRepository, Repository } from "typeorm";
-import Game from "../src/entity/Game";
-import User from "../src/entity/User";
-import UserStatistic from "../src/entity/userStatistic";
+import Game from "../entity/Game";
+import User from "../entity/User";
+import UserStatistic from "../entity/userStatistic";
 import UserController from "./user.controller";
 
 class GameController {
