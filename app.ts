@@ -12,7 +12,6 @@ import backendConfigDev from "./configs/backend-config-dev.json";
 import * as yargs from "yargs";
 import { ErrorHandler } from "./helpers/ErrorHandler";
 import betterLogging from 'better-logging';
-import DatabaseConnection from './module/database';
 import { Connection } from 'typeorm';
 import {createConnection} from "typeorm";
 import globalRouter from './router/global.router';

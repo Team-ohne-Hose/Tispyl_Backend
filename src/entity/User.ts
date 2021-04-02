@@ -27,7 +27,7 @@ class User {
     public profile_picture: string;
 
     @Column({ type: "int" })
-    public figure: number;
+    public last_figure: number;
 
     @Column({ type: 'tinyint', nullable: false })
     public is_connected: number;
@@ -54,7 +54,7 @@ class User {
         this.user_creation = new Date();
         this.time_played = 0;
         this.profile_picture = null;
-        this.figure = 1;
+        this.last_figure = 1;
         this.is_connected = 0;
         this.is_dev = 0;
     }
