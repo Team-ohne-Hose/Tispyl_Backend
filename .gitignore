@@ -45,3 +45,6 @@ configs/credentials.json
 .env
 
 logs/
+
+# Config
+ormconfig.json

@@ -1,12 +1,10 @@
-import { type } from "os";
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
-import User from "./user";
-
+import User from "./User";
 @Entity()
 class Role {
 
     @PrimaryGeneratedColumn()
-    public role_id: number;
+    public id: number;
 
     @Column({ type: "varchar", length: 65, unique: false, nullable: false })
     public description: string;

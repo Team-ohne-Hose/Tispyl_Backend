@@ -1,12 +1,12 @@
 import { getRepository, Repository } from "typeorm"
 import express, { Request, Response } from 'express';
 import { validate, ValidationError } from "class-validator";
-import User from "../entities/user"
-import { LoginOptions } from "../types/LoginOptions";
-import Authentication from "../module/authentication";
-import { JwtToken } from "../types/JwtToken";
-import { RegisterOptions } from "../types/RegisterOptions";
-import { APIResponse } from "../model/APIResponse";
+import User from "../entity/User"
+import { LoginOptions } from "../../types/LoginOptions";
+import Authentication from "../../module/authentication";
+import { JwtToken } from "../../types/JwtToken";
+import { RegisterOptions } from "../../types/RegisterOptions";
+import { APIResponse } from "../../model/APIResponse";
 
 class UserController {
 
@@ -50,8 +50,8 @@ class UserController {
 
         // Delete the hashed password from the response.
         delete user.password_hash;
+        
         new APIResponse(res, 200, user).send()
-        //res.send({ status: "ok", data: user });
     }
 
     public static async createUser(req: Request, res: Response): Promise<void> {
@@ -106,7 +106,7 @@ class UserController {
             await userRepository.save(user);
         } catch (error) {
             console.error("User couldn't be saved into the database. Error: ", error);
-            new APIResponse(res, 500, {}, ['Error while saving the user inside the database.']).send();
+            new APIResponse(res, 500, {}, ['Error while saving the user to the database.']).send();
             return;
         }
 
@@ -166,6 +166,8 @@ class UserController {
         new APIResponse(res, 200, { user: user }).send();
     }
 
+    //TODO: Delete User
+
     public static async deleteUser(req: Request, res: Response): Promise<void> {
 
         const user_id: number = Number(req.params.user_id)
@@ -203,8 +205,8 @@ class UserController {
 
         try {
             user = await userRepository.findOneOrFail({
-                select: ["user_id", "display_name", "login_name", "password_hash"],
-                where: { login_name: loginOptions.username, password_hash: loginOptions.password  }
+                select: ["id", "display_name", "login_name", "password_hash"],
+                where: { login_name: loginOptions.username, password_hash: loginOptions.password }
             });
 
         } catch (error) {
@@ -215,14 +217,14 @@ class UserController {
 
         // Create JwtToken
         const jwtToken: string = await Authentication.generateJwtToken({
-            id: user.user_id,
+            id: user.id,
             username: user.login_name
         }, Authentication.JWT_OPTIONS);
 
         res.cookie("SESSIONID", jwtToken, { httpOnly: true, secure: true })
 
         new APIResponse(res, 200, { jwtToken: jwtToken, expiresIn: Authentication.JWT_OPTIONS.expiresIn }).send()
-        console.info('User:', user.login_name,"\t" ,'Token:', jwtToken);
+        console.info('User:', user.login_name, "\t", 'Token:', jwtToken);
     }
 
     public static async addPlaytime(login_name: string, minutes: number) {
@@ -238,7 +240,12 @@ class UserController {
 
     private static async verifyUser(req: Request, user: User) {
         const jwtToken: JwtToken = await Authentication.getJwtToken(req)
-        return (user.user_id === jwtToken.id)
+        return (user.id === jwtToken.id)
+    }
+
+    public static async getUserEntity(loginname: string): Promise<User | null> {
+        const userRepository: Repository<User> = getRepository(User)
+        return await userRepository.findOne({ where: [{ login_name: loginname }] }) ?? null
     }
 }
 

@@ -14,10 +14,11 @@ import { Player } from "./model/state/Player";
 import { PhysicsObjectState } from "./model/state/PhysicsState";
 import { ItemManager } from "./model/ItemManager";
 import { Link } from "./model/state/Link";
-import { VoteConfiguration, VoteEntry, VoteStage } from "./model/state/VoteState";
-import UserController from "./controller/user.controller";
-import GameController from "./controller/game.controller";
-import Game from "./entities/game";
+import { VoteEntry, VoteStage } from "./model/state/VoteState";
+import UserController from "./src/controller/user.controller";
+import GameController from "./src/controller/game.controller";
+import Game from "./src/entity/Game";
+import User from "./src/entity/User";
 
 export type createRoomOptions = {
     roomName: string;
@@ -26,15 +27,17 @@ export type createRoomOptions = {
     displayName: string;
     skin: string;
     randomizeTiles: boolean
-  }
-  
+}
+
 export class GameRoom extends Room<GameState> {
 
-    createDate: Date;
+    createTime: Date;
 
     onCreate(options: any): void | Promise<any> {
         console.log(`[onCreate] Room created. Options: ${JSON.stringify(options)}`);
-        this.createDate = new Date();
+        this.createTime = new Date();
+
+        this.maxClients = 16;
 
         this.setState(new GameState());
         this.setMetadata({
@@ -76,21 +79,16 @@ export class GameRoom extends Room<GameState> {
         return undefined;
     }
 
-    onDispose(): void | Promise<any> {
+    async onDispose(): Promise<void | Promise<any>> {
         console.log(`[onDispose] Destructing physicsState`);
+        
+        const { roomName, author, skin, randomizeTiles } = this.metadata;
 
-        const game = new Game(
-            this.metadata.lobbyName,
-            this.metadata.author,
-            this.metadata.skin,
-            this.metadata.randomizeTiles,
-            this.createDate,
-            new Date(),
-            this.state.playerList.size,
-            this.state.round
-        )
-
-        GameController.saveGameLog(game)
+        await GameController.saveGameLog(
+            new Game(roomName, author, skin, randomizeTiles, this.createTime, new Date(), this.maxClients, this.state.round),
+            this.state.playerList,
+            this.createTime,
+            this.state.round)
 
         this.state.physicsState.destructState();
         return undefined;
@@ -293,8 +291,8 @@ export class GameRoom extends Room<GameState> {
                     break;
                 case GameActionType.playerCastVote:
                     this.state.voteState.voteConfiguration.votingOptions.forEach((ve: VoteEntry, i: number) => {
-                        ve.castVotes = ve.castVotes.filter( e => !(e === player.displayName) );
-                        if ( i === data.elementIndex) { ve.castVotes.push(player.displayName) }
+                        ve.castVotes = ve.castVotes.filter(e => !(e === player.displayName));
+                        if (i === data.elementIndex) { ve.castVotes.push(player.displayName) }
                     });
                     this.state.voteState.voteConfiguration.triggerAll();
                     break;
@@ -430,9 +428,9 @@ export class GameRoom extends Room<GameState> {
                 case ChatCommandType.commandAsk:
                     let answer = true;
                     if (data.question.includes('not') ||
-                      data.question.includes('nicht') ||
-                      data.question.includes('überspringen') ||
-                      data.question.includes('skip')) {
+                        data.question.includes('nicht') ||
+                        data.question.includes('überspringen') ||
+                        data.question.includes('skip')) {
                         answer = false;
                     }
                     const msg = data.authorDisplayName + ' asked: ' + data.question + '\n' + 'Tispyl says: ' + (answer ? 'YES' : 'NO');
