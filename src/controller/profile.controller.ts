@@ -41,13 +41,40 @@ class ProfileController {
             return;
         }
 
-        const mimeType = ProfileController.MIMETYPES[path.extname(picturePath).slice(1).toLowerCase()] || 'text/plain';
+        try {
+            if (!fs.existsSync(picturePath)) {
+                console.log(`There is file for user with login_name: ${loginName}, picturePath: ${picturePath}`)
+                res.status(404).send({
+                    status: "not_found",
+                    error: "No picture found."
+                });
+                return;
+            }
+        } catch (error) {
+            console.log(`There was a error finding profilePicture for login_name ${loginName}, picturePath: ${picturePath}`)
+            res.status(404).send({
+                status: "not_found",
+                error: "No picture found."
+            });
+            return;
+        }
 
-        const stream = fs.createReadStream(picturePath);
-        stream.on('open', () => {
-            res.set('Content-Type', mimeType);
-            stream.pipe(res);
-        })
+        try {
+            const mimeType = ProfileController.MIMETYPES[path.extname(picturePath).slice(1).toLowerCase()] || 'text/plain';
+
+            const stream = fs.createReadStream(picturePath);
+            stream.on('open', () => {
+                res.set('Content-Type', mimeType);
+                stream.pipe(res);
+            });
+        } catch (error) {
+            console.log(`There was a error providing profilePicture for login_name ${loginName}, picturePath: ${picturePath}`)
+            res.status(404).send({
+                status: "not_found",
+                error: "No picture found."
+            });
+            return;
+        }
     }
 
     public static async updateProfilePicture(req: Request, res: Response): Promise<void> {
