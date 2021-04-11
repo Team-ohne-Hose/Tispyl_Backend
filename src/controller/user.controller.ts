@@ -210,8 +210,13 @@ class UserController {
             });
 
         } catch (error) {
-            console.error("Couldn't find a user with the following username: " + loginOptions.username + "\n" + "Error: ", error);
-            new APIResponse(res, 404, {}, ["Couldn't find a user with the provided username."]).send();
+            if (error.name === "EntityNotFound") {
+                console.log("(EntityNotFound) Couldn't find User: \"" + loginOptions.username + "\" with Password_hash: \"" + loginOptions.password + "\"");
+                new APIResponse(res, 404, {}, ["Username and Password did not match."]).send();
+            } else {
+                console.error("(EntityNotFound) Couldn't find a user with the following username: " + loginOptions.username + "\nError: ", error);
+                new APIResponse(res, 404, {}, ["Failed to look up user."]).send();
+            }
             return;
         }
 
