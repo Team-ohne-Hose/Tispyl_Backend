@@ -41,7 +41,7 @@ export class GameRoom extends Room<GameState> {
 
         this.setState(new GameState());
         this.setMetadata({
-            roomName: options['name'],
+            roomName: options['roomName'],
             author: options['author'],
             skin: options['skin'],
             randomizeTiles: options['randomizeTiles']
@@ -82,10 +82,12 @@ export class GameRoom extends Room<GameState> {
     async onDispose(): Promise<void | Promise<any>> {
         console.log(`[onDispose] Destructing physicsState`);
         
-        const { roomName, author, skin, randomizeTiles } = this.metadata;
+        const metadata = this.metadata as {roomName, author, skin, randomizeTiles};
+
+        console.log(this.metadata, metadata.roomName, metadata.author, metadata.skin, metadata.randomizeTiles);
 
         await GameController.saveGameLog(
-            new Game(roomName, author, skin, randomizeTiles, this.createTime, new Date(), this.maxClients, this.state.round),
+            new Game(metadata.roomName, metadata.author, metadata.skin, metadata.randomizeTiles, this.createTime, new Date(), this.maxClients, this.state.round),
             this.state.playerList,
             this.createTime,
             this.state.round)
