@@ -84,8 +84,6 @@ export class GameRoom extends Room<GameState> {
         
         const metadata = this.metadata as {roomName, author, skin, randomizeTiles};
 
-        console.log(this.metadata, metadata.roomName, metadata.author, metadata.skin, metadata.randomizeTiles);
-
         await GameController.saveGameLog(
             new Game(metadata.roomName, metadata.author, metadata.skin, metadata.randomizeTiles, this.createTime, new Date(), this.maxClients, this.state.round),
             this.state.playerList,
