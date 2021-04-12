@@ -1,6 +1,8 @@
+import { TriangleStripDrawMode } from "three";
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import BoardTile from "./BoardTile";
 import Role from "./Role";
+import TileSet from "./TileSet";
 import UserStatistic from "./userStatistic";
 @Entity("User")
 class User {
@@ -37,6 +39,9 @@ class User {
 
     @OneToMany(() => BoardTile, boardTile => boardTile.user)
     public board_tile: BoardTile[];
+
+    @OneToMany(() => TileSet, tileSet => tileSet.author)
+    tileSets: TileSet[];
 
     @ManyToMany(type => Role, role => role.users)
     @JoinTable()

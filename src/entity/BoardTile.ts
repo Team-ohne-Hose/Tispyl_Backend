@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import Language from "./Language";
+import SetField from "./SetField";
 import User from "./User";
 
 @Entity()
@@ -22,6 +23,9 @@ class BoardTile {
 
     @ManyToOne(type => User, user => user.board_tile)
     public user: User;
+
+    @OneToOne(() => SetField, setField => setField.boardTile)
+    public setField: SetField;
 
     constructor(name: string, description: string, path: string) {
         this.name = name;
