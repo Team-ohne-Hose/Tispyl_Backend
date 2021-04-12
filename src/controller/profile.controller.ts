@@ -6,20 +6,9 @@ import * as fs from "fs";
 import { ImagePreparer } from '../../helpers/ImagePreparer';
 import multer from 'multer';
 import { APIResponse } from '../../model/APIResponse';
+import {MIMETYPES} from "./mimeTypes";
 
 class ProfileController {
-
-    static MIMETYPES = {
-        html: 'text/html',
-        txt: 'text/plain',
-        css: 'text/css',
-        gif: 'image/gif',
-        jpg: 'image/jpeg',
-        jpeg: 'image/jpeg',
-        png: 'image/png',
-        svg: 'image/svg+xml',
-        js: 'application/javascript'
-    };
 
     static DEFAULT_IMAGE_PATH = 'fileStash/defaultImage.jpg';
 
@@ -60,7 +49,7 @@ class ProfileController {
         }
 
         try {
-            const mimeType = ProfileController.MIMETYPES[path.extname(picturePath).slice(1).toLowerCase()] || 'text/plain';
+            const mimeType = MIMETYPES[path.extname(picturePath).slice(1).toLowerCase()] || 'text/plain';
 
             const stream = fs.createReadStream(picturePath);
             stream.on('open', () => {
@@ -137,9 +126,11 @@ class ProfileController {
         }
 
         try {
-            // Delete all the user content (e.g. the avatar).
-            await userRepository.remove(user);
-
+            if (user !== null) {
+                fs.unlink(user.profile_picture, () => {
+                    user.profile_picture = ProfileController.DEFAULT_IMAGE_PATH;
+                });
+            }
         } catch (error) {
             console.error(
                 "Error while deleting user: " + user.login_name + "\n" + "Error: ", error
@@ -172,7 +163,7 @@ class ProfileController {
     };
 
     private static multerFileFilter = (req, file, cb) => {
-        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+        if (file.mimetype == MIMETYPES.png || file.mimetype == MIMETYPES.jpg || file.mimetype == MIMETYPES.jpeg) {
             cb(null, true);
         } else {
             cb(null, false);

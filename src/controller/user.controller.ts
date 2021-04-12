@@ -214,7 +214,7 @@ class UserController {
                 console.log("(EntityNotFound) Couldn't find User: \"" + loginOptions.username + "\" with Password_hash: \"" + loginOptions.password + "\"");
                 new APIResponse(res, 404, {}, ["Username and Password did not match."]).send();
             } else {
-                console.error("(EntityNotFound) Couldn't find a user with the following username: " + loginOptions.username + "\nError: ", error);
+                console.error(error.name + "Couldn't find a user with the following username: " + loginOptions.username + "\nError: ", error);
                 new APIResponse(res, 404, {}, ["Failed to look up user."]).send();
             }
             return;

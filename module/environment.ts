@@ -40,6 +40,9 @@ class Environment {
     /** The JWT secret key. */
     public static JWT_SECRET: string = null;
 
+    /** PROJECT STRUCTURE */
+    public static NEWS_PATH: string = null;
+
     /** Fetches the current $PROJECT_ROOT/.env file*/
     public static loadEnv(): void {
         if (process.env.NODE_ENV !== undefined) {
@@ -56,6 +59,8 @@ class Environment {
 
             Environment.JWT_SECRET = process.env.JWT_SECRET;
             Environment.DB_SECRET = process.env.DB_SECRET;
+
+            Environment.NEWS_PATH = process.env.NEWS_PATH;
         } else {
             console.error("Failed to load .env file")
         }
