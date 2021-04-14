@@ -16,7 +16,7 @@ class User {
     @Column({ type: "varchar", length: 45, unique: false, nullable: false })
     public display_name: string;
 
-    @Column({ type: "timestamp", nullable: false })
+    @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
     public user_creation: Date;
 
     @Column({ type: 'int' })
@@ -55,8 +55,6 @@ class User {
         this.login_name = loginname;
         this.display_name = displayname;
         this.password_hash = passwordHash;
-
-        this.user_creation = new Date();
         this.time_played = 0;
         this.profile_picture = null;
         this.last_figure = 1;

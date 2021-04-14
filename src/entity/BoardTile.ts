@@ -27,6 +27,12 @@ class BoardTile {
     @OneToOne(() => SetField, setField => setField.boardTile)
     public setField: SetField;
 
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
+    public createdAt: Date;
+
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    public updatedAt: Date;
+
     constructor(name: string, description: string, path: string) {
         this.name = name;
         this.description = description;

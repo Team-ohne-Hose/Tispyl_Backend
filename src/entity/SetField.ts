@@ -24,10 +24,10 @@ class SetField {
     @Column({ type: "int", nullable: true })
     public restrictField: number;
 
-    @Column({ type: "datetime", nullable: false })
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
     public createdAt: Date;
 
-    @Column({ type: "datetime", nullable: false })
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
     public updatedAt: Date;
 
     constructor(fieldNumber: number, boardTile: BoardTile, restrictRing: number = null, restrictField: number = null) {
@@ -35,9 +35,6 @@ class SetField {
         this.boardTile = boardTile;
         this.restrictRing = restrictRing;
         this.restrictField = restrictField;
-
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
     }
 }
 

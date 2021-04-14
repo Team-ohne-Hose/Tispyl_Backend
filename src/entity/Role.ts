@@ -9,11 +9,11 @@ class Role {
     @Column({ type: "varchar", length: 65, unique: false, nullable: false })
     public description: string;
 
-    @Column({ type: "datetime", nullable: false })
-    public create_time: Date;
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
+    public createdAt: Date;
 
-    @Column({ type: "datetime", nullable: false })
-    public update_time: Date;
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+    public updatedAt: Date;
 
     @ManyToMany(type => User, user => user.roles)
     public users: User[]
