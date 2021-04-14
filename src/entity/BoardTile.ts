@@ -6,38 +6,38 @@ import User from "./User";
 @Entity()
 class BoardTile {
 
-    @PrimaryGeneratedColumn()
-    public id: number;
+  @PrimaryGeneratedColumn()
+  public id: number;
 
-    @Column({ type: 'varchar', length: 65, unique: true, nullable: false })
-    public name: string
+  @Column({ type: 'varchar', length: 65, unique: true, nullable: false })
+  public name: string
 
-    @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
-    public description: string;
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
+  public description: string;
 
-    @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
-    public path: string;
+  @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
+  public path: string;
 
-    @ManyToOne(() => Language, language => language.board_tiles)
-    language: Language;
+  @ManyToOne(() => Language, language => language.board_tiles)
+  language: Language;
 
-    @ManyToOne(type => User, user => user.board_tile)
-    public user: User;
+  @ManyToOne(type => User, user => user.board_tile)
+  public user: User;
 
-    @OneToOne(() => SetField, setField => setField.boardTile)
-    public setField: SetField;
+  @OneToOne(() => SetField, setField => setField.boardTile)
+  public setField: SetField;
 
-    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
-    public createdAt: Date;
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
+  public createdAt: Date;
 
-    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
-    public updatedAt: Date;
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+  public updatedAt: Date;
 
-    constructor(name: string, description: string, path: string) {
-        this.name = name;
-        this.description = description;
-        this.path = path
-    }
+  constructor(name: string, description: string, path: string) {
+    this.name = name;
+    this.description = description;
+    this.path = path
+  }
 }
 
 export default BoardTile;
