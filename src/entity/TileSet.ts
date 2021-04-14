@@ -14,10 +14,10 @@ class TileSet {
     @ManyToOne(() => User, user => user.tileSets)
     public author: User;
 
-    @Column({ type: "datetime", nullable: false })
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
     public createdAt: Date;
 
-    @Column({ type: "datetime", nullable: false })
+    @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
     public updatedAt: Date;
 
     @OneToMany(() => SetField, setField => setField.tileSet)
@@ -26,9 +26,6 @@ class TileSet {
     constructor(name: string, author: User) {
         this.name = name;
         this.author = author;
-
-        this.createdAt = new Date();
-        this.updatedAt = new Date();
     }
 }
 
