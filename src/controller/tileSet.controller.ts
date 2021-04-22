@@ -21,7 +21,7 @@ class TileSetController {
   }
   public static async getByIdRoute(req: Request, res: Response): Promise<void> {
     let ts: TileSet;
-    const tileSetID: number = Number(req.query.tileId);
+    const tileSetID: number = Number(req.query.id);
     try {
       ts = await TileSetController.getTileSetById(tileSetID);
     } catch (error) {
