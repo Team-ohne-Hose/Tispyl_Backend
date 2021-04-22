@@ -11,13 +11,16 @@ class TileSet {
   @Column({ type: "varchar", length: 45, unique: false, nullable: false })
   public name: string;
 
-  @ManyToOne(() => User, user => user.tileSets)
+  @ManyToOne(() => User, user => user.tileSets, {nullable: false})
   public author: User;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
+  @Column({type: "varchar", length: 45, unique: false, nullable: true })
+  public thumbnailPath: string;
+
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()" })
   public createdAt: Date;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()", onUpdate: "CURRENT_TIMESTAMP()" })
   public updatedAt: Date;
 
   @OneToMany(() => SetField, setField => setField.tileSet)

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import Language from "./Language";
 import SetField from "./SetField";
 import User from "./User";
@@ -18,19 +18,19 @@ class BoardTile {
   @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
   public path: string;
 
-  @ManyToOne(() => Language, language => language.board_tiles)
+  @ManyToOne(() => Language, language => language.board_tiles, {nullable: false})
   language: Language;
 
-  @ManyToOne(type => User, user => user.board_tile)
+  @ManyToOne(type => User, user => user.board_tile, {nullable: false})
   public user: User;
 
-  @OneToOne(() => SetField, setField => setField.boardTile)
-  public setField: SetField;
+  @OneToMany(() => SetField, setField => setField.boardTile)
+  public setFields: SetField[];
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()" })
   public createdAt: Date;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()", onUpdate: "CURRENT_TIMESTAMP()" })
   public updatedAt: Date;
 
   constructor(name: string, description: string, path: string) {

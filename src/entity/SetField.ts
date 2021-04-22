@@ -8,14 +8,13 @@ class SetField {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @ManyToOne(() => TileSet, tileSet => tileSet.fields)
+  @ManyToOne(() => TileSet, tileSet => tileSet.fields, {nullable: false})
   public tileSet: TileSet;
 
   @Column({ type: "int", nullable: false })
   public fieldNumber: number;
 
-  @OneToOne(() => BoardTile, boardTile => boardTile.setField)
-  @JoinColumn()
+  @ManyToOne(() => BoardTile, boardTile => boardTile.setFields, {nullable: false})
   public boardTile: BoardTile;
 
   @Column({ type: "int", nullable: true })
@@ -24,10 +23,10 @@ class SetField {
   @Column({ type: "int", nullable: true })
   public restrictField: number;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)" })
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()" })
   public createdAt: Date;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()", onUpdate: "CURRENT_TIMESTAMP()" })
   public updatedAt: Date;
 
   constructor(fieldNumber: number, boardTile: BoardTile, restrictRing: number = null, restrictField: number = null) {

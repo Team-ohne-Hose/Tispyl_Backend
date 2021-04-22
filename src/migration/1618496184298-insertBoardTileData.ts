@@ -22,7 +22,7 @@ export class insertBoardTileData1618496184298 implements MigrationInterface {
           "(13,'Ex & Hopp','Leere dein Getränk auf Ex.',1,'/assets/board/exHopp.png', 1)," +
           "(14,'Spendabel','Verteile zwei Rationen.',1,'/assets/board/donor.png', 1)," +
           "(15,'Schwänze','Alle Kerle trinken.',1,'/assets/board/dicks.png', 1)," +
-          "(16,'Wasserfall','Alle setzen gleichzeitig ihr Getränk an und trinken. Wenn du aufhörst darf der nächst in der Reihe absetzen usw.',1,'/assets/board/waterfall.png', 1)," +
+          "(16,'Wasserfall','Alle setzen gleichzeitig ihr Getränk an und trinken. Wenn du aufhörst darf der nächste in der Reihe absetzen usw.',1,'/assets/board/waterfall.png', 1)," +
           "(17,'Wahrheit oder Dicht','Suche dir ein Opfer. Stelle eine Wahrheit oder Pflicht Aufgabe.',1,'/assets/board/truth.png', 1)," +
           "(18,'Kategorie','Suche dir eine Kategorie aus. Jeder sagt reihum einen dazu passenden Begriff. Wer zögert oder nichts weiß, trinkt. Du fängst an.',1,'/assets/board/category.png', 1)," +
           "(19,'Alleingang','Gönn dir eine Ration.',1,'/assets/board/loneSurvivor.png', 1)," +
@@ -69,70 +69,70 @@ export class insertBoardTileData1618496184298 implements MigrationInterface {
           "(60,'Lauch','Der Dünnste trinkt.',1,'/assets/board/leek.png', 1)," +
           "(61,'Fake News','Stelle eine These über dich auf. Bei Drei melden sich Alle, die sie für wahr halten. Wer falsch liegt, trinkt. Für Jeden, der richtig liegt, trinkst du.',1,'/assets/board/fakeNews.png', 1)," +
           "(62,'Edward Fortyhands','Du bekommst ein Getränk an jede Hand geklebt. Sie werden erst wieder abgemacht, wenn du sie geleert hast.',1,'/assets/board/edward.png', 1)");
-        await queryRunner.query("INSERT INTO tile_set (id, name, authorId) VALUES (1, 'DEFAULT', 1)");
+        await queryRunner.query("INSERT INTO tile_set (id, name, authorId) VALUES (1, 'CLASSIC', 1)");
         await queryRunner.query("INSERT INTO set_field (id, tileSetId, fieldNumber, boardTileId, restrictRing, restrictField) VALUES" +
-          "(1, 1, 1, 1, -1, -1)," +
-          "(2, 1, 2, 2, 12, -1)," +
-          "(3, 1, 3, 3, -1, -1)," +
-          "(4, 1, 4, 4, -1, -1)," +
-          "(5, 1, 5, 5, -1, -1)," +
-          "(6, 1, 6, 6, -1, -1)," +
-          "(7, 1, 7, 7, -1, -1)," +
-          "(8, 1, 8, 8, -1, -1)," +
-          "(9, 1, 9, 9, -1, -1)," +
-          "(10, 1, 10, 10, -1, -1)," +
-          "(11, 1, 11, 11, -1, -1)," +
-          "(12, 1, 12, 12, -1, -1)," +
-          "(13, 1, 13, 13, -1, -1)," +
-          "(14, 1, 14, 14, -1, -1)," +
-          "(15, 1, 15, 15, -1, -1)," +
-          "(16, 1, 16, 16, -1, -1)," +
-          "(17, 1, 17, 17, -1, -1)," +
-          "(18, 1, 18, 18, -1, -1)," +
-          "(19, 1, 19, 19, -1, -1)," +
-          "(20, 1, 20, 20, -1, -1)," +
-          "(21, 1, 21, 21, -1, -1)," +
-          "(22, 1, 22, 22, -1, -1)," +
-          "(23, 1, 23, 23, -1, -1)," +
-          "(24, 1, 24, 24, -1, -1)," +
-          "(25, 1, 25, 25, -1, -1)," +
-          "(26, 1, 26, 26, -1, -1)," +
-          "(27, 1, 27, 27, -1, -1)," +
-          "(28, 1, 28, 28, -1, -1)," +
-          "(29, 1, 29, 29, -1, -1)," +
-          "(30, 1, 30, 30, -1, -1)," +
-          "(31, 1, 31, 31, -1, -1)," +
-          "(32, 1, 32, 32, -1, -1)," +
-          "(33, 1, 33, 33, -1, -1)," +
-          "(34, 1, 34, 34, -1, -1)," +
-          "(35, 1, 35, 35, -1, -1)," +
-          "(36, 1, 36, 36, -1, -1)," +
-          "(37, 1, 37, 37, -1, -1)," +
-          "(38, 1, 38, 38, 234, -1)," +
-          "(39, 1, 39, 39, -1, -1)," +
-          "(40, 1, 40, 40, -1, -1)," +
-          "(41, 1, 41, 41, -1, -1)," +
-          "(42, 1, 42, 42, 234, -1)," +
-          "(43, 1, 43, 43, -1, -1)," +
-          "(44, 1, 44, 44, -1, -1)," +
-          "(45, 1, 45, 45, -1, -1)," +
-          "(46, 1, 46, 46, -1, -1)," +
-          "(47, 1, 47, 47, -1, -1)," +
-          "(48, 1, 48, 48, -1, -1)," +
-          "(49, 1, 49, 49, -1, -1)," +
-          "(50, 1, 50, 50, -1, -1)," +
-          "(51, 1, 51, 51, -1, -1)," +
-          "(52, 1, 52, 52, -1, -1)," +
-          "(53, 1, 53, 53, -1, -1)," +
-          "(54, 1, 54, 54, -1, -1)," +
-          "(55, 1, 55, 55, -1, -1)," +
-          "(56, 1, 56, 56, -1, -1)," +
-          "(57, 1, 57, 57, -1, -1)," +
-          "(58, 1, 58, 58, -1, -1)," +
-          "(59, 1, 59, 59, -1, -1)," +
-          "(60, 1, 60, 60, -1, -1)," +
-          "(61, 1, 61, 61, -1, -1)," +
-          "(62, 1, 62, 62, -1, -1)");
+          "(1, 1, 1, 1, NULL, NULL)," +
+          "(2, 1, 2, 2, 12, NULL)," +
+          "(3, 1, 3, 3, NULL, NULL)," +
+          "(4, 1, 4, 4, NULL, NULL)," +
+          "(5, 1, 5, 5, NULL, NULL)," +
+          "(6, 1, 6, 6, NULL, NULL)," +
+          "(7, 1, 7, 7, NULL, NULL)," +
+          "(8, 1, 8, 8, NULL, NULL)," +
+          "(9, 1, 9, 9, NULL, NULL)," +
+          "(10, 1, 10, 10, NULL, NULL)," +
+          "(11, 1, 11, 11, NULL, NULL)," +
+          "(12, 1, 12, 12, NULL, NULL)," +
+          "(13, 1, 13, 13, NULL, NULL)," +
+          "(14, 1, 14, 14, NULL, NULL)," +
+          "(15, 1, 15, 15, NULL, NULL)," +
+          "(16, 1, 16, 16, NULL, NULL)," +
+          "(17, 1, 17, 17, NULL, NULL)," +
+          "(18, 1, 18, 18, NULL, NULL)," +
+          "(19, 1, 19, 19, NULL, NULL)," +
+          "(20, 1, 20, 20, NULL, NULL)," +
+          "(21, 1, 21, 21, NULL, NULL)," +
+          "(22, 1, 22, 22, NULL, NULL)," +
+          "(23, 1, 23, 23, NULL, NULL)," +
+          "(24, 1, 24, 24, NULL, NULL)," +
+          "(25, 1, 25, 25, NULL, NULL)," +
+          "(26, 1, 26, 26, NULL, NULL)," +
+          "(27, 1, 27, 27, NULL, NULL)," +
+          "(28, 1, 28, 28, NULL, NULL)," +
+          "(29, 1, 29, 29, NULL, NULL)," +
+          "(30, 1, 30, 30, NULL, NULL)," +
+          "(31, 1, 31, 31, NULL, NULL)," +
+          "(32, 1, 32, 32, NULL, NULL)," +
+          "(33, 1, 33, 33, NULL, NULL)," +
+          "(34, 1, 34, 34, NULL, NULL)," +
+          "(35, 1, 35, 35, NULL, NULL)," +
+          "(36, 1, 36, 36, NULL, NULL)," +
+          "(37, 1, 37, 37, NULL, NULL)," +
+          "(38, 1, 38, 38, 234, NULL)," +
+          "(39, 1, 39, 39, NULL, NULL)," +
+          "(40, 1, 40, 40, NULL, NULL)," +
+          "(41, 1, 41, 41, NULL, NULL)," +
+          "(42, 1, 42, 42, 234, NULL)," +
+          "(43, 1, 43, 43, NULL, NULL)," +
+          "(44, 1, 44, 44, NULL, NULL)," +
+          "(45, 1, 45, 45, NULL, NULL)," +
+          "(46, 1, 46, 46, NULL, NULL)," +
+          "(47, 1, 47, 47, NULL, NULL)," +
+          "(48, 1, 48, 48, NULL, NULL)," +
+          "(49, 1, 49, 49, NULL, NULL)," +
+          "(50, 1, 50, 50, NULL, NULL)," +
+          "(51, 1, 51, 51, NULL, NULL)," +
+          "(52, 1, 52, 52, NULL, NULL)," +
+          "(53, 1, 53, 53, NULL, NULL)," +
+          "(54, 1, 54, 54, NULL, NULL)," +
+          "(55, 1, 55, 55, NULL, NULL)," +
+          "(56, 1, 56, 56, NULL, NULL)," +
+          "(57, 1, 57, 57, NULL, NULL)," +
+          "(58, 1, 58, 58, NULL, NULL)," +
+          "(59, 1, 59, 59, NULL, NULL)," +
+          "(60, 1, 60, 60, NULL, NULL)," +
+          "(61, 1, 61, 61, NULL, NULL)," +
+          "(62, 1, 62, 62, NULL, NULL)");
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

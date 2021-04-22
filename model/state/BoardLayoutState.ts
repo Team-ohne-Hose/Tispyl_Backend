@@ -15,11 +15,11 @@ interface TileSet {
     base: TileSetEntry[];
     extensions: TileSetEntry[]; // Currently extensions are NOT supported
 }
-interface TileRestriction {
+export interface TileRestriction {
     id: number;
     field: number;
 }
-interface TileRowRestriction {
+export interface TileRowRestriction {
     id: number;
     row: number;
 }
@@ -29,23 +29,34 @@ export class Tile extends Schema {
     @type('string')
     imageUrl: string;
     @type('string')
-    translationKey: string;
-    @type('string')
     title: string;
     @type('string')
     description: string;
 
-    constructor(tileId: number, imageUrl: string, translationKey: string, title: string, description: string) {
+    constructor(tileId: number, imageUrl: string, title: string, description: string) {
         super();
         this.tileId = tileId;
         this.imageUrl = imageUrl;
-        this.translationKey = translationKey;
         this.title = title;
         this.description = description;
     }
 }
 
 export class BoardLayoutState extends Schema {
+    readonly startTile: Tile = new Tile(
+      0,
+      "/assets/board/start.png",
+      "Start",
+      "Füllt die Gläser!"
+      );
+    readonly goalTile: Tile = new Tile(
+      63,
+      "/assets/board/goal.png",
+      "Ziel",
+      "Trinket aus!!"
+    );
+    readonly defaultUrl = "/assets/board/default.png";
+
     @type({map: Tile})
     tileList = new MapSchema<Tile>();
 
@@ -177,7 +188,7 @@ export class BoardLayoutState extends Schema {
 
         for (let i = 0; i < 64; i++) {
             const tsEntry = tiles[permutation[i]];
-            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.translationKey, tsEntry.title, tsEntry.description);
+            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.title, tsEntry.description);
         }
     }
     generateDefaultLayout(tileset?: string) {
@@ -185,7 +196,19 @@ export class BoardLayoutState extends Schema {
         const tiles: TileSetEntry[] = ts.base;
         for (let i = 0; i < 64; i++) {
             const tsEntry = tiles[i];
-            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.translationKey, tsEntry.title, tsEntry.description);
+            this.tileList[i] = new Tile(i, tsEntry.imageUrl, tsEntry.title, tsEntry.description);
+        }
+    }
+    // set start and goal tile defaults. (at spot 0 and 63)
+    setStartEnd() {
+        this.tileList[0] = this.startTile;
+        this.tileList[63] = this.goalTile;
+    }
+    fillEmptyTilesWithDefaults() {
+        for (let i = 1; i <= 62; i++) {
+            if (!this.tileList[i]) {
+                this.tileList[i] = new Tile(i, this.defaultUrl, 'UNDEFINED', 'UNDEFINED');
+            }
         }
     }
 
