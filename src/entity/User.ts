@@ -12,6 +12,8 @@ import TileSet from './TileSet';
 import UserStatistic from './userStatistic';
 @Entity('User')
 class User {
+  private test = null;
+
   @PrimaryGeneratedColumn()
   public id: number;
 
