@@ -18,7 +18,9 @@ import { VoteEntry, VoteStage } from "./model/state/VoteState";
 import UserController from "./src/controller/user.controller";
 import GameController from "./src/controller/game.controller";
 import Game from "./src/entity/Game";
-import User from "./src/entity/User";
+import TileSetController from "./src/controller/tileSet.controller";
+import TileSet from "./src/entity/TileSet";
+import SetField from "./src/entity/SetField";
 
 export type createRoomOptions = {
     roomName: string;
@@ -47,13 +49,35 @@ export class GameRoom extends Room<GameState> {
             randomizeTiles: options['randomizeTiles']
         });
 
-        if (options['randomizeTiles']) {
-            this.state.boardLayout.generateRandomLayout();
-            console.log('generated random Layout');
-        } else {
-            this.state.boardLayout.generateDefaultLayout();
-            console.log('generated Layout');
-        }
+        TileSetController.getTileSetById(1).then(
+            ((tileSet: TileSet) => {
+                tileSet.fields.then(((fields: SetField[]) => {
+                        if (options['randomizeTiles']) {
+                            if (TileSetController.generateField(fields, this.state.boardLayout, true)) {
+                                console.log('generated random Layout');
+                            } else {
+                                console.error('failed to generate random Layout');
+                            }
+                        } else {
+                            if (TileSetController.generateField(fields, this.state.boardLayout, false)) {
+                                console.log('generated random Layout');
+                            } else {
+                                console.error('failed to generate random Layout');
+                            }
+                        }
+                      try {
+                    } catch (err) {
+                        console.error('an error occurred while trying to generate the Field', err);
+                    }
+                }),
+                (reason: any) => {
+                  console.error("failed, couldn't get TileSet.fields", reason);
+                })
+            }),
+            (reason: any) => {
+              console.error("failed, couldn't get TileSet", reason);
+            });
+
 
         this.state.physicsState.setBroadcastCallback(this.broadcast.bind(this));
         this.state.physicsState.addDice();

@@ -23,7 +23,7 @@ class User {
   @Column({ type: 'varchar', length: 45, unique: false, nullable: false })
   public display_name: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP()' })
   public user_creation: Date;
 
   @Column({ type: 'int' })
