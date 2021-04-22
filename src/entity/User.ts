@@ -1,10 +1,8 @@
-import { TriangleStripDrawMode } from 'three';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -54,7 +52,7 @@ class User {
   @JoinTable()
   public roles: Role[];
 
-  @ManyToMany((type) => UserStatistic, (userStatistic) => userStatistic.users)
+  @ManyToMany(() => UserStatistic, (userStatistic) => userStatistic.users)
   @JoinTable()
   public userStatistics: UserStatistic[];
 
