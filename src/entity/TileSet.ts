@@ -24,7 +24,7 @@ class TileSet {
   public updatedAt: Date;
 
   @OneToMany(() => SetField, setField => setField.tileSet)
-  public fields: SetField[];
+  public fields: Promise<SetField[]>;
 
   constructor(name: string, author: User) {
     this.name = name;

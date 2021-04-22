@@ -201,15 +201,19 @@ export class BoardLayoutState extends Schema {
     }
     // set start and goal tile defaults. (at spot 0 and 63)
     setStartEnd() {
-        this.tileList[0] = this.startTile;
-        this.tileList[63] = this.goalTile;
+        this.tileList.set('0', this.startTile);
+        this.tileList.set('63', this.goalTile);
     }
     fillEmptyTilesWithDefaults() {
         for (let i = 1; i <= 62; i++) {
-            if (!this.tileList[i]) {
-                this.tileList[i] = new Tile(i, this.defaultUrl, 'UNDEFINED', 'UNDEFINED');
+            if (!this.tileList.get(i.toString())) {
+                this.tileList.set(i.toString(), new Tile(i, this.defaultUrl, 'UNDEFINED', 'UNDEFINED'));
             }
         }
+    }
+    setTile(i: number, t: Tile) {
+        //this.tileList.set(i.toString(), t);
+        this.tileList[i] = t;
     }
 
 }

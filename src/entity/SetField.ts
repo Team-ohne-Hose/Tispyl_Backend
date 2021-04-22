@@ -14,7 +14,7 @@ class SetField {
   @Column({ type: "int", nullable: false })
   public fieldNumber: number;
 
-  @ManyToOne(() => BoardTile, boardTile => boardTile.setFields, {nullable: false})
+  @ManyToOne(() => BoardTile, boardTile => boardTile.setFields, {nullable: false, eager: true})
   public boardTile: BoardTile;
 
   @Column({ type: "int", nullable: true })

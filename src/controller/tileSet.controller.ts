@@ -21,28 +21,23 @@ class TileSetController {
   public static async getTileSetById(tilesetID: number): Promise<TileSet> | null {
     const tilesetRepo: Repository<TileSet> = getRepository(TileSet);
 
-    return tilesetRepo.findOneOrFail({where: [{id: tilesetID}]});
+    return tilesetRepo.findOneOrFail({where: [{id: tilesetID}], relations: ['fields', 'fields.boardTile']});
   }
 
-  public static async generateField(ts: TileSet, boardLayoutState: BoardLayoutState, randomize: boolean) {
+  public static generateField(tiles: SetField[], boardLayoutState: BoardLayoutState, randomize: boolean) {
     if (randomize) {
-      return TileSetController.generateRandomField(ts, boardLayoutState);
+      return TileSetController.generateRandomField(tiles, boardLayoutState);
     } else {
-      return TileSetController.generateDefaultField(ts, boardLayoutState);
+      return TileSetController.generateDefaultField(tiles, boardLayoutState);
     }
   }
-  private static async generateDefaultField(ts: TileSet, boardLayoutState: BoardLayoutState) {
-    const fieldBuffer = Tile[62];
-    ts.fields.forEach((value) => {
+  private static generateDefaultField(tiles: SetField[], boardLayoutState: BoardLayoutState) {
+    tiles.forEach((value) => {
       if (value.fieldNumber >= 1 && value.fieldNumber <= 62) {
         const boardTile = value.boardTile;
-        fieldBuffer[value.fieldNumber] = new Tile(value.fieldNumber, boardTile.path, boardTile.name, boardTile.description);
+        boardLayoutState.setTile(value.fieldNumber, new Tile(value.fieldNumber, boardTile.path, boardTile.name, boardTile.description));
       }
     });
-
-    for (let i = 1; i <= 62; i++) {
-      boardLayoutState.tileList[i] = fieldBuffer[i - 1];
-    }
     boardLayoutState.fillEmptyTilesWithDefaults();
     boardLayoutState.setStartEnd();
     return true;
@@ -83,12 +78,13 @@ class TileSetController {
     }
 
     // pick random set of 62 Tiles
-    const pickRandomFromRange = (maxExcl: number) => Math.min(Math.random() * maxExcl, maxExcl - 1);
+    const pickRandomFromRange = (maxExcl: number) => Math.min(Math.floor(Math.random() * maxExcl), maxExcl - 1);
     for (let j = 0; j < 62; j++) {
-      if (activePool.length <= 0) {
-        throw new Error("active pool is not containing enough tiles");
+      if (inactivePool.length <= 0) {
+        throw new Error("inactivePool pool is not containing enough tiles");
       }
-      activePool.push(inactivePool.splice(pickRandomFromRange(inactivePool.length), 1)[0]);
+      const val = inactivePool.splice(pickRandomFromRange(inactivePool.length), 1)[0];
+      activePool.push(val);
     }
 
     // try to set the tiles on to the field
@@ -104,20 +100,26 @@ class TileSetController {
           failures.push(val);
         }
         return false;
+      } else {
+        return true;
       }
     });
     // set row-restricted Tiles
-    activePool.filter((val: number, index: number) => {
+    activePool = activePool.filter((val: number, index: number) => {
       if (tiles[val].restrictRing) {
         const fieldList = TileSetController.placeRowRestricted(tiles[val].restrictRing, permutation);
         // if list exists, pick a random canidate from it
         if (fieldList.length > 0) {
-          permutation[fieldList[pickRandomFromRange(fieldList.length)]] = val;
+          const ran = pickRandomFromRange(fieldList.length);
+          const target = fieldList[ran];
+          permutation[target] = val;
         } else {
           // else mark as failure
           failures.push(val);
         }
         return false;
+      } else {
+        return true;
       }
     });
 
@@ -150,7 +152,7 @@ class TileSetController {
     }
 
     // fill with unrestricted tiles
-    for (let i = 0; i < 62; i++) {
+    for (let i = 1; i <= 62; i++) {
       if (permutation[i] === undefined) {
         if (activePool.length <= 0) {
           throw new Error("Unexpected, Active Pool is empty");
@@ -162,18 +164,15 @@ class TileSetController {
     }
     return permutation;
   }
-  private static generateRandomField(ts: TileSet, boardLayoutState: BoardLayoutState) {
-    const tr: TileRestriction[] = [];
-    const trr: TileRowRestriction[] = [];
-
+  private static generateRandomField(tiles: SetField[], boardLayoutState: BoardLayoutState) {
     // max 10 tries
     let permutation = [];
     for (let i = 0; i < 10; i++) {
-      permutation = TileSetController.generateRandomPermutation(ts.fields);
-      if (permutation.length === 62) {
+      permutation = TileSetController.generateRandomPermutation(tiles);
+      if (permutation.length === 63) { //62 Tiles + spot at 0 to keep correct indices for the tile position
         for (let i = 1; i <= 62; i++) {
-          const boardTile = ts.fields[permutation[i]].boardTile;
-          boardLayoutState.tileList[i] = new Tile(i, boardTile.path, boardTile.name, boardTile.description);
+          const boardTile = tiles[permutation[i]].boardTile;
+          boardLayoutState.setTile(i, new Tile(i, boardTile.path, boardTile.name, boardTile.description));
         }
         boardLayoutState.fillEmptyTilesWithDefaults();
         boardLayoutState.setStartEnd();
@@ -181,14 +180,8 @@ class TileSetController {
       }
     }
     console.error("Randomisation failed 10x. Now serving default.");
-    return this.generateDefaultField(ts, boardLayoutState);
-  }
-  private static getRandomTile(setFields: SetField[]): SetField {
-    if (setFields.length > 0) {
-      return setFields[Math.min(Math.random() * setFields.length, setFields.length - 1)];
-    } else {
-      throw new Error('Empty setField-Table supplied');
-    }
+    this.generateDefaultField(tiles, boardLayoutState);
+    return false;
   }
 }
 
