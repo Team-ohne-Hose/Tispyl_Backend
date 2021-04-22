@@ -2,9 +2,35 @@ import {getRepository, Repository} from "typeorm";
 import TileSet from "../entity/TileSet";
 import SetField from "../entity/SetField";
 import {BoardLayoutState, Tile} from "../../model/state/BoardLayoutState";
+import {APIResponse} from "../../model/APIResponse";
+import {Request, Response} from "express";
 
 
 class TileSetController {
+
+  public static async getAllRoute(req: Request, res: Response): Promise<void> {
+    let ts: TileSet[];
+    try {
+      ts = await TileSetController.getAll();
+    } catch (error) {
+      console.error(error);
+      new APIResponse(res, 500, {}, ['internal_server_error']).send();
+      return;
+    }
+    new APIResponse(res, 200, ts).send();
+  }
+  public static async getByIdRoute(req: Request, res: Response): Promise<void> {
+    let ts: TileSet;
+    const tileSetID: number = Number(req.query.tileId);
+    try {
+      ts = await TileSetController.getTileSetById(tileSetID);
+    } catch (error) {
+      console.error(error);
+      new APIResponse(res, 404, ['There is no language with given id.']).send();
+      return;
+    }
+    new APIResponse(res, 200, ts).send();
+  }
 
   public static async getAll(): Promise<TileSet[]> {
     const tilesetRepo: Repository<TileSet> = getRepository(TileSet);
