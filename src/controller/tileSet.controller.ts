@@ -1,17 +1,10 @@
 import {getRepository, Repository} from "typeorm";
 import TileSet from "../entity/TileSet";
 import SetField from "../entity/SetField";
-import {BoardLayoutState, Tile, TileRestriction, TileRowRestriction} from "../../model/state/BoardLayoutState";
+import {BoardLayoutState, Tile} from "../../model/state/BoardLayoutState";
 
 
 class TileSetController {
-  private static readonly rows: [number, number][] = [
-    [0,27],
-    [28, 47],
-    [48, 59],
-    [60, 62],
-    [63, 63]
-  ];
 
   public static async getAll(): Promise<TileSet[]> {
     const tilesetRepo: Repository<TileSet> = getRepository(TileSet);
@@ -46,7 +39,7 @@ class TileSetController {
     // reconstruct list of allowed rows
     const allowedRows: number[] = [];
     while (row > 0) {
-      if (row % 10 > 0 && row % 10 <= this.rows.length) {
+      if (row % 10 > 0 && row % 10 <= BoardLayoutState.rows.length) {
         allowedRows.push(row % 10);
       }
       row = Math.floor(row / 10);
@@ -55,7 +48,7 @@ class TileSetController {
     // create list of available fields
     const fieldList: number[] = [];
     allowedRows.forEach(value => {
-      for (let canidate = this.rows[value - 1][0]; canidate <= this.rows[value - 1][1]; canidate++) {
+      for (let canidate = BoardLayoutState.rows[value - 1][0]; canidate <= BoardLayoutState.rows[value - 1][1]; canidate++) {
         if (permutation[canidate] === undefined) {
           fieldList.push(canidate);
         }

@@ -43,7 +43,7 @@ export class GameRoom extends Room<GameState> {
 
         this.setState(new GameState());
         this.setMetadata({
-            roomName: options['name'],
+            roomName: options['roomName'],
             author: options['author'],
             skin: options['skin'],
             randomizeTiles: options['randomizeTiles']
