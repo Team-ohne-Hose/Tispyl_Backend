@@ -50,7 +50,7 @@ class User {
   @OneToMany(() => TileSet, (tileSet) => tileSet.author)
   tileSets: TileSet[];
 
-  @ManyToMany((type) => Role, (role) => role.users)
+  @ManyToMany(() => Role, (role) => role.users)
   @JoinTable()
   public roles: Role[];
 
