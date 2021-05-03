@@ -4,19 +4,28 @@ import SetField from "../entity/SetField";
 import {BoardLayoutState, Tile} from "../../model/state/BoardLayoutState";
 import {APIResponse} from "../../model/APIResponse";
 import {Request, Response} from "express";
+import User from "../entity/User";
 
 
 class TileSetController {
 
+  private static filterUserData(u: User) {
+    const filteredUser: User = {id: u.id, display_name: u.display_name, login_name: u.login_name} as User;
+    return filteredUser
+  }
+
   public static async getAllRoute(req: Request, res: Response): Promise<void> {
     let ts: TileSet[];
-    try {
       ts = await TileSetController.getAll();
+    try {
     } catch (error) {
       console.error(error);
       new APIResponse(res, 500, {}, ['internal_server_error']).send();
       return;
     }
+    ts.forEach((tileSet: TileSet) => {
+      tileSet.author = TileSetController.filterUserData(tileSet.author);
+    });
     new APIResponse(res, 200, ts).send();
   }
   public static async getByIdRoute(req: Request, res: Response): Promise<void> {
@@ -29,6 +38,8 @@ class TileSetController {
       new APIResponse(res, 404, ['There is no language with given id.']).send();
       return;
     }
+
+    ts.author = TileSetController.filterUserData(ts.author);
     new APIResponse(res, 200, ts).send();
   }
 

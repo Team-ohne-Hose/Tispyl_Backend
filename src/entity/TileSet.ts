@@ -1,6 +1,8 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import SetField from "./SetField";
 import User from "./User";
+import Tag from "./Tag";
+import DefaultRule from "./DefaultRule";
 
 @Entity()
 class TileSet {
@@ -11,7 +13,10 @@ class TileSet {
   @Column({ type: "varchar", length: 45, unique: false, nullable: false })
   public name: string;
 
-  @ManyToOne(() => User, user => user.tileSets, {nullable: false})
+  @Column({ type: "varchar", length: 160, unique: false, nullable: false })
+  public description: string;
+
+  @ManyToOne(() => User, user => user.tileSets, {nullable: false, eager: true})
   public author: User;
 
   @Column({type: "varchar", length: 45, unique: false, nullable: true })
@@ -25,6 +30,12 @@ class TileSet {
 
   @OneToMany(() => SetField, setField => setField.tileSet)
   public fields: Promise<SetField[]>;
+
+  @OneToMany(() => Tag, tag => tag.tileSet, {eager: true})
+  public tags: Tag[];
+
+  @OneToMany(() => DefaultRule, dRule => dRule.tileSet, {eager: true})
+  public defaultRules: DefaultRule[];
 
   constructor(name: string, author: User) {
     this.name = name;
