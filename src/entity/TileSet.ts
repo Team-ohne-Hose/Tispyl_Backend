@@ -10,25 +10,29 @@ class TileSet {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ type: "varchar", length: 45, unique: false, nullable: false })
+  @Column({ type: 'varchar', length: 45, unique: false, nullable: false })
   public name: string;
 
   @Column({ type: "varchar", length: 160, unique: false, nullable: false })
   public description: string;
 
-  @ManyToOne(() => User, user => user.tileSets, {nullable: false, eager: true})
+  @ManyToOne(() => User, (user) => user.tileSets, {nullable: false, eager: true})
   public author: User;
 
-  @Column({type: "varchar", length: 45, unique: false, nullable: true })
+  @Column({ type: 'varchar', length: 45, unique: false, nullable: true })
   public thumbnailPath: string;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()" })
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP()' })
   public createdAt: Date;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP()", onUpdate: "CURRENT_TIMESTAMP()" })
+  @Column({
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP()',
+    onUpdate: 'CURRENT_TIMESTAMP()',
+  })
   public updatedAt: Date;
 
-  @OneToMany(() => SetField, setField => setField.tileSet)
+  @OneToMany(() => SetField, (setField) => setField.tileSet)
   public fields: Promise<SetField[]>;
 
   @OneToMany(() => Tag, tag => tag.tileSet, {eager: true})
