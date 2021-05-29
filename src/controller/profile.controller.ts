@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { ImagePreparer } from '../../helpers/ImagePreparer';
 import multer from 'multer';
 import { APIResponse } from '../../model/APIResponse';
+import {MIMETYPES} from "./mimeTypes";
 
 class ProfileController {
   static MIMETYPES = {
@@ -136,7 +137,6 @@ class ProfileController {
         return;
       }
     }
-
     try {
       // Delete all the user content (e.g. the avatar).
       await userRepository.remove(user);
@@ -188,7 +188,6 @@ class ProfileController {
       return cb(err);
     }
   };
-
   public static multipartData = multer({
     storage: ProfileController.multerStorage,
     limits: ProfileController.multerLimits,
