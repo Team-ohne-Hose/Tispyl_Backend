@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 module.exports = {
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
@@ -11,13 +12,29 @@ module.exports = {
   },
 
   rules: {
-    'prettier/prettier': 'error',
     '@typescript-eslint/camelcase': 'off',
-    '@typescript-eslint/no-empty-function': 0,
     'no-console': 'off',
+    'lines-between-class-members': [
+      'error',
+      'always',
+      { exceptAfterSingleLine: true },
+    ],
+    'no-eval': ['error'],
+    'no-trailing-spaces': ['error', { skipBlankLines: true }],
+    'no-unused-expressions': [
+      'error',
+      { allowTernary: true, allowShortCircuit: true },
+    ],
+    'no-use-before-define': ['error', { functions: true, classes: true }],
+    'max-len': ['error', { code: 140 }],
+    'no-var': ['error'],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    'no-empty-function': ['error', { allow: ['constructors'] }],
   },
   env: {
     browser: true,
     node: true,
+    es6: true,
   },
 };
