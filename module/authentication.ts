@@ -9,8 +9,7 @@ class Authentication {
   private static SALT_ROUNDS = 10;
 
   static JWT_OPTIONS: jwt.SignOptions = {
-    expiresIn: 10 * 12, // Time given in seconds.
-    //expiresIn: 3600 * 12, // Time given in seconds.
+    expiresIn: 3600 * 12, // Time given in seconds.
   };
 
   public static async generateJwtToken(
