@@ -7,7 +7,7 @@ import {
 import GameLog from '../entity/GameLog';
 
 @EventSubscriber()
-export class GameSubscriber implements EntitySubscriberInterface<any> {
+export class GameLogSubscriber implements EntitySubscriberInterface<any> {
   /**
    * Indicates that this subscriber only listen to Post events.
    */
