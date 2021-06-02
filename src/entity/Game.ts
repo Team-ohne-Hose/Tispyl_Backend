@@ -1,8 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  getRepository,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Repository,
+} from 'typeorm';
+import Language from './Language';
+import TileSet from './TileSet';
+import { APIResponse } from '../../model/APIResponse';
+import User from './User';
+import { Tile } from '../../model/state/BoardLayoutState';
 
-@Entity("Games")
+@Entity('Games')
 class Game {
-
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -12,34 +23,53 @@ class Game {
   @Column({ type: 'varchar', length: 45, nullable: false })
   public author: string;
 
-  @Column({ type: 'varchar', length: 45, nullable: false })
-  public skin: string;
+  @ManyToOne(() => TileSet, (tileSet) => tileSet.games)
+  public tileSet: TileSet;
 
-  @Column({ type: "tinyint" })
+  @Column({ type: 'tinyint' })
+  public useItems: number;
+
+  @Column({ type: 'tinyint' })
+  public useMultipleItems: number;
+
+  @Column({ type: 'tinyint' })
   public randomizeTiles: number;
 
-  @Column({ type: "datetime", nullable: false })
+  @Column({ type: 'datetime', nullable: false })
   public startTime: Date;
 
-  @Column({ type: "datetime", nullable: false })
+  @Column({ type: 'datetime', nullable: false })
   public endTime: Date;
 
-  @Column({ type: "int", nullable: false })
+  @Column({ type: 'int', nullable: false })
   public maxPlayers: number;
 
-  @Column({ type: "int", nullable: false })
+  @Column({ type: 'int', nullable: false })
   public maxRound: number;
 
-  constructor(gameName: string, author: string, skin: string, randomizeTiles: number, startTime: Date, endTime: Date, maxPlayers: number, maxRound: number) {
+  constructor(
+    gameName: string,
+    author: string,
+    randomizeTiles: number,
+    tileSet: TileSet,
+    useItems: number,
+    useMultipleItems: number,
+    startTime: Date,
+    endTime: Date,
+    maxPlayers: number,
+    maxRound: number
+  ) {
     this.name = gameName;
     this.author = author;
-    this.skin = skin;
     this.randomizeTiles = randomizeTiles;
+    this.useItems = useItems;
+    this.useMultipleItems = useMultipleItems;
     this.startTime = startTime;
     this.endTime = endTime;
     this.maxPlayers = maxPlayers;
     this.maxRound = maxRound;
+    this.tileSet = tileSet;
   }
 }
 
-export default Game
+export default Game;
