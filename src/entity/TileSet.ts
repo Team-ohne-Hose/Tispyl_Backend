@@ -9,7 +9,7 @@ import SetField from './SetField';
 import User from './User';
 import Tag from './Tag';
 import DefaultRule from './DefaultRule';
-import Game from './Game';
+import GameLog from './GameLog';
 
 @Entity()
 class TileSet {
@@ -50,8 +50,8 @@ class TileSet {
   @OneToMany(() => DefaultRule, (dRule) => dRule.tileSet, { eager: true })
   public defaultRules: DefaultRule[];
 
-  @OneToMany(() => Game, (game) => game.tileSet)
-  public games: Game[];
+  @OneToMany(() => GameLog, (game) => game.tileSet)
+  public games: GameLog[];
 
   constructor(name: string, author: User) {
     this.name = name;

@@ -1,5 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
-import Game from '../entity/Game';
+import GameLog from '../entity/GameLog';
 import User from '../entity/User';
 import UserStatistic from '../entity/userStatistic';
 import UserController from './user.controller';
@@ -8,12 +8,12 @@ import { Player } from '../../model/state/Player';
 
 class GameController {
   public static async saveGameLog(
-    game: Game,
+    game: GameLog,
     players: MapSchema<Player>,
     start: Date,
     rounds: number
-  ): Promise<Game> {
-    const gameRepository: Repository<Game> = getRepository(Game);
+  ): Promise<GameLog> {
+    const gameRepository: Repository<GameLog> = getRepository(GameLog);
 
     const stop: Date = new Date();
     const duration = Math.round(

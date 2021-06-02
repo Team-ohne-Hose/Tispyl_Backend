@@ -19,7 +19,7 @@ import { Link } from './model/state/Link';
 import { VoteEntry, VoteStage } from './model/state/VoteState';
 import UserController from './src/controller/user.controller';
 import GameController from './src/controller/game.controller';
-import Game from './src/entity/Game';
+import GameLog from './src/entity/GameLog';
 import TileSetController from './src/controller/tileSet.controller';
 import TileSet from './src/entity/TileSet';
 import SetField from './src/entity/SetField';
@@ -131,7 +131,7 @@ export class GameRoom extends Room<GameState, Metadata> {
       this.metadata.tileSetId
     );
     await GameController.saveGameLog(
-      new Game(
+      new GameLog(
         this.metadata.roomName,
         this.metadata.author,
         this.metadata.randomizeTiles ? 1 : 0,

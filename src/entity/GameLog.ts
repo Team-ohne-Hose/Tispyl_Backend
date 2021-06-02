@@ -12,8 +12,8 @@ import { APIResponse } from '../../model/APIResponse';
 import User from './User';
 import { Tile } from '../../model/state/BoardLayoutState';
 
-@Entity('Games')
-class Game {
+@Entity('GameLogs')
+class GameLog {
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -72,4 +72,4 @@ class Game {
   }
 }
 
-export default Game;
+export default GameLog;
