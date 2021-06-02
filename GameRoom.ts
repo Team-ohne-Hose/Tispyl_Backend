@@ -39,13 +39,14 @@ export interface Metadata {
 
 export class GameRoom extends Room<GameState, Metadata> {
   createTime: Date;
+  maxClients: number;
 
   /**
    * will be called when a new room should be created
    * @param options should be of type {@link CreateRoomOpts}
    * @throws Error when type of options is incorrect
    */
-  onCreate(options: any): void | Promise<any> {
+  async onCreate(options: any): Promise<any> {
     options = options as CreateRoomOpts;
     if (options === undefined) {
       throw new Error(
@@ -56,59 +57,37 @@ export class GameRoom extends Room<GameState, Metadata> {
     console.log(`[onCreate] Room created. Options: ${JSON.stringify(options)}`);
     this.createTime = new Date();
 
-    this.maxClients = 16;
+    this.maxClients = 1;
 
     this.setState(new GameState());
     this.setMetadata(options as Metadata).catch((reason: any) => {
       throw new Error('Metadata couldnt be set' + reason.toString());
     });
-
-    TileSetController.getTileSetById(options.tileSetId || 1).then(
-      (tileSet: TileSet) => {
-        tileSet.fields.then(
-          (fields: SetField[]) => {
-            if (options.randomizeTiles) {
-              if (
-                TileSetController.generateField(
-                  fields,
-                  this.state.boardLayout,
-                  true
-                )
-              ) {
-                console.log('generated random Layout');
-              } else {
-                console.error('failed to generate random Layout');
-              }
-            } else {
-              if (
-                TileSetController.generateField(
-                  fields,
-                  this.state.boardLayout,
-                  false
-                )
-              ) {
-                console.log('generated random Layout');
-              } else {
-                console.error('failed to generate random Layout');
-              }
-            }
-            try {
-            } catch (err) {
-              console.error(
-                'an error occurred while trying to generate the Field',
-                err
-              );
-            }
-          },
-          (reason: any) => {
-            console.error("failed, couldn't get TileSet.fields", reason);
-          }
-        );
-      },
-      (reason: any) => {
-        console.error("failed, couldn't get TileSet", reason);
+    try {
+      const tileSet = await TileSetController.getTileSetById(
+        options.tileSetId || 1
+      );
+      const fields = await tileSet.fields;
+      if (options.randomizeTiles) {
+        if (
+          TileSetController.generateField(fields, this.state.boardLayout, true)
+        ) {
+          console.log('generated random Layout');
+        } else {
+          console.error('failed to generate random Layout');
+        }
+      } else {
+        if (
+          TileSetController.generateField(fields, this.state.boardLayout, false)
+        ) {
+          console.log('generated non-random Layout');
+        } else {
+          console.error('failed to generate non-random Layout');
+        }
       }
-    );
+    } catch (reason) {
+      console.error("failed, couldn't get TileSet", reason);
+    }
 
     this.state.physicsState.setBroadcastCallback(this.broadcast.bind(this));
     this.state.physicsState.addDice();
@@ -197,6 +176,9 @@ export class GameRoom extends Room<GameState, Metadata> {
 
     let joinedMsg = '';
     if (isNewPlayer) {
+      // increment number of unique players
+      this.maxClients++;
+
       joinedMsg = `${
         this.state.playerList[options.login].displayName
       } joined the game`;
@@ -248,7 +230,8 @@ export class GameRoom extends Room<GameState, Metadata> {
           } left the game.`,
         });
         this.state.removePlayer(player.loginName);
-        // only way to access 'first' element...
+
+        // get the first still connected player
         const newHostPlayer: [string, Player] = Array.from(
           this.state.playerList.entries()
         ).find((val: [string, Player]) => {
