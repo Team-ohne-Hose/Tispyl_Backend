@@ -1,9 +1,9 @@
 export interface JwtUserData {
-    id: number;
-    username: string;
-};
+  id: number;
+  username: string;
+}
 
 export interface JwtToken extends JwtUserData {
-    iat: number;
-    exp: number;
-};
+  iat: number;
+  exp: number;
+}

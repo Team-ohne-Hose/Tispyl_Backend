@@ -38,7 +38,7 @@ export class PhysicsEngine {
     this.setupPhysicsWorld();
   }
 
-  setupPhysicsWorld() {
+  setupPhysicsWorld(): void {
     this.world = new CANNON.World();
     this.world.gravity.set(0, -9.81, 0);
     this.world.allowSleep = true;
@@ -54,15 +54,7 @@ export class PhysicsEngine {
     );
   }
 
-  setupMaterials() {
-    /* Defaults from Cannon are:
-      friction: 0.3,
-      restitution: 0.3,
-      contactEquationRelaxation: 1e7,
-      contactEquationStiffness: 3,
-      frictionEquationRelaxation: 1e7,
-      frictionEquationStiffness: 3
-     */
+  setupMaterials(): void {
     const dice_ground = new CANNON.ContactMaterial(
       this.ground_Material,
       this.dice_Material,
@@ -104,22 +96,23 @@ export class PhysicsEngine {
     this.world.addContactMaterial(dice_figure);
   }
 
-  updatePhysics() {
+  updatePhysics(): void {
     try {
       const time = Date.now();
       if (this.lastTime != undefined) {
         const dt = (time - this.lastTime) / 3000;
-        if (dt <= 0) {
-          return;
-        }
+        if (dt <= 0) return;
+
         this.lastTime = time;
-        //this.world.step(this.fixedTimeStep / 1000, dt, this.maxSubSteps);
         this.world.step(dt);
 
         this.sumOfIterations += dt;
         this.iterations++;
+
         if (this.lastLog === undefined) this.lastLog = Date.now();
+
         const dtLog = Date.now() - this.lastLog; //in ms
+
         if (this.iterations >= 1000 && dtLog >= 120000) {
           //every 2 minutes AND 1000 Frames, log mean time
           this.lastLog = Date.now();
@@ -141,11 +134,11 @@ export class PhysicsEngine {
       this.physicsObjects.forEach(this.updatePhysicsObject.bind(this));
     } catch (exception) {
       console.error('got an Exception in Physics Loop', exception);
-      // Todo: close game
+      //TODO: close game
     }
   }
 
-  updatePhysicsObject(phys: PhysicsObject, key: number) {
+  updatePhysicsObject(phys: PhysicsObject, key: number): void {
     if (phys === undefined || phys.physicsBody === undefined) return;
 
     if (!this.checkDeletionPlane(phys, key, phys.physicsBody.position)) {
@@ -161,7 +154,7 @@ export class PhysicsEngine {
     key: string,
     position: CANNON.Vec3,
     quat: CANNON.Quaternion
-  ) {
+  ): void {
     const netObj = this.networkObjects.get(key.toString());
     netObj.position.set(
       PhysicsEngine.rescaleUnitInverse(position.x),
@@ -175,7 +168,7 @@ export class PhysicsEngine {
     object: PhysicsObject,
     objectKey: number,
     position: CANNON.Vec3
-  ) {
+  ): boolean {
     if (
       position.y < this.deletionPlane ||
       (position.y < 0 &&
@@ -232,7 +225,7 @@ export class PhysicsEngine {
     return gBoardBody;
   }
 
-  addGameBoardBoundarys(gameBoard: CANNON.Body) {
+  addGameBoardBoundarys(gameBoard: CANNON.Body): void {
     boundaryData.boundarys.forEach(
       (value: { landscape: boolean; x: number; y: number; length: number }) => {
         const x = boundaryData.borderCoords.x[value.x],
@@ -273,7 +266,7 @@ export class PhysicsEngine {
     );
   }
 
-  addCannonObject(o: CANNON.Body) {
+  addCannonObject(o: CANNON.Body): void {
     o.sleepSpeedLimit = this.SLEEP_SPEED;
     o.sleepTimeLimit = this.SLEEP_TIME;
     this.world.addBody(o);
@@ -291,7 +284,7 @@ export class PhysicsEngine {
     this.physicsObjects.delete(id);
   }
 
-  setKinematic(objID: number, kinematic: boolean) {
+  setKinematic(objID: number, kinematic: boolean): void {
     const pBody = this.getPhysicsObjectByID(objID).physicsBody;
     if (kinematic) {
       pBody.type = CANNON.Body.KINEMATIC;
@@ -301,7 +294,7 @@ export class PhysicsEngine {
     }
   }
 
-  setPosition(objID: number, x: number, y: number, z: number) {
+  setPosition(objID: number, x: number, y: number, z: number): void {
     this.getPhysicsObjectByID(objID).physicsBody.position.set(
       PhysicsEngine.rescaleUnit(x),
       PhysicsEngine.rescaleUnit(y),
@@ -309,17 +302,14 @@ export class PhysicsEngine {
     );
   }
 
-  setQuat(objID: number, x: number, y: number, z: number, w: number) {
+  setQuat(objID: number, x: number, y: number, z: number, w: number): void {
     this.getPhysicsObjectByID(objID).physicsBody.quaternion.set(x, y, z, w);
   }
 
-  setVelocity(objID: number, x: number, y: number, z: number) {
+  setVelocity(objID: number, x: number, y: number, z: number): void {
     const pBody = this.getPhysicsObjectByID(objID).physicsBody;
-    if (pBody === undefined) {
-      return;
-    }
-    //console.log("set Velocity:", objID, x, y, z);
-    //pBody.velocity.set(x, y, z);
+    if (pBody === undefined) return;
+
     pBody.wakeUp();
     pBody.velocity.set(
       PhysicsEngine.rescaleUnit(x),
@@ -328,21 +318,15 @@ export class PhysicsEngine {
     );
     pBody.velocity.scale(2, pBody.velocity);
     pBody.velocity.scale(pBody.mass, pBody.inertia);
-    /*pBody.inertia.set(
-      PhysicsEngine.rescaleUnit(x) * pBody.mass,
-      PhysicsEngine.rescaleUnit(y) * pBody.mass,
-      PhysicsEngine.rescaleUnit(z) * pBody.mass);*/
   }
 
   //set angular Velocity by rotation axis. length of vector is the rotation speed
-  setAngularVelocity(objID: number, x: number, y: number, z: number) {
+  setAngularVelocity(objID: number, x: number, y: number, z: number): void {
     const pBody = this.getPhysicsObjectByID(objID).physicsBody;
     pBody.angularVelocity.set(x, y, z);
-    const aVelClone = pBody.angularVelocity.clone();
-    //console.log("set Ang Velocity:", aVelClone, aVelClone.normalize());
   }
 
-  wakeAll() {
+  wakeAll(): void {
     this.physicsObjects.forEach((pObj: PhysicsObject) => {
       if (pObj.physicsBody.sleepState === CANNON.Body.SLEEPING)
         pObj.physicsBody.wakeUp();
@@ -358,7 +342,7 @@ export class PhysicsEngine {
     object: PhysicsObjectState,
     mass: number,
     onDelete?: OnDeleteBehaviour
-  ) {
+  ): void {
     const objectID = object.objectIDPhysics;
     const physicsBody = new CANNON.Body({
       mass: mass,
@@ -374,43 +358,25 @@ export class PhysicsEngine {
         object.quaternion.w
       ),
     });
+
     if (object.entity === PhysicsEntity.dice) {
       physicsBody.material = this.dice_Material;
     } else if (object.entity === PhysicsEntity.figure) {
       physicsBody.material = this.figure_Material;
     }
+
     geoList.forEach((geo) => {
       physicsBody.addShape(geo.shape, geo.offset, geo.orientation);
     });
+
     this.physicsObjects.set(objectID, {
       mass: mass,
       objectIdTHREE: objectID,
       physicsBody: physicsBody,
       onDelete: this.getOnDelete(onDelete) || this.defaultOnDelete,
     });
+
     this.addCannonObject(physicsBody);
-    console.info(
-      'Shape Added: ID:',
-      objectID,
-      ', mass:',
-      mass.toFixed(2),
-      ', entity:',
-      object.entity,
-      ',x:',
-      PhysicsEngine.rescaleUnit(object.position.x).toFixed(2),
-      'y:',
-      PhysicsEngine.rescaleUnit(object.position.y).toFixed(2),
-      'z:',
-      PhysicsEngine.rescaleUnit(object.position.z).toFixed(2),
-      'rx:',
-      object.quaternion.x.toFixed(2),
-      'ry:',
-      object.quaternion.y.toFixed(2),
-      'rz:',
-      object.quaternion.z.toFixed(2),
-      'rw:',
-      object.quaternion.w.toFixed(2)
-    );
   }
 
   private getOnDelete(
@@ -420,7 +386,6 @@ export class PhysicsEngine {
       case OnDeleteBehaviour.default:
       default:
         return this.defaultOnDelete;
-        break;
     }
   }
 
@@ -429,13 +394,12 @@ export class PhysicsEngine {
   }
 
   private respawnOnDelete(obj: PhysicsObject): boolean {
-    // console.log("deleting with default: " + obj.objectIdTHREE);
     obj.physicsBody.position.set(0, 0.15, 0);
     obj.physicsBody.velocity.set(0, 0, 0);
     return true;
   }
 
-  destructEngine() {
+  destructEngine(): void {
     global.clearInterval(this.physicsLoop);
   }
 }

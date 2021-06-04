@@ -332,7 +332,7 @@ class UserController {
     }
   }
 
-  private static async verifyUser(req: Request, user: User) {
+  private static async verifyUser(req: Request, user: User): Promise<boolean> {
     const jwtToken: JwtToken = await Authentication.getJwtToken(req);
     return user.id === jwtToken.id;
   }

@@ -1,22 +1,107 @@
 {
   "borderCoords": {
-    "x": [-35, -25, -15, -5, 5, 15, 25, 35, 45],
-    "y": [-40, -30, -20, -10, 0, 10, 20, 30, 40]
+    "x": [
+      -35,
+      -25,
+      -15,
+      -5,
+      5,
+      15,
+      25,
+      35,
+      45
+    ],
+    "y": [
+      -40,
+      -30,
+      -20,
+      -10,
+      0,
+      10,
+      20,
+      30,
+      40
+    ]
   },
   "boundarys": [
-    {"landscape": true, "x": 1, "y": 1, "length": 70},
-    {"landscape": false, "x": 1, "y": 1, "length": 60},
-    {"landscape": true, "x": 1, "y": 7, "length": 60},
-    {"landscape": false, "x": 7, "y": 2, "length": 50},
-    {"landscape": true, "x": 2, "y": 2, "length": 50},
-    {"landscape": false, "x": 2, "y": 2, "length": 40},
-    {"landscape": true, "x": 2, "y": 6, "length": 40},
-    {"landscape": false, "x": 6, "y": 3, "length": 30},
-    {"landscape": true, "x": 3, "y": 3, "length": 30},
-    {"landscape": false, "x": 3, "y": 3, "length": 20},
-    {"landscape": true, "x": 3, "y": 5, "length": 20},
-    {"landscape": false, "x": 5, "y": 4, "length": 10},
-    {"landscape": true, "x": 4, "y": 4, "length": 10}
+    {
+      "landscape": true,
+      "x": 1,
+      "y": 1,
+      "length": 70
+    },
+    {
+      "landscape": false,
+      "x": 1,
+      "y": 1,
+      "length": 60
+    },
+    {
+      "landscape": true,
+      "x": 1,
+      "y": 7,
+      "length": 60
+    },
+    {
+      "landscape": false,
+      "x": 7,
+      "y": 2,
+      "length": 50
+    },
+    {
+      "landscape": true,
+      "x": 2,
+      "y": 2,
+      "length": 50
+    },
+    {
+      "landscape": false,
+      "x": 2,
+      "y": 2,
+      "length": 40
+    },
+    {
+      "landscape": true,
+      "x": 2,
+      "y": 6,
+      "length": 40
+    },
+    {
+      "landscape": false,
+      "x": 6,
+      "y": 3,
+      "length": 30
+    },
+    {
+      "landscape": true,
+      "x": 3,
+      "y": 3,
+      "length": 30
+    },
+    {
+      "landscape": false,
+      "x": 3,
+      "y": 3,
+      "length": 20
+    },
+    {
+      "landscape": true,
+      "x": 3,
+      "y": 5,
+      "length": 20
+    },
+    {
+      "landscape": false,
+      "x": 5,
+      "y": 4,
+      "length": 10
+    },
+    {
+      "landscape": true,
+      "x": 4,
+      "y": 4,
+      "length": 10
+    }
   ],
   "boundaryWidth": 0.15,
   "boundaryHeight": 0.85,
