@@ -60,6 +60,35 @@ class UserController {
     new APIResponse(res, 200, user).send();
   }
 
+  public static async getSingleUserbyId(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const userId = Number(req.query?.userId);
+    const userRepository: Repository<User> = getRepository(User);
+
+    let user: User = null;
+
+    console.log(userId);
+
+    try {
+      user = await userRepository.findOneOrFail({
+        where: [{ id: userId }],
+      });
+    } catch (error) {
+      console.log('There is no user with id ' + userId);
+      new APIResponse(res, 404, {}, [
+        'There is no user with given username.',
+      ]).send();
+      return;
+    }
+
+    // Delete the hashed password from the response.
+    delete user.password_hash;
+
+    new APIResponse(res, 200, user).send();
+  }
+
   public static async createUser(req: Request, res: Response): Promise<void> {
     const registerOptions: RegisterOptions = req.body;
     const userRepository: Repository<User> = getRepository(User);

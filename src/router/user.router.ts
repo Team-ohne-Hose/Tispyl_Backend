@@ -7,6 +7,11 @@ const userRouter: Router = Router({ mergeParams: true });
 /** ALL USER ROUTES. */
 
 userRouter.get('/', Authentication.verifyAccess, UserController.getSingleUser);
+userRouter.get(
+  '/byId',
+  Authentication.verifyAccess,
+  UserController.getSingleUserbyId
+);
 userRouter.get('/all', Authentication.verifyAccess, UserController.getAllUsers);
 userRouter.post('/', UserController.createUser);
 userRouter.patch('/', Authentication.verifyAccess, UserController.updateUser);
