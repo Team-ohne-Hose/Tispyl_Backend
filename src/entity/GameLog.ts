@@ -1,16 +1,5 @@
-import {
-  Column,
-  Entity,
-  getRepository,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  Repository,
-} from 'typeorm';
-import Language from './Language';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import TileSet from './TileSet';
-import { APIResponse } from '../../model/APIResponse';
-import User from './User';
-import { Tile } from '../../model/state/BoardLayoutState';
 
 @Entity('GameLogs')
 class GameLog {

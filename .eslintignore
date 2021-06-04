@@ -1,1 +1,7 @@
 /src/migration
+/node_modules
+/fileStash
+/resources
+/config
+/deployment
+/docker

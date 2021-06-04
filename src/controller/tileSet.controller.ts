@@ -1,22 +1,23 @@
-import {getRepository, Repository} from "typeorm";
-import TileSet from "../entity/TileSet";
-import SetField from "../entity/SetField";
-import {BoardLayoutState, Tile} from "../../model/state/BoardLayoutState";
-import {APIResponse} from "../../model/APIResponse";
-import {Request, Response} from "express";
-import User from "../entity/User";
-
+import { getRepository, Repository } from 'typeorm';
+import TileSet from '../entity/TileSet';
+import SetField from '../entity/SetField';
+import { BoardLayoutState, Tile } from '../../model/state/BoardLayoutState';
+import { APIResponse } from '../../model/APIResponse';
+import { Request, Response } from 'express';
+import User from '../entity/User';
 
 class TileSetController {
-
   private static filterUserData(u: User) {
-    const filteredUser: User = {id: u.id, display_name: u.display_name, login_name: u.login_name} as User;
-    return filteredUser
+    const filteredUser: User = {
+      id: u.id,
+      display_name: u.display_name,
+      login_name: u.login_name,
+    } as User;
+    return filteredUser;
   }
 
   public static async getAllRoute(req: Request, res: Response): Promise<void> {
-    let ts: TileSet[];
-      ts = await TileSetController.getAll();
+    const ts: TileSet[] = await TileSetController.getAll();
     try {
     } catch (error) {
       console.error(error);
@@ -28,9 +29,10 @@ class TileSetController {
     });
     new APIResponse(res, 200, ts).send();
   }
+
   public static async getByIdRoute(req: Request, res: Response): Promise<void> {
     let ts: TileSet;
-    const tileSetID: number = Number(req.query.id);
+    const tileSetID = Number(req.query.id);
     try {
       ts = await TileSetController.getTileSetById(tileSetID);
     } catch (error) {
@@ -63,17 +65,18 @@ class TileSetController {
     tiles: SetField[],
     boardLayoutState: BoardLayoutState,
     randomize: boolean
-  ) {
+  ): boolean {
     if (randomize) {
       return TileSetController.generateRandomField(tiles, boardLayoutState);
     } else {
       return TileSetController.generateDefaultField(tiles, boardLayoutState);
     }
   }
+
   private static generateDefaultField(
     tiles: SetField[],
     boardLayoutState: BoardLayoutState
-  ) {
+  ): boolean {
     tiles.forEach((value) => {
       if (value.fieldNumber >= 1 && value.fieldNumber <= 62) {
         const boardTile = value.boardTile;
@@ -92,6 +95,7 @@ class TileSetController {
     boardLayoutState.setStartEnd();
     return true;
   }
+
   private static placeRowRestricted(
     row: number,
     permutation: number[]
@@ -107,8 +111,12 @@ class TileSetController {
 
     // create list of available fields
     const fieldList: number[] = [];
-    allowedRows.forEach(value => {
-      for (let canidate = BoardLayoutState.rows[value - 1][0]; canidate <= BoardLayoutState.rows[value - 1][1]; canidate++) {
+    allowedRows.forEach((value) => {
+      for (
+        let canidate = BoardLayoutState.rows[value - 1][0];
+        canidate <= BoardLayoutState.rows[value - 1][1];
+        canidate++
+      ) {
         if (permutation[canidate] === undefined) {
           fieldList.push(canidate);
         }
@@ -116,6 +124,8 @@ class TileSetController {
     });
     return fieldList;
   }
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   private static generateRandomPermutation(tiles: SetField[]) {
     const len = tiles.length;
     const inactivePool = [];
@@ -131,6 +141,7 @@ class TileSetController {
     }
 
     // pick random set of 62 Tiles
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const pickRandomFromRange = (maxExcl: number) =>
       Math.min(Math.floor(Math.random() * maxExcl), maxExcl - 1);
     for (let j = 0; j < 62; j++) {
@@ -235,10 +246,11 @@ class TileSetController {
     }
     return permutation;
   }
+
   private static generateRandomField(
     tiles: SetField[],
     boardLayoutState: BoardLayoutState
-  ) {
+  ): boolean {
     // max 10 tries
     let permutation = [];
     for (let i = 0; i < 10; i++) {

@@ -6,7 +6,6 @@ import * as fs from 'fs';
 import { ImagePreparer } from '../../helpers/ImagePreparer';
 import multer from 'multer';
 import { APIResponse } from '../../model/APIResponse';
-import {MIMETYPES} from "./mimeTypes";
 
 class ProfileController {
   static MIMETYPES = {
@@ -172,7 +171,7 @@ class ProfileController {
     parts: 10,
   };
 
-  private static multerFileFilter = (req, file, cb) => {
+  private static multerFileFilter = (req, file, cb): void => {
     if (
       file.mimetype == 'image/png' ||
       file.mimetype == 'image/jpg' ||
@@ -188,6 +187,7 @@ class ProfileController {
       return cb(err);
     }
   };
+
   public static multipartData = multer({
     storage: ProfileController.multerStorage,
     limits: ProfileController.multerLimits,

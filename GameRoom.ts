@@ -258,7 +258,7 @@ export class GameRoom extends Room<GameState, Metadata> {
         this.state.removePlayer(player.loginName);
       }
       player.gracePeriodTimeout = global.setTimeout(
-        ((p: Player) => {
+        ((p: Player): void => {
           if (!p.isConnected) {
             p.hasLeft = true;
             const pObj: PhysicsObjectState = this.state.physicsState.objects[
@@ -275,7 +275,7 @@ export class GameRoom extends Room<GameState, Metadata> {
     return undefined;
   }
 
-  onChatMessage(client: Client, data: WsData) {
+  onChatMessage(client: Client, data: WsData): void {
     const player = this.state.getPlayerByClientId(client.id);
     if (player !== undefined && data.type === MessageType.CHAT_MESSAGE) {
       const msg: ChatMessage = {
@@ -287,12 +287,12 @@ export class GameRoom extends Room<GameState, Metadata> {
     }
   }
 
-  onJoinMessage(client: Client, data: WsData) {
+  onJoinMessage(client: Client, data: WsData): void {
     if (data.type === MessageType.JOIN_MESSAGE) {
     }
   }
 
-  onGameMessage(client: Client, data: WsData) {
+  onGameMessage(client: Client, data: WsData): void {
     console.log(`got GameMessage: ${JSON.stringify(data)}`);
     const player = this.state.getPlayerByClientId(client.id);
     if (player !== undefined && data.type === MessageType.GAME_MESSAGE) {
@@ -448,53 +448,50 @@ export class GameRoom extends Room<GameState, Metadata> {
     }
   }
 
-  onPhysicsMessage(client: Client, data: WsData) {
+  onPhysicsMessage(client: Client, data: WsData): void {
     if (data.type === MessageType.PHYSICS_MESSAGE) {
       switch (data.subType) {
         default:
           this.state.physicsState.handlePhysicsCommand(data);
-          break;
       }
     }
   }
 
-  onDebugMessage(client: Client, data: WsData) {
+  onDebugMessage(client: Client, data: WsData): void {
     if (data.type === MessageType.DEBUG_COMMAND) {
       switch (data.subType) {
         case DebugCommandType.listPhysics:
           this.state.physicsState.listPhysicsItems();
-          break;
       }
     }
   }
 
-  onLeftMessage(client: Client, data: WsData) {
+  onLeftMessage(client: Client, data: WsData): void {
     const player = this.state.getPlayerByClientId(client.id);
     if (player !== undefined && data.type === MessageType.LEFT_MESSAGE) {
     }
   }
 
-  onOtherMessage(client: Client, data: WsData) {
+  onOtherMessage(client: Client, data: WsData): void {
     const player = this.state.getPlayerByClientId(client.id);
     if (player !== undefined && data.type === MessageType.OTHER) {
     }
   }
 
-  onRefreshMessage(client: Client, data: WsData) {
+  onRefreshMessage(client: Client, data: WsData): void {
     this.broadcast(data.type, data);
   }
 
-  onAchievementMessage(client: Client, data: WsData) {
+  onAchievementMessage(client: Client, data: WsData): void {
     if (data.type === MessageType.ACHIEVEMENT_MESSAGE) {
       switch (data.subType) {
         case AchievementMessageType.newAchievement:
           this.broadcast(data.type, data);
-          break;
       }
     }
   }
 
-  onItemMessage(client: Client, data: WsData) {
+  onItemMessage(client: Client, data: WsData): void {
     if (data.type === MessageType.ITEM_MESSAGE) {
       switch (data.subType) {
         case ItemMessageType.giveItem:
@@ -544,7 +541,8 @@ export class GameRoom extends Room<GameState, Metadata> {
             }
           } else {
             console.log(
-              `[onItemMessage] Client not authorized to use: ${player.loginName} tried to use ${data.playerLoginName}'s Item of ${data.itemId}`
+              `[onItemMessage] Client not authorized to use: 
+              ${player.loginName} tried to use ${data.playerLoginName}'s Item of ${data.itemId}`
             );
           }
           break;
@@ -552,7 +550,7 @@ export class GameRoom extends Room<GameState, Metadata> {
     }
   }
 
-  onChatCommand(client: Client, data: WsData) {
+  onChatCommand(client: Client, data: WsData): void {
     if (data.type === MessageType.CHAT_COMMAND) {
       switch (data.subType) {
         case ChatCommandType.commandAsk:
@@ -610,7 +608,7 @@ export class GameRoom extends Room<GameState, Metadata> {
     }
   }
 
-  private isHost(client: Client) {
+  private isHost(client: Client): boolean {
     const player = this.state.getPlayerByClientId(client.id);
     if (player !== undefined) {
       return player.loginName === this.state.hostLoginName;

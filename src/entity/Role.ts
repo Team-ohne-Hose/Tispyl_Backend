@@ -18,7 +18,7 @@ class Role {
   })
   public updatedAt: Date;
 
-  @ManyToMany((type) => User, (user) => user.roles)
+  @ManyToMany(() => User, (user) => user.roles)
   public users: User[];
 
   constructor(description: string) {

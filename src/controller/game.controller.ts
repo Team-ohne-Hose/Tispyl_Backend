@@ -39,7 +39,7 @@ class GameController {
     duration: number,
     rounds: number,
     has_left: boolean
-  ) {
+  ): Promise<void> {
     const userStatRepository: Repository<UserStatistic> = getRepository(
       UserStatistic
     );
