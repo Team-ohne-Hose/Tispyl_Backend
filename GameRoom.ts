@@ -154,8 +154,7 @@ export class GameRoom extends Room<GameState, Metadata> {
 
   onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
     console.log(
-      `[onJoin] Client ID: ${client.id} DisplayName: ${
-        options.displayName
+      `[onJoin] Client ID: ${client.id} DisplayName: ${options.displayName
       } joined. Options: ${JSON.stringify(options)}`
     );
 
@@ -179,14 +178,12 @@ export class GameRoom extends Room<GameState, Metadata> {
       // increment number of unique players
       this.maxClients++;
 
-      joinedMsg = `${
-        this.state.playerList[options.login].displayName
-      } joined the game`;
+      joinedMsg = `${this.state.playerList[options.login].displayName
+        } joined the game`;
       player.figureId = this.state.physicsState.addPlayerFigure();
     } else {
-      joinedMsg = `${
-        this.state.playerList[options.login].displayName
-      } reconnected to the game`;
+      joinedMsg = `${this.state.playerList[options.login].displayName
+        } reconnected to the game`;
 
       // remove potential timeout
       if (player.gracePeriodTimeout !== undefined) {
@@ -210,6 +207,8 @@ export class GameRoom extends Room<GameState, Metadata> {
       type: MessageType.JOIN_MESSAGE,
       message: joinedMsg,
     });
+
+    this.unlock();
     return undefined;
   }
 
@@ -225,9 +224,8 @@ export class GameRoom extends Room<GameState, Metadata> {
       if (player.loginName === this.state.hostLoginName) {
         this.broadcast(MessageType.LEFT_MESSAGE, {
           type: MessageType.LEFT_MESSAGE,
-          message: `The Host: ${
-            this.state.playerList[player.loginName].displayName
-          } left the game.`,
+          message: `The Host: ${this.state.playerList[player.loginName].displayName
+            } left the game.`,
         });
         this.state.removePlayer(player.loginName);
 
@@ -250,9 +248,8 @@ export class GameRoom extends Room<GameState, Metadata> {
       } else {
         this.broadcast(MessageType.SERVER_MESSAGE, {
           type: MessageType.SERVER_MESSAGE,
-          message: `Player: ${
-            this.state.playerList[player.loginName].displayName
-          } left the game.`,
+          message: `Player: ${this.state.playerList[player.loginName].displayName
+            } left the game.`,
           origin: 'SERVER',
         });
         this.state.removePlayer(player.loginName);
@@ -507,9 +504,8 @@ export class GameRoom extends Room<GameState, Metadata> {
               );
               this.broadcast(MessageType.SERVER_MESSAGE, {
                 type: MessageType.SERVER_MESSAGE,
-                message: `Player: ${
-                  this.state.playerList[data.playerLoginName].displayName
-                } received Item ${data.itemId}.`,
+                message: `Player: ${this.state.playerList[data.playerLoginName].displayName
+                  } received Item ${data.itemId}.`,
                 origin: 'SERVER',
               });
             } else {
@@ -598,9 +594,8 @@ export class GameRoom extends Room<GameState, Metadata> {
 
           this.broadcast(MessageType.SERVER_MESSAGE, {
             type: MessageType.SERVER_MESSAGE,
-            message: `The coin landed on ${
-              coin ? 'HEADS (KOPF)' : 'TAILS (ZAHL)'
-            }`,
+            message: `The coin landed on ${coin ? 'HEADS (KOPF)' : 'TAILS (ZAHL)'
+              }`,
             origin: 'SERVER',
           });
           break;
