@@ -68,8 +68,6 @@ class Authentication {
     // If the header exists check the JWT token.
     const validToken: JwtToken = await Authentication.verifyJwtToken(jwtToken);
 
-    console.log(validToken, !null);
-
     if (validToken === null) {
       new APIResponse(res, 401, {}, [
         {
