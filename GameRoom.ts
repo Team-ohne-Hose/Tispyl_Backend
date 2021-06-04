@@ -211,9 +211,6 @@ export class GameRoom extends Room<GameState, Metadata> {
       type: MessageType.JOIN_MESSAGE,
       message: joinedMsg,
     });
-
-    this.unlock();
-    return undefined;
   }
 
   onLeave(client: Client, consented?: boolean): void | Promise<any> {
