@@ -35,10 +35,9 @@ class ProfileController {
       const user: User = await userRepository.findOneOrFail({
         where: [{ login_name: loginName }],
       });
-      picturePath =
-        user.profile_picture !== null
-          ? user.profile_picture
-          : ProfileController.DEFAULT_IMAGE_PATH;
+      picturePath = fs.existsSync(user.profile_picture)
+        ? user.profile_picture
+        : ProfileController.DEFAULT_IMAGE_PATH;
     } catch (error) {
       console.log('There is no user with login_name' + loginName);
       res.status(404).send({
