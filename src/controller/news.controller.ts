@@ -39,6 +39,26 @@ class NewsController {
     }
   }
 
+  public static async rawMedia(req: Request, res: Response): Promise<void> {
+    const path = Environment.NEWS_PATH + '/' + req.params.fileName;
+    if (path !== undefined && path !== null) {
+      try {
+        if (fs.existsSync(path)) {
+          const stream = fs.createReadStream(path);
+          stream.on('open', () => {
+            stream.pipe(res);
+          });
+        } else {
+          new APIResponse(res, 404, {}, ['File not found']).send();
+        }
+      } catch (e) {
+        new APIResponse(res, 500, {}, ['File access error']).send();
+      }
+    } else {
+      new APIResponse(res, 400, {}, ['Undefined fileName parameter']).send();
+    }
+  }
+
   private static firstLineFs(fileName: string): Promise<string> {
     const stream = fs.createReadStream(fileName);
     let acc = '';

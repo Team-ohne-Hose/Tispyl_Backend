@@ -9,5 +9,6 @@ newsRouter.get('/:md/head', NewsController.getNewsHead);
 newsRouter.get('/headmapping', NewsController.getNewsMapping);
 newsRouter.get('/:md', NewsController.getSingleNews);
 newsRouter.get('/', NewsController.getAvailableContent);
+newsRouter.get('/media/:fileName', NewsController.rawMedia);
 
 export default newsRouter;
