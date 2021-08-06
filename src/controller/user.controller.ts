@@ -69,8 +69,6 @@ class UserController {
 
     let user: User = null;
 
-    console.log(userId);
-
     try {
       user = await userRepository.findOneOrFail({
         where: [{ id: userId }],
@@ -168,14 +166,14 @@ class UserController {
 
   public static async updateUser(req: Request, res: Response): Promise<void> {
     const jwtToken: JwtToken = await Authentication.getJwtToken(req);
-    const loginName = String(req.query.login_name);
+    const id = String(req.body.id);
     const userRepository: Repository<User> = getRepository(User);
 
     let user: User = null;
 
     try {
       user = await userRepository.findOneOrFail({
-        where: { login_name: loginName },
+        where: { id: id },
       });
     } catch (error) {
       console.log(`Couldn't find the requested user. Error: ${error}`);
@@ -218,7 +216,7 @@ class UserController {
     }
 
     delete user.password_hash;
-    new APIResponse(res, 200, { user: user }).send();
+    new APIResponse(res, 200, user).send();
   }
 
   //TODO: Delete User
@@ -328,7 +326,7 @@ class UserController {
       userToUpdate.time_played += minutes;
       await userRepository.save(userToUpdate);
     } catch (error) {
-      console.log('Error:', error);
+      console.log('Error by adding playtime to player:', error);
     }
   }
 
