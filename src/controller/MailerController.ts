@@ -36,8 +36,7 @@ class MailerController {
       ],
     });
     request
-      .then((result) => {
-        console.log(result.body);
+      .then(() => {
         new APIResponse(res, 200, {}).send();
       })
       .catch((err) => {
