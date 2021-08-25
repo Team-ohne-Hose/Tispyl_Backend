@@ -7,6 +7,7 @@ import { VoteState } from './VoteState';
 import { Link } from './Link';
 import { ItemManager } from '../ItemManager';
 import { GameRoom } from '../../GameRoom';
+import {Rule} from "./Rule";
 
 export enum Actions {
   ROLL,
@@ -33,8 +34,8 @@ export class GameState extends Schema {
   @type({ map: Player })
   playerList = new MapSchema<Player>();
 
-  @type(['string'])
-  rules = new ArraySchema<string>();
+  @type([Rule])
+  rules = new ArraySchema<Rule>();
 
   @type([Link])
   drinkBuddyLinks = new ArraySchema<Link>();

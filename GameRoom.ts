@@ -23,6 +23,7 @@ import GameLog from './src/entity/GameLog';
 import TileSetController from './src/controller/tileSet.controller';
 import TileSet from './src/entity/TileSet';
 import SetField from './src/entity/SetField';
+import {Rule} from "./model/state/Rule";
 
 export interface CreateRoomOpts extends Metadata {
   displayName: string;
@@ -314,8 +315,7 @@ export class GameRoom extends Room<GameState, Metadata> {
           this.state.startGame();
           break;
         case GameActionType.addRule:
-          // TODO: add Author
-          this.state.rules.push(data.text);
+          this.state.rules.push(new Rule(data.text, data.author));
           break;
         case GameActionType.deleteRule:
           this.state.rules.splice(data.id, 1);
