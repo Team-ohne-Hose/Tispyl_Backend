@@ -1,5 +1,5 @@
 import { Client, Room } from 'colyseus';
-import { Actions, GameState } from './model/state/GameState';
+import { Actions, GameState } from './src/model/state/GameState';
 import {
   AchievementMessageType,
   ChatCommandType,
@@ -10,18 +10,18 @@ import {
   MessageType,
   PlayerMessageType,
   WsData,
-} from './model/WsData';
+} from './src/model/WsData';
 
-import { Player } from './model/state/Player';
-import { PhysicsObjectState } from './model/state/PhysicsState';
-import { ItemManager } from './model/ItemManager';
-import { Link } from './model/state/Link';
-import { VoteEntry, VoteStage } from './model/state/VoteState';
+import { Player } from './src/model/state/Player';
+import { PhysicsObjectState } from './src/model/state/PhysicsState';
+import { ItemManager } from './src/model/ItemManager';
+import { Link } from './src/model/state/Link';
+import { VoteEntry, VoteStage } from './src/model/state/VoteState';
 import UserController from './src/controller/user.controller';
 import GameController from './src/controller/game.controller';
 import GameLog from './src/entity/GameLog';
 import TileSetController from './src/controller/tileSet.controller';
-import { Rule } from "./model/state/Rule";
+import { Rule } from "./src/model/state/Rule";
 
 export interface CreateRoomOpts extends Metadata {
   displayName: string;

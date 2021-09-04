@@ -1,7 +1,7 @@
 import { OnDeleteBehaviour, PhysicsObjectState } from './state/PhysicsState';
 import { MapSchema } from '@colyseus/schema';
 import CANNON from 'cannon';
-import boundaryData from '../resources/gameBoundarys.json';
+import boundaryData from '../../resources/gameBoundarys.json';
 import { PhysicsEntity } from './WsData';
 
 export interface PhysicsObject {

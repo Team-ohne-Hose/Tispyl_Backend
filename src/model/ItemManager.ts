@@ -75,7 +75,8 @@ export class ItemManager {
       weight: 1,
       name: 'Trittbrettfahrer',
       desc:
-        'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)',
+        'Exe dein Getränk. Schaffst du es müssen alle anderen dir gleich tun.' +
+        '(Dein Getränk muss mindestens halb voll sein wenn du dieses Item nutzt.)',
       executeType: 0,
     },
     11: {
@@ -96,8 +97,6 @@ export class ItemManager {
   };
 
   private static chanceTable: number[] = undefined;
-
-  constructor() { }
 
   private static generateChanceTable(): void {
     this.chanceTable = [];

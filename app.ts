@@ -8,11 +8,11 @@ import { Server } from 'colyseus';
 import { monitor } from '@colyseus/monitor';
 import { GameRoom } from './GameRoom';
 import backendConfig from './configs/backend-config.json';
-import { ErrorHandler } from './helpers/ErrorHandler';
+import { ErrorHandler } from './src/helpers/ErrorHandler';
 import betterLogging from 'better-logging';
 import { Connection, createConnection } from 'typeorm';
 import globalRouter from './src/router/global.router';
-import Environment from './module/environment';
+import Environment from './src/module/environment';
 
 require('dotenv').config();
 

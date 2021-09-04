@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { APIResponse } from '../../model/APIResponse';
+import { APIResponse } from '../model/APIResponse';
 
 class MailerController {
-  public static async getRequest(req: Request, res: Response) {
+  public static async getRequest(req: Request, res: Response): Promise<void> {
     const { email, text } = req.body;
 
     const mailjet = require('node-mailjet').connect(

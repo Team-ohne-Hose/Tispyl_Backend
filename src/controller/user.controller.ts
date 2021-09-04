@@ -2,11 +2,11 @@ import { getRepository, Repository } from 'typeorm';
 import { Request, Response } from 'express';
 import { validate, ValidationError } from 'class-validator';
 import User from '../entity/User';
-import { LoginOptions } from '../../types/LoginOptions';
-import Authentication from '../../module/authentication';
-import { JwtToken } from '../../types/JwtToken';
-import { RegisterOptions } from '../../types/RegisterOptions';
-import { APIResponse } from '../../model/APIResponse';
+import { LoginOptions } from '../types/LoginOptions';
+import Authentication from '../module/authentication';
+import { JwtToken } from '../types/JwtToken';
+import { RegisterOptions } from '../types/RegisterOptions';
+import { APIResponse } from '../model/APIResponse';
 
 class UserController {
   public static async getAllUsers(req: Request, res: Response): Promise<void> {

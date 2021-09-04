@@ -4,7 +4,7 @@ import User from '../entity/User';
 import UserStatistic from '../entity/userStatistic';
 import UserController from './user.controller';
 import { MapSchema } from '@colyseus/schema';
-import { Player } from '../../model/state/Player';
+import { Player } from '../model/state/Player';
 
 class GameController {
   public static async saveGameLog(

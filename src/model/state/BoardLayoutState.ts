@@ -81,12 +81,12 @@ export class BoardLayoutState extends Schema {
   }
 
   // set start and goal tile defaults. (at spot 0 and 63)
-  setStartEnd() {
+  setStartEnd(): void {
     this.tileList.set('0', this.startTile);
     this.tileList.set('63', this.goalTile);
   }
 
-  fillEmptyTilesWithDefaults() {
+  fillEmptyTilesWithDefaults(): void {
     for (let i = 1; i <= 62; i++) {
       if (!this.tileList.get(i.toString())) {
         this.tileList.set(
@@ -97,7 +97,7 @@ export class BoardLayoutState extends Schema {
     }
   }
 
-  setTile(i: number, t: Tile) {
+  setTile(i: number, t: Tile): void {
     //this.tileList.set(i.toString(), t);
     this.tileList[i] = t;
   }
