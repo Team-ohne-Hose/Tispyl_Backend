@@ -74,6 +74,7 @@ export enum GameActionType {
   closeVotingSession,
   addDrinkbuddies,
   removeDrinkbuddies,
+  wakePlayer,
 }
 
 export type GameMessage =
@@ -89,7 +90,8 @@ export type GameMessage =
   | GameBeginVotingSession
   | GamePlayerCastVote
   | GameCloseVotingSession
-  | GameUpdateDrinkBuddies;
+  | GameUpdateDrinkBuddies
+  | GameWakePlayer;
 
 type actionTypes =
   | GameActionType.none
@@ -165,6 +167,11 @@ export interface GameUpdateDrinkBuddies {
   action: GameActionType.addDrinkbuddies | GameActionType.removeDrinkbuddies;
   source: string;
   target: string;
+}
+export interface GameWakePlayer {
+  type: MessageType.GAME_MESSAGE;
+  action: GameActionType.wakePlayer;
+  targetLoginName: string;
 }
 
 export type PlayerMessage = SetFigure;

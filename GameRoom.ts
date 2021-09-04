@@ -21,9 +21,7 @@ import UserController from './src/controller/user.controller';
 import GameController from './src/controller/game.controller';
 import GameLog from './src/entity/GameLog';
 import TileSetController from './src/controller/tileSet.controller';
-import TileSet from './src/entity/TileSet';
-import SetField from './src/entity/SetField';
-import {Rule} from "./model/state/Rule";
+import { Rule } from "./model/state/Rule";
 
 export interface CreateRoomOpts extends Metadata {
   displayName: string;
@@ -412,6 +410,15 @@ export class GameRoom extends Room<GameState, Metadata> {
             (l) => l.source === data.source && l.target === data.target
           );
           this.state.drinkBuddyLinks.splice(linkIndex, 1);
+          break;
+        case GameActionType.wakePlayer:
+          const targetPlayer = this.state.getPlayer(data.targetLoginName);
+          const targetClient: Client = this.clients.find(value => {return value.id === targetPlayer.clientId});
+          if (targetClient !== undefined) {
+            targetClient.send(MessageType.GAME_MESSAGE, data)
+          } else {
+            console.warn("Failed to find target client to send a wake player message to.");
+          }
           break;
         case GameActionType.none:
         default:
