@@ -1,5 +1,5 @@
 import { getRepository, Repository } from 'typeorm';
-import express, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { validate, ValidationError } from 'class-validator';
 import User from '../entity/User';
 import { LoginOptions } from '../../types/LoginOptions';
@@ -196,7 +196,14 @@ class UserController {
       return;
     }
 
-    const { display_name, last_figure } = req.body;
+    const { display_name, last_figure, currentPassword } = req.body;
+
+    if (user.password_hash !== currentPassword) {
+      new APIResponse(res, 403, {}, [
+        { userMessage: 'Wrong password.', internalMessage: 'Wrong password.' },
+      ]).send();
+      return;
+    }
 
     if (display_name !== undefined) user.display_name = display_name;
 
