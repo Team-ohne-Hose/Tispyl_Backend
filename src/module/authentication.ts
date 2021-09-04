@@ -51,7 +51,7 @@ class Authentication {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> {
+  ): Promise<void> {
     const jwtToken: string = req.get('Authorization');
 
     // Check if a authorization header is set.

@@ -1,7 +1,7 @@
 import { getRepository, Repository } from 'typeorm';
 import { Request, Response } from 'express';
 import Language from '../entity/Language';
-import { APIResponse } from '../../model/APIResponse';
+import { APIResponse } from '../model/APIResponse';
 
 class LanguageController {
   public static async getAll(req: Request, res: Response): Promise<void> {

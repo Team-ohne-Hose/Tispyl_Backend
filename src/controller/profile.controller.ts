@@ -3,9 +3,9 @@ import { getRepository, Repository } from 'typeorm';
 import User from '../entity/User';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ImagePreparer } from '../../helpers/ImagePreparer';
+import { ImagePreparer } from '../helpers/ImagePreparer';
 import multer from 'multer';
-import { APIResponse } from '../../model/APIResponse';
+import { APIResponse } from '../model/APIResponse';
 
 class ProfileController {
   static MIMETYPES = {

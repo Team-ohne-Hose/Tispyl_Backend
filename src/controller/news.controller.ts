@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { APIResponse } from '../../model/APIResponse';
+import { APIResponse } from '../model/APIResponse';
 import { MIMETYPES } from './mimeTypes';
 import fs from 'fs';
-import Environment from '../../module/environment';
+import Environment from '../module/environment';
 
 class NewsController {
   public static async getAvailableContent(

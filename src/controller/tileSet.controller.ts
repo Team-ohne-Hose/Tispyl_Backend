@@ -1,13 +1,13 @@
 import { getRepository, Repository } from 'typeorm';
 import TileSet from '../entity/TileSet';
 import SetField from '../entity/SetField';
-import { BoardLayoutState, Tile } from '../../model/state/BoardLayoutState';
-import { APIResponse } from '../../model/APIResponse';
+import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
+import { APIResponse } from '../model/APIResponse';
 import { Request, Response } from 'express';
 import User from '../entity/User';
 
 class TileSetController {
-  private static filterUserData(u: User) {
+  private static filterUserData(u: User): User {
     const filteredUser: User = {
       id: u.id,
       display_name: u.display_name,

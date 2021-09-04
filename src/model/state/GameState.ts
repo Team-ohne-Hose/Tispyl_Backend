@@ -6,8 +6,8 @@ import { BoardLayoutState } from './BoardLayoutState';
 import { VoteState } from './VoteState';
 import { Link } from './Link';
 import { ItemManager } from '../ItemManager';
-import { GameRoom } from '../../GameRoom';
-import {Rule} from "./Rule";
+import { GameRoom } from '../../../GameRoom';
+import { Rule } from './Rule';
 
 export enum Actions {
   ROLL,
@@ -105,8 +105,9 @@ export class GameState extends Schema {
       this.getPlayer(this.currentPlayerLogin).addItem(itemId);
       gameRoom.broadcast(MessageType.CHAT_MESSAGE, {
         type: MessageType.CHAT_MESSAGE,
-        message: `Player: ${gameRoom.state.playerList[this.currentPlayerLogin].displayName
-          } received Item ${itemId}.`,
+        message: `Player: ${
+          gameRoom.state.playerList[this.currentPlayerLogin].displayName
+        } received Item ${itemId}.`,
         authorLoginName: 'SERVER',
       });
     }

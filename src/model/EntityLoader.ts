@@ -61,8 +61,6 @@ export class EntityLoader {
 
   fs = require('fs');
 
-  constructor() { }
-
   private isMesh(obj: THREE.Object3D): obj is THREE.Mesh {
     if (obj !== undefined) {
       const m = obj as THREE.Mesh;
@@ -120,12 +118,12 @@ export class EntityLoader {
       geometry.computeBoundingSphere();
       geometry.computeFaceNormals();
     }
-    const points: CANNON.Vec3[] = (<THREE.Geometry>geometry).vertices.map(
+    const points: CANNON.Vec3[] = (geometry as THREE.Geometry).vertices.map(
       function (v) {
         return new CANNON.Vec3(v.x, v.y, v.z);
       }
     );
-    const faces: number[][] = (<THREE.Geometry>geometry).faces.map(function (
+    const faces: number[][] = (geometry as THREE.Geometry).faces.map(function (
       f
     ) {
       return [f.a, f.b, f.c];
@@ -326,7 +324,7 @@ export class EntityLoader {
     engine: PhysicsEngine,
     object: PhysicsObjectState,
     color?: number
-  ) {
+  ): Promise<void> {
     engine.addShape(
       await this.loadGeometry(
         PhysicsEntity.figure,
