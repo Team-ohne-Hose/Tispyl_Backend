@@ -196,7 +196,12 @@ class UserController {
       return;
     }
 
-    const { display_name, last_figure, currentPassword } = req.body;
+    const {
+      display_name,
+      last_figure,
+      currentPassword,
+      newPassword,
+    } = req.body;
 
     if (user.password_hash !== currentPassword) {
       new APIResponse(res, 403, {}, [
@@ -208,6 +213,8 @@ class UserController {
     if (display_name !== undefined) user.display_name = display_name;
 
     if (last_figure !== undefined) user.last_figure = last_figure;
+
+    if (newPassword !== undefined) user.password_hash = newPassword;
 
     try {
       await userRepository.save(user);
