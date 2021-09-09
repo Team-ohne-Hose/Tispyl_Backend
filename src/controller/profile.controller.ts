@@ -82,8 +82,6 @@ class ProfileController {
       return;
     }
 
-    console.warn(req.file.path);
-
     ImagePreparer.prepare(req.file.path).then((preparedImagePath: string) => {
       if (user?.profile_picture) {
         fs.unlink(user.profile_picture, () => {
