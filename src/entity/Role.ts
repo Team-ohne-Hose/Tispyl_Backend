@@ -5,7 +5,10 @@ class Role {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ type: 'varchar', length: 65, unique: false, nullable: false })
+  @Column({ type: 'varchar', length: 64, unique: false, nullable: false })
+  public name: string;
+
+  @Column({ type: 'varchar', length: 256, unique: false, nullable: false })
   public description: string;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP()' })
