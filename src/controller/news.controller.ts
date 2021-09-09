@@ -19,23 +19,23 @@ class NewsController {
     req: Request,
     res: Response
   ): Promise<void> {
-    const path = Environment.NEWS_PATH + '/' + req.params.md;
-    if (path !== undefined && path !== null) {
-      try {
-        if (fs.existsSync(path)) {
-          const stream = fs.createReadStream(path);
-          stream.on('open', () => {
-            res.set('Content-Type', MIMETYPES.md);
-            stream.pipe(res);
-          });
-        } else {
-          new APIResponse(res, 404, {}, ['File not found']).send();
-        }
-      } catch (e) {
-        new APIResponse(res, 500, {}, ['File access error']).send();
-      }
-    } else {
+    if (req.params.md === undefined || req.params.md === null)
       new APIResponse(res, 400, {}, ['Undefined news parameter']).send();
+
+    const path = `${Environment.NEWS_PATH}/${req.params.md}`;
+
+    try {
+      if (fs.existsSync(path)) {
+        const stream = fs.createReadStream(path);
+        stream.on('open', () => {
+          res.set('Content-Type', MIMETYPES.md);
+          stream.pipe(res);
+        });
+      } else {
+        new APIResponse(res, 404, {}, ['File not found']).send();
+      }
+    } catch (e) {
+      new APIResponse(res, 500, {}, ['File access error']).send();
     }
   }
 
