@@ -39,9 +39,6 @@ testem.log
 Thumbs.db
 lib/
 
-filestash/img_*
-
-configs/credentials.json
 .env
 
 logs/

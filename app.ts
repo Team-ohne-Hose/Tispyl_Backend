@@ -14,11 +14,9 @@ import { Connection, createConnection } from 'typeorm';
 import globalRouter from './src/router/global.router';
 import Environment from './src/module/environment';
 
-require('dotenv').config();
+import dotenv_expand from 'dotenv-expand';
 
-betterLogging(console, {
-  saveToFile: __dirname + `/logs/${Date.now()}.log`,
-});
+dotenv_expand(require('dotenv').config());
 
 /**
  * Establishes the database connection using TypeORM and runs actions to prepare the database for later use.
@@ -62,6 +60,13 @@ async function run(): Promise<void> {
     console.error('Environment was not loaded. Aborting server startup.');
     return;
   }
+
+  betterLogging(console, {
+    saveToFile: `${Environment.LOGGING_PATH}/${
+      new Date().toISOString().split('T')[0]
+    }.log`,
+  });
+
   const requestHandler: express.Application = express();
 
   /** Configure express */
@@ -72,7 +77,7 @@ async function run(): Promise<void> {
   requestHandler.use('/api', globalRouter);
   requestHandler.use('/colyseus', monitor());
   requestHandler.use('/', (req, res, next) => {
-    res.sendFile(__dirname + '/views/index.html');
+    res.sendFile(__dirname + '/index.html');
   });
 
   /** Configure error handling for express*/

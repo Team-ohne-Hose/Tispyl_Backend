@@ -40,6 +40,8 @@ class Environment {
   public static JWT_SECRET: string = null;
 
   /** PROJECT STRUCTURE */
+  public static LOGGING_PATH: string = null;
+  public static IMAGE_PATH: string = null;
   public static NEWS_PATH: string = null;
 
   /** Fetches the current $PROJECT_ROOT/.env file*/
@@ -59,7 +61,11 @@ class Environment {
       Environment.JWT_SECRET = process.env.JWT_SECRET;
       Environment.DB_SECRET = process.env.DB_SECRET;
 
+      Environment.LOGGING_PATH = process.env.LOGGING_PATH;
+      Environment.IMAGE_PATH = process.env.IMAGE_PATH;
       Environment.NEWS_PATH = process.env.NEWS_PATH;
+
+      console.log(process.env.LOGGING_PATH);
     } else {
       console.error('Failed to load .env file');
     }
