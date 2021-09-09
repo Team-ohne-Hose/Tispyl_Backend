@@ -9,16 +9,12 @@ class Environment {
   public static NODE_ENV = '';
 
   /** ALL DATABASE VARIABLES. */
-
   /** The database host to connect to. */
   public static DB_HOST = '';
-
   /** The database port. */
   public static DB_PORT = 0;
-
   /** The database user. */
   public static DB_USER = '';
-
   /** The name of the database. */
   public static DB_NAME = '';
 
@@ -31,12 +27,12 @@ class Environment {
    */
   public static DEVELOPMENT: boolean = process.env.NODE_ENV === 'development';
 
+  /** HTTPS */
+  public static TLS_KEY: string = null;
+  public static TLS_CRT: string = null;
+
   /** All SECRETS. */
-
-  /** The database password. */
   public static DB_SECRET: string = null;
-
-  /** The JWT secret key. */
   public static JWT_SECRET: string = null;
 
   /** PROJECT STRUCTURE */
@@ -61,11 +57,12 @@ class Environment {
       Environment.JWT_SECRET = process.env.JWT_SECRET;
       Environment.DB_SECRET = process.env.DB_SECRET;
 
+      Environment.TLS_KEY = process.env.TLS_KEY;
+      Environment.TLS_KEY = process.env.TLS_CRT;
+
       Environment.LOGGING_PATH = process.env.LOGGING_PATH;
       Environment.IMAGE_PATH = process.env.IMAGE_PATH;
       Environment.NEWS_PATH = process.env.NEWS_PATH;
-
-      console.log(process.env.LOGGING_PATH);
     } else {
       console.error('Failed to load .env file');
     }

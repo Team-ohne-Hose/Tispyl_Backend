@@ -1,5 +1,7 @@
 # Ignore all files in this dir...
 *
 .gitignore
-# ... except for this one.
+# ... except for this.
 !.gitignore
+!default_image.jpg
+!README.md

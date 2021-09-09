@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { ImagePreparer } from '../helpers/ImagePreparer';
 import multer from 'multer';
 import { APIResponse } from '../model/APIResponse';
+import Environment from '../module/environment';
 
 class ProfileController {
   static MIMETYPES = {
@@ -20,7 +21,7 @@ class ProfileController {
     js: 'application/javascript',
   };
 
-  static DEFAULT_IMAGE_PATH = 'fileStash/defaultImage.jpg';
+  static DEFAULT_IMAGE_PATH = `${Environment.IMAGE_PATH}/default_image.jpg`;
 
   public static async getProfilePicture(
     req: Request,
@@ -37,7 +38,7 @@ class ProfileController {
       });
       picturePath = fs.existsSync(user.profile_picture)
         ? user.profile_picture
-        : ProfileController.DEFAULT_IMAGE_PATH;
+        : `${Environment.IMAGE_PATH}/default_image.jpg`;
     } catch (error) {
       console.log('There is no user with login_name' + loginName);
       res.status(404).send({
@@ -80,6 +81,8 @@ class ProfileController {
       ]).send();
       return;
     }
+
+    console.warn(req.file.path);
 
     ImagePreparer.prepare(req.file.path).then((preparedImagePath: string) => {
       if (user?.profile_picture) {
@@ -154,7 +157,7 @@ class ProfileController {
 
   private static multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'fileStash');
+      cb(null, `${Environment.IMAGE_PATH}`);
     },
     filename: (req, file, cb) => {
       cb(

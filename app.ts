@@ -7,7 +7,6 @@ import { createServer as createHttpServer } from 'http';
 import { Server } from 'colyseus';
 import { monitor } from '@colyseus/monitor';
 import { GameRoom } from './GameRoom';
-import backendConfig from './configs/backend-config.json';
 import { ErrorHandler } from './src/helpers/ErrorHandler';
 import betterLogging from 'better-logging';
 import { Connection, createConnection } from 'typeorm';
@@ -43,8 +42,8 @@ function buildHTTPServer(expressApp): { server; protocol } {
   if (Environment.NODE_ENV === 'production') {
     const s = createHttpsServer(
       {
-        key: fs.readFileSync(backendConfig.tlsKey),
-        cert: fs.readFileSync(backendConfig.tlsCert),
+        key: fs.readFileSync(Environment.TLS_KEY),
+        cert: fs.readFileSync(Environment.TLS_CRT),
       },
       expressApp
     );
