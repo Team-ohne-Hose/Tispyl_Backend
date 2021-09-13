@@ -58,7 +58,7 @@ class Environment {
       Environment.DB_SECRET = process.env.DB_SECRET;
 
       Environment.TLS_KEY = process.env.TLS_KEY;
-      Environment.TLS_KEY = process.env.TLS_CRT;
+      Environment.TLS_CRT = process.env.TLS_CRT;
 
       Environment.LOGGING_PATH = process.env.LOGGING_PATH;
       Environment.IMAGE_PATH = process.env.IMAGE_PATH;
