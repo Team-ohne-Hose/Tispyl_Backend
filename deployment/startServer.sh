@@ -9,5 +9,5 @@ cd ~/BrettSpiel_Backend
 
 # let action run into timeout instead of direcly detaching
 # directly detaching with & didnt work
-nohup npm run runProd 1>/dev/null 2>~/BrettSpiel_Backend/logs/errOut.txt &
+nohup npm start 1>/dev/null 2>~/BrettSpiel_Backend/logs/errOut.txt &
 echo Started
