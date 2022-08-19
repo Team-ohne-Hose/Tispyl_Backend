@@ -18,11 +18,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
+
   "lint-staged": {
     "src/**/*.{ts,json,css}": [
       "prettier --write",
