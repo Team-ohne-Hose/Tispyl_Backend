@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "outDir": "lib",
+        "outDir": "dist",
         "module": "commonjs",
         "lib": [
             "es6",
@@ -13,7 +13,8 @@
         "sourceMap": false,
         "resolveJsonModule": true,
         "esModuleInterop": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true, 
+        //"allowJs": true,
     },
     "include": [ "**/*.ts" ],
     "exclude": [ "node_modules" ]

@@ -2,9 +2,10 @@
   "name": "Tispyl_Backend",
   "version": "1.0.0",
   "description": "Backend for the famous TischSpiel",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
     "start": "nodemon app.ts",
+    "start:prod": "tsc && node dist/app.js",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "updateRemote": "deployment\\updateRemote.cmd deployment_rsa",
     "startRemote": "deployment\\startRemote.cmd deployment_rsa",
@@ -29,22 +30,18 @@
       "git add -A"
     ]
   },
-  "engines": {
-    "node": "8.9.1"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@colyseus/monitor": "^0.12.2",
+    "@colyseus/monitor": "^0.14.22",
     "@types/express": "^4.17.8",
     "@types/multer": "^1.4.4",
-    "@types/node": "^12.12.5",
-    "ammojs-typed": "1.0.2",
+    "@types/node": "^16.11.12",
     "atob": "^2.1.2",
     "better-logging": "^4.4.0",
     "cannon": "github:schteppe/cannon.js",
     "class-validator": "^0.13.1",
-    "colyseus": "^0.14.1",
+    "colyseus": "^0.14.23",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -59,28 +56,29 @@
     "object-hash": "^2.1.1",
     "serve-index": "^1.8.0",
     "superagent": "^3.8.1",
-    "three": "^0.115.0",
+    "three": "^0.143.0",
     "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@types/cannon": "^0.1.5",
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@types/three": "^0.141.0",
     "babel-eslint": "^10.1.0",
     "browserify": "^14.4.0",
-    "eslint": "^7.24.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-config-wesbos": "^1.0.1",
-    "eslint-plugin-html": "^6.1.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint": "^8.0.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-wesbos": "^3.0.2",
+    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.0",
     "husky": "^3.1.0",
     "lint-staged": "^10.5.4",
     "nodemon": "^2.0.12",
     "prettier": "^2.2.1",
     "ts-node": "^8.10.2",
     "typeorm": "^0.2.31",
-    "typescript": "^3.9.7"
+    "typescript": "^4.7.0"
   }
 }
