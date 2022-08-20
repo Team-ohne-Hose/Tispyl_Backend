@@ -1,9 +1,10 @@
+/* eslint-disable */
+
 import { PhysicsEntity, PhysicsEntityVariation } from './WsData';
 import { PhysicsEngine } from './PhysicsEngineCannon';
 import { PhysicsObjectState } from './state/PhysicsState';
 import * as THREE from 'three';
 import { AnimationClip, BufferGeometry, Camera, Group } from 'three';
-import { GLTFLoader } from './gltfLoaderLocal/GLTFLoaderLocal.js';
 import * as BufferGeometryUtils from './BufferGeometryUtils.js';
 import CANNON from 'cannon';
 
@@ -93,9 +94,8 @@ export class EntityLoader {
       } else if (bufferGeos.length <= 1) {
         return bufferGeos[0];
       } else {
-        const resultGeo: THREE.BufferGeometry = BufferGeometryUtils.mergeBufferGeometries(
-          bufferGeos
-        );
+        const resultGeo: THREE.BufferGeometry =
+          BufferGeometryUtils.mergeBufferGeometries(bufferGeos);
         resultGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
         return resultGeo;
       }

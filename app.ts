@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires*/
+/* eslint-disable @typescript-eslint/no-unused-vars*/
+/* eslint-disable unused-imports/no-unused-vars*/
+
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -96,7 +100,7 @@ async function run(): Promise<void> {
   console.info(`Instantiating Colyseus Server.`);
   const colyseus = new Server({
     transport: new WebSocketTransport({
-      pingInterval: 5000,
+      pingInterval: 10000,
       pingMaxRetries: 3,
     }),
   });

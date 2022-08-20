@@ -3,7 +3,6 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import Language from './Language';
@@ -29,7 +28,7 @@ class BoardTile {
   })
   language: Language;
 
-  @ManyToOne((type) => User, (user) => user.board_tile, { nullable: false })
+  @ManyToOne(() => User, (user) => user.board_tile, { nullable: false })
   public user: User;
 
   @OneToMany(() => SetField, (setField) => setField.boardTile)

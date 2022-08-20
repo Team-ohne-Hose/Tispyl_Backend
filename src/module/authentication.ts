@@ -1,4 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+/* eslint-disable @typescript-eslint/ban-types*/
+
+import { NextFunction, Request, Response } from 'express';
 import { JwtToken, JwtUserData } from '../types/JwtToken';
 import jwt from 'jsonwebtoken';
 import * as hash from 'object-hash';

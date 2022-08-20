@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define*/
+
 import { VoteConfiguration } from './state/VoteState';
 
 export type WsData =

@@ -1,4 +1,4 @@
-import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { ArraySchema, Schema, type } from '@colyseus/schema';
 import { Player } from './Player';
 
 export class VoteEntry extends Schema {

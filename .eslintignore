@@ -1,4 +1,9 @@
 /src/migration
+/src/model/EntityLoader.js
+/src/model/gltfLoaderLocal/GLTFLoaderLocal.js
+
+/dist
+
 /node_modules
 /fileStash
 /resources

@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars*/
+/* eslint-disable unused-imports/no-unused-vars*/
+/* eslint-disable @typescript-eslint/no-explicit-any*/
+/* eslint-disable no-case-declarations*/
+
 import { Client, Room } from 'colyseus';
 import { Actions, GameState } from './src/model/state/GameState';
 import {
@@ -21,12 +26,8 @@ import UserController from './src/controller/user.controller';
 import GameController from './src/controller/game.controller';
 import GameLog from './src/entity/GameLog';
 import TileSetController from './src/controller/tileSet.controller';
-import { Rule } from "./src/model/state/Rule";
+import { Rule } from './src/model/state/Rule';
 
-export interface CreateRoomOpts extends Metadata {
-  displayName: string;
-  login: string;
-}
 export interface Metadata {
   roomName: string;
   author: string;
@@ -36,6 +37,11 @@ export interface Metadata {
   enableMultipleItems: boolean;
 }
 
+export interface CreateRoomOpts extends Metadata {
+  displayName: string;
+  login: string;
+}
+
 export class GameRoom extends Room<GameState, Metadata> {
   createTime: Date;
   peakPlayers: number;
@@ -43,10 +49,9 @@ export class GameRoom extends Room<GameState, Metadata> {
 
   /**
    * will be called when a new room should be created
-   * @param options should be of type {@link CreateRoomOpts}
    * @throws Error when type of options is incorrect
    */
-  async onCreate(options: any): Promise<any> {
+  async onCreate(options: CreateRoomOpts): Promise<any> {
     options = options as CreateRoomOpts;
     if (options === undefined) {
       throw new Error(
@@ -195,9 +200,8 @@ export class GameRoom extends Room<GameState, Metadata> {
       }
 
       // re-enable figure old game
-      const pObj: PhysicsObjectState = this.state.physicsState.objects[
-        player.figureId
-      ];
+      const pObj: PhysicsObjectState =
+        this.state.physicsState.objects[player.figureId];
       pObj.setDisabled(false);
 
       // register new sessionId to old player object
@@ -260,9 +264,8 @@ export class GameRoom extends Room<GameState, Metadata> {
         ((p: Player): void => {
           if (!p.isConnected) {
             p.hasLeft = true;
-            const pObj: PhysicsObjectState = this.state.physicsState.objects[
-              p.figureId
-            ];
+            const pObj: PhysicsObjectState =
+              this.state.physicsState.objects[p.figureId];
             pObj.setDisabled(true);
           }
           p.gracePeriodTimeout = undefined;
@@ -288,6 +291,7 @@ export class GameRoom extends Room<GameState, Metadata> {
 
   onJoinMessage(client: Client, data: WsData): void {
     if (data.type === MessageType.JOIN_MESSAGE) {
+      // TODO: Why is this block empty?
     }
   }
 
@@ -413,11 +417,15 @@ export class GameRoom extends Room<GameState, Metadata> {
           break;
         case GameActionType.wakePlayer:
           const targetPlayer = this.state.getPlayer(data.targetLoginName);
-          const targetClient: Client = this.clients.find(value => {return value.id === targetPlayer.clientId});
+          const targetClient: Client = this.clients.find((value) => {
+            return value.id === targetPlayer.clientId;
+          });
           if (targetClient !== undefined) {
-            targetClient.send(MessageType.GAME_MESSAGE, data)
+            targetClient.send(MessageType.GAME_MESSAGE, data);
           } else {
-            console.warn("Failed to find target client to send a wake player message to.");
+            console.warn(
+              'Failed to find target client to send a wake player message to.'
+            );
           }
           break;
         case GameActionType.none:
@@ -476,12 +484,14 @@ export class GameRoom extends Room<GameState, Metadata> {
   onLeftMessage(client: Client, data: WsData): void {
     const player = this.state.getPlayerByClientId(client.id);
     if (player !== undefined && data.type === MessageType.LEFT_MESSAGE) {
+      // TODO: Why is this block empty?
     }
   }
 
   onOtherMessage(client: Client, data: WsData): void {
     const player = this.state.getPlayerByClientId(client.id);
     if (player !== undefined && data.type === MessageType.OTHER) {
+      // TODO: Why is this block empty?
     }
   }
 

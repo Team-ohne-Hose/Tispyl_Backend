@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 import { APIResponse } from '../model/APIResponse';
 import multer from 'multer';
 
 export class ErrorHandler {
-  static logErrors(err, req, res, next): void {
+  static logErrors(err, req, next): void {
     const now = new Date(Date.now()).toLocaleTimeString();
     console.error(
       `[${now}][HTTP][${req.method}] (${err.message})\n${err.stack}`
@@ -10,7 +11,7 @@ export class ErrorHandler {
     next(err);
   }
 
-  static handleKnownError(err, req, res, next): void {
+  static handleKnownError(err, res, next): void {
     if (err instanceof multer.MulterError) {
       new APIResponse(res, 500, 'Form data issue: ' + err.code, [
         err.message,
@@ -22,7 +23,7 @@ export class ErrorHandler {
     }
   }
 
-  static handleUnexpectedError(err: Error, req, res, next): void {
+  static handleUnexpectedError(err: Error, res: any): void {
     new APIResponse(
       res,
       500,

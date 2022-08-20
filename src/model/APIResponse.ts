@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Request, Response } from 'express';
+/* eslint-disable @typescript-eslint/ban-types*/
+
+import { Response } from 'express';
 
 export class APIResponse {
   responseBody: {};

@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import GameLog from '../entity/GameLog';
 import User from '../entity/User';
 import UserStatistic from '../entity/userStatistic';
@@ -40,15 +40,14 @@ class GameController {
     rounds: number,
     has_left: boolean
   ): Promise<void> {
-    const userStatRepository: Repository<UserStatistic> = getRepository(
-      UserStatistic
-    );
+    const userStatRepository: Repository<UserStatistic> =
+      getRepository(UserStatistic);
 
     const userStats = new UserStatistic(duration, rounds, has_left);
     const user: User = await UserController.getUserEntity(loginName);
     userStats.users = [user];
 
-    const stats = await userStatRepository.save(userStats);
+    await userStatRepository.save(userStats);
   }
 }
 
