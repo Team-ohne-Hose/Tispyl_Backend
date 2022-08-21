@@ -2,9 +2,7 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import BoardTile from './BoardTile';

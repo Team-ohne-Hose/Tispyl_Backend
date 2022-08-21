@@ -13,9 +13,7 @@
  * @author Tony Parisi / http://www.tonyparisi.com/
  * @author Takahiro / https://github.com/takahirox
  * @author Don McCurdy / https://www.donmccurdy.com
- * only changed Import style and added atob to make work
  */
-global.atob = require('atob');
 const three = require('three');
 
 const Bone = three.Bone;

@@ -1,4 +1,7 @@
-import { Schema, MapSchema, type } from '@colyseus/schema';
+/* eslint-disable @typescript-eslint/no-unused-vars*/
+/* eslint-disable unused-imports/no-unused-vars*/
+
+import { MapSchema, Schema, type } from '@colyseus/schema';
 interface TileSetEntry {
   id: number;
   title: string;

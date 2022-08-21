@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires*/
 import { Request, Response } from 'express';
 import { APIResponse } from '../model/APIResponse';
 

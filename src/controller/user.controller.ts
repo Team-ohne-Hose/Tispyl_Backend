@@ -1,6 +1,6 @@
-import { getRepository, Repository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import { Request, Response } from 'express';
-import { validate, ValidationError } from 'class-validator';
+import { ValidationError, validate } from 'class-validator';
 import User from '../entity/User';
 import { LoginOptions } from '../types/LoginOptions';
 import Authentication from '../module/authentication';

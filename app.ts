@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires*/
+/* eslint-disable @typescript-eslint/no-unused-vars*/
+/* eslint-disable unused-imports/no-unused-vars*/
+
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -12,6 +16,7 @@ import betterLogging from 'better-logging';
 import { Connection, createConnection } from 'typeorm';
 import globalRouter from './src/router/global.router';
 import Environment from './src/module/environment';
+import { WebSocketTransport } from '@colyseus/ws-transport';
 
 import dotenv_expand from 'dotenv-expand';
 
@@ -93,7 +98,12 @@ async function run(): Promise<void> {
   const { server, protocol } = buildHTTPServer(requestHandler);
 
   console.info(`Instantiating Colyseus Server.`);
-  const colyseus = new Server({ noServer: true });
+  const colyseus = new Server({
+    transport: new WebSocketTransport({
+      pingInterval: 10000,
+      pingMaxRetries: 3,
+    }),
+  });
   colyseus.define('game', GameRoom);
   colyseus.onShutdown(function () {
     console.info(`Game server is going down.`);

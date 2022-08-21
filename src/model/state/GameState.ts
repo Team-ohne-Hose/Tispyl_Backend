@@ -1,6 +1,6 @@
 import { PhysicsState } from './PhysicsState';
 import { MessageType } from '../WsData';
-import { Schema, ArraySchema, MapSchema, type } from '@colyseus/schema';
+import { ArraySchema, MapSchema, Schema, type } from '@colyseus/schema';
 import { Player } from './Player';
 import { BoardLayoutState } from './BoardLayoutState';
 import { VoteState } from './VoteState';
@@ -140,7 +140,7 @@ export class GameState extends Schema {
   }
 
   getPlayerByClientId(clientId: string): Player {
-    return this.asArray(this.playerList).find((p: Player, i: number) => {
+    return this.asArray(this.playerList).find((p: Player) => {
       return p.clientId === clientId;
     });
   }

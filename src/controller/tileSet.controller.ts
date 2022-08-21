@@ -1,4 +1,4 @@
-import { getRepository, Repository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import TileSet from '../entity/TileSet';
 import SetField from '../entity/SetField';
 import { BoardLayoutState, Tile } from '../model/state/BoardLayoutState';
@@ -17,8 +17,9 @@ class TileSetController {
   }
 
   public static async getAllRoute(req: Request, res: Response): Promise<void> {
-    const ts: TileSet[] = await TileSetController.getAll();
+    let ts: TileSet[];
     try {
+      ts = await TileSetController.getAll();
     } catch (error) {
       console.error(error);
       new APIResponse(res, 500, {}, ['internal_server_error']).send();
@@ -159,7 +160,7 @@ class TileSetController {
     const failures: number[] = [];
 
     // set field-restricted Tiles
-    activePool = activePool.filter((val: number, index: number) => {
+    activePool = activePool.filter((val: number) => {
       if (tiles[val].restrictField) {
         if (permutation[tiles[val].restrictField] === undefined) {
           permutation[tiles[val].restrictField] = val;
@@ -173,7 +174,7 @@ class TileSetController {
       }
     });
     // set row-restricted Tiles
-    activePool = activePool.filter((val: number, index: number) => {
+    activePool = activePool.filter((val: number) => {
       if (tiles[val].restrictRing) {
         const fieldList = TileSetController.placeRowRestricted(
           tiles[val].restrictRing,
@@ -218,9 +219,8 @@ class TileSetController {
         );
         // if list exists, pick a random canidate from it
         if (fieldList.length > 0) {
-          permutation[
-            fieldList[pickRandomFromRange(fieldList.length)]
-          ] = replacement;
+          permutation[fieldList[pickRandomFromRange(fieldList.length)]] =
+            replacement;
         } else {
           // else mark as failure
           failures.push(replacement);

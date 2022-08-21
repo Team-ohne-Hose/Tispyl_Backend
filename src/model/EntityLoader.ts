@@ -1,10 +1,11 @@
+/* eslint-disable */
+
 import { PhysicsEntity, PhysicsEntityVariation } from './WsData';
 import { PhysicsEngine } from './PhysicsEngineCannon';
 import { PhysicsObjectState } from './state/PhysicsState';
 import * as THREE from 'three';
 import { AnimationClip, BufferGeometry, Camera, Group } from 'three';
-import { GLTFLoader } from './gltfLoaderLocal/GLTFLoaderLocal.js';
-import { BufferGeometryUtils } from './BufferGeometryUtils.js';
+import * as BufferGeometryUtils from './BufferGeometryUtils.js';
 import CANNON from 'cannon';
 
 interface GLTF {
@@ -75,11 +76,7 @@ export class EntityLoader {
       return undefined;
     } else if (this.isMesh(parent)) {
       // console.log('Mesh: ', parent.name);
-      const geo = parent.geometry.clone();
-      const buffGeo =
-        geo instanceof THREE.BufferGeometry
-          ? geo
-          : new THREE.BufferGeometry().fromGeometry(geo);
+      const buffGeo = parent.geometry.clone();
       buffGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
       return buffGeo;
     } else {
@@ -97,9 +94,8 @@ export class EntityLoader {
       } else if (bufferGeos.length <= 1) {
         return bufferGeos[0];
       } else {
-        const resultGeo: THREE.BufferGeometry = BufferGeometryUtils.mergeBufferGeometries(
-          bufferGeos
-        );
+        const resultGeo: THREE.BufferGeometry =
+          BufferGeometryUtils.mergeBufferGeometries(bufferGeos);
         resultGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
         return resultGeo;
       }
@@ -108,57 +104,73 @@ export class EntityLoader {
   }
 
   private createConvexPolyhedron(
-    geometry: THREE.Geometry | THREE.BufferGeometry
+    geometry: THREE.BufferGeometry
   ): CANNON.ConvexPolyhedron {
-    if (!(geometry as THREE.Geometry).vertices) {
-      geometry = new THREE.Geometry().fromBufferGeometry(
-        geometry as THREE.BufferGeometry
+    // if (!(geometry as THREE.Geometry).vertices) {
+    //   geometry = new THREE.Geometry().fromBufferGeometry(
+    //     geometry as THREE.BufferGeometry
+    //   );
+    //   geometry.mergeVertices();
+    //   geometry.computeBoundingSphere();
+    //   geometry.computeFaceNormals();
+    // }
+
+    if (!geometry.hasAttribute('position') || !geometry.hasAttribute('normal'))
+      throw Error; // TODO: Define errror types
+
+    const points: CANNON.Vec3[] = [];
+    const position = geometry.getAttribute('position');
+    for (let i = 0; i < position.count; i++) {
+      points.push(
+        new CANNON.Vec3(position.getX(i), position.getY(i), position.getZ(i))
       );
-      geometry.mergeVertices();
-      geometry.computeBoundingSphere();
-      geometry.computeFaceNormals();
     }
-    const points: CANNON.Vec3[] = (geometry as THREE.Geometry).vertices.map(
-      function (v) {
-        return new CANNON.Vec3(v.x, v.y, v.z);
-      }
-    );
-    const faces: number[][] = (geometry as THREE.Geometry).faces.map(function (
-      f
-    ) {
-      return [f.a, f.b, f.c];
-    });
 
-    // typedefinition of CANNON is wrong! faces has to be of type number[][].
-    // To stop Typescript complaining, cast to any
-    return new CANNON.ConvexPolyhedron(points, faces as any);
+    const faces: number[][] = [];
+    const normals = geometry.getAttribute('normal');
+    for (let i = 0; i < normals.count; i++) {
+      faces.push([normals.getX(i), normals.getY(i), normals.getZ(i)]);
+    }
+
+    // const points: CANNON.Vec3[] = (geometry as THREE.Geometry).vertices.map(
+    //   function (v) {
+    //     return new CANNON.Vec3(v.x, v.y, v.z);
+    //   }
+    // );
+    // const faces: number[][] = (geometry as THREE.Geometry).faces.map(function (
+    //   f
+    // ) {
+    //   return [f.a, f.b, f.c];
+    // });
+
+    return new CANNON.ConvexPolyhedron(points, faces);
   }
 
-  private async loadModel(fName: string): Promise<CANNON.ConvexPolyhedron> {
-    console.log(`Loading new model: ${fName}`);
-    const loader = new GLTFLoader(); //.setPath(this.resourcePath);
-    const path = this.resourcePath + fName;
+  // private async loadModel(fName: string): Promise<CANNON.ConvexPolyhedron> {
+  //   console.log(`Loading new model: ${fName}`);
+  //   const loader = new GLTFLoader(); //.setPath(this.resourcePath);
+  //   const path = this.resourcePath + fName;
 
-    const scene: THREE.Group = await new Promise((resolve, reject) => {
-      const data = this.fs.readFileSync(this.resourcePath + fName);
-      loader.parse(
-        data,
-        fName,
-        (gltf: GLTF) => {
-          console.log(`Finished loading: ${fName}`); // gltf.scene);
-          resolve(gltf.scene);
-        },
-        (e) => {
-          console.error('Error', e);
-          reject();
-        }
-      );
-    });
-    // console.log('scenechildren are:', scene.children);
+  //   const scene: THREE.Group = await new Promise((resolve, reject) => {
+  //     const data = this.fs.readFileSync(this.resourcePath + fName);
+  //     loader.parse(
+  //       data,
+  //       fName,
+  //       (gltf: GLTF) => {
+  //         console.log(`Finished loading: ${fName}`); // gltf.scene);
+  //         resolve(gltf.scene);
+  //       },
+  //       (e) => {
+  //         console.error('Error', e);
+  //         reject();
+  //       }
+  //     );
+  //   });
+  // console.log('scenechildren are:', scene.children);
 
-    const buffGeo: BufferGeometry = this.mergeChildrenGeo(scene);
-    return this.createConvexPolyhedron(buffGeo);
-  }
+  //   const buffGeo: BufferGeometry = this.mergeChildrenGeo(scene);
+  //   return this.createConvexPolyhedron(buffGeo);
+  // }
 
   private async loadGeometry(
     entity: PhysicsEntity,

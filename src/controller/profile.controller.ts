@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getRepository, Repository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import User from '../entity/User';
 import * as path from 'path';
 import * as fs from 'fs';

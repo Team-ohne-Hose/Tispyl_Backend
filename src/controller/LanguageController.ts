@@ -1,10 +1,10 @@
-import { getRepository, Repository } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import { Request, Response } from 'express';
 import Language from '../entity/Language';
 import { APIResponse } from '../model/APIResponse';
 
 class LanguageController {
-  public static async getAll(req: Request, res: Response): Promise<void> {
+  public static async getAll(res: Response): Promise<void> {
     const languageRepo: Repository<Language> = getRepository(Language);
 
     let languages: Language[] = null;
@@ -76,12 +76,8 @@ class LanguageController {
     const languageId = Number(req.params.id);
     const languageRepo: Repository<Language> = getRepository(Language);
 
-    console.log(languageId);
-
-    let language: Language = null;
-
     try {
-      language = await languageRepo.findOneOrFail(languageId);
+      await languageRepo.findOneOrFail(languageId);
       await languageRepo.delete(languageId);
     } catch (error) {
       console.error("Couldn't find the requested user. Error: ", error);
