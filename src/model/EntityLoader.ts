@@ -3,9 +3,8 @@
 import { PhysicsEntity, PhysicsEntityVariation } from './WsData';
 import { PhysicsEngine } from './PhysicsEngineCannon';
 import { PhysicsObjectState } from './state/PhysicsState';
-import * as THREE from 'three';
-import { AnimationClip, BufferGeometry, Camera, Group } from 'three';
-import * as BufferGeometryUtils from './BufferGeometryUtils.js';
+import { AnimationClip, BufferGeometry, Camera, Group, Mesh, Object3D } from 'three';
+import { mergeBufferGeometries } from './BufferGeometryUtils.js';
 import CANNON from 'cannon';
 
 interface GLTF {
@@ -62,15 +61,15 @@ export class EntityLoader {
 
   fs = require('fs');
 
-  private isMesh(obj: THREE.Object3D): obj is THREE.Mesh {
+  private isMesh(obj: Object3D): obj is Mesh {
     if (obj !== undefined) {
-      const m = obj as THREE.Mesh;
+      const m = obj as Mesh;
       return m !== undefined && m.geometry !== undefined && m.type === 'Mesh';
     }
     return false;
   }
 
-  private mergeChildrenGeo(parent: THREE.Object3D): THREE.BufferGeometry {
+  private mergeChildrenGeo(parent: Object3D): BufferGeometry {
     if (parent === undefined) {
       // console.log('undefined');
       return undefined;
@@ -82,7 +81,7 @@ export class EntityLoader {
     } else {
       // console.log('other: ', parent.name, parent.type);
       const bufferGeos: BufferGeometry[] = [];
-      parent.children.forEach((val: THREE.Object3D, i: number) => {
+      parent.children.forEach((val: Object3D, i: number) => {
         const childGeo: BufferGeometry = this.mergeChildrenGeo(val);
         if (childGeo !== undefined) {
           bufferGeos.push(childGeo);
@@ -94,8 +93,8 @@ export class EntityLoader {
       } else if (bufferGeos.length <= 1) {
         return bufferGeos[0];
       } else {
-        const resultGeo: THREE.BufferGeometry =
-          BufferGeometryUtils.mergeBufferGeometries(bufferGeos);
+        const resultGeo: BufferGeometry =
+          mergeBufferGeometries(bufferGeos);
         resultGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
         return resultGeo;
       }
@@ -104,11 +103,11 @@ export class EntityLoader {
   }
 
   private createConvexPolyhedron(
-    geometry: THREE.BufferGeometry
+    geometry: BufferGeometry
   ): CANNON.ConvexPolyhedron {
-    // if (!(geometry as THREE.Geometry).vertices) {
-    //   geometry = new THREE.Geometry().fromBufferGeometry(
-    //     geometry as THREE.BufferGeometry
+    // if (!(geometry as Geometry).vertices) {
+    //   geometry = new Geometry().fromBufferGeometry(
+    //     geometry as BufferGeometry
     //   );
     //   geometry.mergeVertices();
     //   geometry.computeBoundingSphere();
@@ -132,12 +131,12 @@ export class EntityLoader {
       faces.push([normals.getX(i), normals.getY(i), normals.getZ(i)]);
     }
 
-    // const points: CANNON.Vec3[] = (geometry as THREE.Geometry).vertices.map(
+    // const points: CANNON.Vec3[] = (geometry as Geometry).vertices.map(
     //   function (v) {
     //     return new CANNON.Vec3(v.x, v.y, v.z);
     //   }
     // );
-    // const faces: number[][] = (geometry as THREE.Geometry).faces.map(function (
+    // const faces: number[][] = (geometry as Geometry).faces.map(function (
     //   f
     // ) {
     //   return [f.a, f.b, f.c];
@@ -151,7 +150,7 @@ export class EntityLoader {
   //   const loader = new GLTFLoader(); //.setPath(this.resourcePath);
   //   const path = this.resourcePath + fName;
 
-  //   const scene: THREE.Group = await new Promise((resolve, reject) => {
+  //   const scene: Group = await new Promise((resolve, reject) => {
   //     const data = this.fs.readFileSync(this.resourcePath + fName);
   //     loader.parse(
   //       data,

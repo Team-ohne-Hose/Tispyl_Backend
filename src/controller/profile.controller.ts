@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { Repository, getRepository } from 'typeorm';
 import User from '../entity/User';
-import * as path from 'path';
-import * as fs from 'fs';
+import { extname } from 'path';
+import { existsSync, createReadStream, unlink } from 'fs';
 import { ImagePreparer } from '../helpers/ImagePreparer';
 import multer from 'multer';
 import { APIResponse } from '../model/APIResponse';
@@ -36,7 +36,7 @@ class ProfileController {
       const user: User = await userRepository.findOneOrFail({
         where: [{ login_name: loginName }],
       });
-      picturePath = fs.existsSync(user.profile_picture)
+      picturePath = existsSync(user.profile_picture)
         ? user.profile_picture
         : `${Environment.IMAGE_PATH}/default_image.jpg`;
     } catch (error) {
@@ -50,10 +50,10 @@ class ProfileController {
 
     const mimeType =
       ProfileController.MIMETYPES[
-        path.extname(picturePath).slice(1).toLowerCase()
+      extname(picturePath).slice(1).toLowerCase()
       ] || 'text/plain';
 
-    const stream = fs.createReadStream(picturePath);
+    const stream = createReadStream(picturePath);
     stream.on('open', () => {
       res.set('Content-Type', mimeType);
       stream.pipe(res);
@@ -84,7 +84,7 @@ class ProfileController {
 
     ImagePreparer.prepare(req.file.path).then((preparedImagePath: string) => {
       if (user?.profile_picture) {
-        fs.unlink(user.profile_picture, () => {
+        unlink(user.profile_picture, () => {
           return;
         });
       }
@@ -96,7 +96,7 @@ class ProfileController {
         .save(user)
         .then(() => new APIResponse(res, 200, user).send())
         .catch((error) => {
-          fs.unlink(req.file.path, () => {
+          unlink(req.file.path, () => {
             return;
           });
           console.error(
@@ -160,7 +160,7 @@ class ProfileController {
     filename: (req, file, cb) => {
       cb(
         null,
-        file.fieldname + '_' + Date.now() + path.extname(file.originalname)
+        file.fieldname + '_' + Date.now() + extname(file.originalname)
       );
     },
   });
