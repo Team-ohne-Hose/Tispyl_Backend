@@ -85,7 +85,7 @@ export class MarkdownController {
         new APIResponse(res, 404, {}, ['File not found']).send();
       }
     } catch (e) {
-      console.error("fs error", e);
+      console.error("[MarkDown FileReader] Could not read file: ", e);
 
       new APIResponse(res, 500, {}, ['File access error']).send();
     }
@@ -111,7 +111,7 @@ export class MarkdownController {
   }
   static async newsHeadRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
     const path = MarkdownController.getPathForDomain(domain) + '/' + req.params.md;
-    if (path !== undefined && path !== null) {
+    if (path) {
       try {
         if (fs.existsSync(path)) {
           const line = await MarkdownController.firstLineFs(path);
@@ -127,7 +127,11 @@ export class MarkdownController {
     }
   }
   static async newsMappingRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
-    const newsMap = await MarkdownController.buildNewsHeadMapping(domain);
-    new APIResponse(res, 200, newsMap).send();
+    try {
+      const newsMap = await MarkdownController.buildNewsHeadMapping(domain);
+      new APIResponse(res, 200, newsMap).send();
+    } catch (e) {
+      new APIResponse(res, 500, {}, ['Internal error']).send();
+    }
   }
 }

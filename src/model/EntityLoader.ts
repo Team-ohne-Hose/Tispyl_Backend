@@ -105,14 +105,6 @@ export class EntityLoader {
   private createConvexPolyhedron(
     geometry: BufferGeometry
   ): CANNON.ConvexPolyhedron {
-    // if (!(geometry as Geometry).vertices) {
-    //   geometry = new Geometry().fromBufferGeometry(
-    //     geometry as BufferGeometry
-    //   );
-    //   geometry.mergeVertices();
-    //   geometry.computeBoundingSphere();
-    //   geometry.computeFaceNormals();
-    // }
 
     if (!geometry.hasAttribute('position') || !geometry.hasAttribute('normal'))
       throw Error; // TODO: Define errror types
@@ -130,18 +122,6 @@ export class EntityLoader {
     for (let i = 0; i < normals.count; i++) {
       faces.push([normals.getX(i), normals.getY(i), normals.getZ(i)]);
     }
-
-    // const points: CANNON.Vec3[] = (geometry as Geometry).vertices.map(
-    //   function (v) {
-    //     return new CANNON.Vec3(v.x, v.y, v.z);
-    //   }
-    // );
-    // const faces: number[][] = (geometry as Geometry).faces.map(function (
-    //   f
-    // ) {
-    //   return [f.a, f.b, f.c];
-    // });
-
     return new CANNON.ConvexPolyhedron(points, faces);
   }
 
