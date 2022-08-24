@@ -10,11 +10,11 @@ beim Programmieren als auch beim Trinken Spaß macht.
 Schnell kam die selbst designte Tischplatte, die wir vor einigen Jahren für **Rock am Ring** gebaut hatten in den Sinn.
 Besagte Tischplatte:
 
-<img src="https://tispyl.uber.space:41920/api/news/media/tischplatte.jpeg" alt="tischplatte" width=30%>
+<img src="https://tispyl.uber.space:41920/api/news/media/tischplatte.jpeg" alt="tischplatte">
 
 Diese hat nach guten Diensten sogar eine zweite Version in Form einer bedruckten Werbeplane bekommen:
 
-<img src="https://tispyl.uber.space:41920/api/news/media/tischplatteV2.jpeg" alt="tischplatteV2" width="30%">
+<img src="https://tispyl.uber.space:41920/api/news/media/tischplatteV2.jpeg" alt="tischplatteV2">
 
 Wie wärs also mit einer Version drei? Jetzt online und in 3D? Gesagt getan und hier sind wir. Nach circa 2 Monaten
 Vorlauf gab es die ersten Testspiele mit viel Bier und noch mehr Bugs, Ideen zur Verbesserung und crashenden 
@@ -24,7 +24,7 @@ Probleme, aber dafür gibt es immer etwas zu lachen, wenn wieder was schiefgeht.
 daraus machen: "Wer findet den nächsten Bug?".
 
 ### Tada:
-<img src="https://tispyl.uber.space:41920/api/news/media/tischplatteV3.png" alt="tischplatteV3" width="60%">
+<img src="https://tispyl.uber.space:41920/api/news/media/tischplatteV3.png" alt="tischplatteV3">
 
 ---
 
