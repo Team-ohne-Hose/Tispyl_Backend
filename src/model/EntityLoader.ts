@@ -125,32 +125,6 @@ export class EntityLoader {
     return new CANNON.ConvexPolyhedron(points, faces);
   }
 
-  // private async loadModel(fName: string): Promise<CANNON.ConvexPolyhedron> {
-  //   console.log(`Loading new model: ${fName}`);
-  //   const loader = new GLTFLoader(); //.setPath(this.resourcePath);
-  //   const path = this.resourcePath + fName;
-
-  //   const scene: Group = await new Promise((resolve, reject) => {
-  //     const data = this.fs.readFileSync(this.resourcePath + fName);
-  //     loader.parse(
-  //       data,
-  //       fName,
-  //       (gltf: GLTF) => {
-  //         console.log(`Finished loading: ${fName}`); // gltf.scene);
-  //         resolve(gltf.scene);
-  //       },
-  //       (e) => {
-  //         console.error('Error', e);
-  //         reject();
-  //       }
-  //     );
-  //   });
-  // console.log('scenechildren are:', scene.children);
-
-  //   const buffGeo: BufferGeometry = this.mergeChildrenGeo(scene);
-  //   return this.createConvexPolyhedron(buffGeo);
-  // }
-
   private async loadGeometry(
     entity: PhysicsEntity,
     variant: PhysicsEntityVariation
