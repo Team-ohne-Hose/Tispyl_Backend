@@ -10,7 +10,7 @@ beim Programmieren als auch beim Trinken Spaß macht.
 Schnell kam die selbst designte Tischplatte, die wir vor einigen Jahren für **Rock am Ring** gebaut hatten in den Sinn.
 Besagte Tischplatte:
 
-<img src="https://tispyl.uber.space:41920/api/news/media/tischplatte.jpeg" alt="tischplatte" class="centered">
+<img src="https://tispyl.uber.space:41920/api/news/media/tischplatte.jpeg" alt="tischplatte">
 
 Diese hat nach guten Diensten sogar eine zweite Version in Form einer bedruckten Werbeplane bekommen:
 
