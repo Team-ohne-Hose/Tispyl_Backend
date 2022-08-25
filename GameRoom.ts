@@ -46,6 +46,7 @@ export class GameRoom extends Room<GameState, Metadata> {
   createTime: Date;
   peakPlayers: number;
   maxClients = 16;
+  maxItemCount = 5;
 
   /**
    * will be called when a new room should be created
@@ -159,8 +160,7 @@ export class GameRoom extends Room<GameState, Metadata> {
 
   onJoin(client: Client, options?: any, auth?: any): void | Promise<any> {
     console.log(
-      `[onJoin] Client ID: ${client.id} DisplayName: ${
-        options.displayName
+      `[onJoin] Client ID: ${client.id} DisplayName: ${options.displayName
       } joined. Options: ${JSON.stringify(options)}`
     );
 
@@ -168,7 +168,8 @@ export class GameRoom extends Room<GameState, Metadata> {
     const playerResult: [Player, boolean] = this.state.getOrAddPlayer(
       options.login,
       client.id,
-      options.displayName
+      options.displayName,
+      this.maxItemCount
     );
     const player: Player = playerResult[0];
     const isNewPlayer: boolean = playerResult[1];
@@ -184,14 +185,12 @@ export class GameRoom extends Room<GameState, Metadata> {
       // increment number of unique players
       this.peakPlayers++;
 
-      joinedMsg = `${
-        this.state.playerList[options.login].displayName
-      } joined the game`;
+      joinedMsg = `${this.state.playerList[options.login].displayName
+        } joined the game`;
       player.figureId = this.state.physicsState.addPlayerFigure();
     } else {
-      joinedMsg = `${
-        this.state.playerList[options.login].displayName
-      } reconnected to the game`;
+      joinedMsg = `${this.state.playerList[options.login].displayName
+        } reconnected to the game`;
 
       // remove potential timeout
       if (player.gracePeriodTimeout !== undefined) {
@@ -228,9 +227,8 @@ export class GameRoom extends Room<GameState, Metadata> {
       if (player.loginName === this.state.hostLoginName) {
         this.broadcast(MessageType.LEFT_MESSAGE, {
           type: MessageType.LEFT_MESSAGE,
-          message: `The Host: ${
-            this.state.playerList[player.loginName].displayName
-          } left the game.`,
+          message: `The Host: ${this.state.playerList[player.loginName].displayName
+            } left the game.`,
         });
         this.state.removePlayer(player.loginName);
 
@@ -253,9 +251,8 @@ export class GameRoom extends Room<GameState, Metadata> {
       } else {
         this.broadcast(MessageType.SERVER_MESSAGE, {
           type: MessageType.SERVER_MESSAGE,
-          message: `Player: ${
-            this.state.playerList[player.loginName].displayName
-          } left the game.`,
+          message: `Player: ${this.state.playerList[player.loginName].displayName
+            } left the game.`,
           origin: 'SERVER',
         });
         this.state.removePlayer(player.loginName);
@@ -518,17 +515,28 @@ export class GameRoom extends Room<GameState, Metadata> {
               if (Number(data.itemId) === -1) {
                 data.itemId = ItemManager.getRandomItem();
               }
-              p.addItem(Number(data.itemId));
-              console.log(
-                `[onItemMessage] Player received Item: ${p.loginName}, Item:${data.itemId}`
-              );
-              this.broadcast(MessageType.SERVER_MESSAGE, {
-                type: MessageType.SERVER_MESSAGE,
-                message: `Player: ${
-                  this.state.playerList[data.playerLoginName].displayName
-                } received Item ${data.itemId}.`,
-                origin: 'SERVER',
-              });
+              const success = p.addItem(Number(data.itemId));
+              if (success) {
+                console.log(
+                  `[onItemMessage] Player received Item: ${p.loginName}, Item:${data.itemId}`
+                );
+                this.broadcast(MessageType.SERVER_MESSAGE, {
+                  type: MessageType.SERVER_MESSAGE,
+                  message: `Player: ${this.state.playerList[data.playerLoginName].displayName
+                    } received Item ${data.itemId}.`,
+                  origin: 'SERVER',
+                });
+              } else {
+                console.log(
+                  `[onItemMessage] Failed giving Item: ${p.loginName}, Item:${data.itemId}`
+                );
+                client.send(MessageType.SERVER_MESSAGE, {
+                  type: MessageType.SERVER_MESSAGE,
+                  message: `Player: ${this.state.playerList[data.playerLoginName].displayName
+                    } couldnt receive Item ${data.itemId}. Player has maximum allowed number of items`,
+                  origin: 'SERVER',
+                });
+              }
             } else {
               console.log(
                 `[onItemMessage] Player couldn't be found to receive Item: ${data.playerLoginName}`
@@ -615,9 +623,8 @@ export class GameRoom extends Room<GameState, Metadata> {
 
           this.broadcast(MessageType.SERVER_MESSAGE, {
             type: MessageType.SERVER_MESSAGE,
-            message: `The coin landed on ${
-              coin ? 'HEADS (KOPF)' : 'TAILS (ZAHL)'
-            }`,
+            message: `The coin landed on ${coin ? 'HEADS (KOPF)' : 'TAILS (ZAHL)'
+              }`,
             origin: 'SERVER',
           });
           break;

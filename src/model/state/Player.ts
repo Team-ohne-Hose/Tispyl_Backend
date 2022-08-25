@@ -38,14 +38,16 @@ export class Player extends Schema {
 
   gracePeriodTimeout: Timeout;
   joined: Date;
+  maxItemCount: number;
 
-  constructor(loginName: string, playerId: string, displayName: string) {
+  constructor(loginName: string, playerId: string, displayName: string, maxItemCount?: number) {
     super();
     this.loginName = loginName;
     this.clientId = playerId;
     this.displayName = displayName;
     this.isConnected = true;
     this.hasLeft = false;
+    this.maxItemCount = maxItemCount | 5;
   }
 
   setFigure(id: number, figureModel?: PlayerModel): void {
@@ -58,8 +60,20 @@ export class Player extends Schema {
     this.currentTile = tile;
   }
 
-  addItem(itemId: number): void {
-    this.itemList[itemId] = this.itemList[itemId] + 1 || 1;
+  getItemCount(): number {
+    let count = 0;
+    this.itemList.forEach((val: number, key: string) => {
+      count += val;
+    });
+    return count;
+  }
+
+  addItem(itemId: number): boolean {
+    if (this.getItemCount() < 5) {
+      this.itemList[itemId] = this.itemList[itemId] + 1 || 1;
+      return true;
+    }
+    return false;
   }
 
   useItem(itemId: number): boolean {
