@@ -105,15 +105,14 @@ export class GameState extends Schema {
       this.getPlayer(this.currentPlayerLogin).addItem(itemId);
       gameRoom.broadcast(MessageType.CHAT_MESSAGE, {
         type: MessageType.CHAT_MESSAGE,
-        message: `Player: ${
-          gameRoom.state.playerList[this.currentPlayerLogin].displayName
-        } received Item ${itemId}.`,
+        message: `Player: ${gameRoom.state.playerList[this.currentPlayerLogin].displayName
+          } received Item ${itemId}.`,
         authorLoginName: 'SERVER',
       });
     }
   }
 
-  getOrAddPlayer(login: string, id: string, name: string): [Player, boolean] {
+  getOrAddPlayer(login: string, id: string, name: string, maxItemCount?: number): [Player, boolean] {
     const playerArray: Player[] = this.asArray(this.playerList);
     const playerRef: Player = playerArray.find((p: Player) => {
       return p.loginName === login;
@@ -121,12 +120,12 @@ export class GameState extends Schema {
     if (playerRef !== undefined) {
       return [playerRef, false];
     } else {
-      return [this.addPlayer(login, id, name), true];
+      return [this.addPlayer(login, id, name, maxItemCount), true];
     }
   }
 
-  addPlayer(login: string, id: string, name: string): Player {
-    const p = new Player(login, id, name);
+  addPlayer(login: string, id: string, name: string, maxItemCount?: number): Player {
+    const p = new Player(login, id, name, maxItemCount);
     this.playerList[login] = p;
     return p;
   }
