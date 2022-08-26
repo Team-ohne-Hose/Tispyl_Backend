@@ -91,6 +91,14 @@ export class MarkdownController {
     }
   }
   static async mediaRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
+    if (req.params.fileName.includes('/') ||
+      req.params.fileName.includes('..') ||
+      req.params.fileName.includes('~') ||
+      req.params.fileName.includes('\\') ||
+      req.params.fileName.includes('*')) {
+      new APIResponse(res, 404, {}, ['Forbidden']).send();
+      return;
+    }
     const path = MarkdownController.getPathForDomain(domain) + '/' + req.params.fileName;
     if (path !== undefined && path !== null) {
       try {
