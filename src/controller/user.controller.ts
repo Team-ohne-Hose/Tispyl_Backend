@@ -1,4 +1,4 @@
-import { Repository, getRepository } from 'typeorm';
+import { Repository, getRepository, FindRelationsNotFoundError } from 'typeorm';
 import { Request, Response } from 'express';
 import { ValidationError, validate } from 'class-validator';
 import User from '../entity/User';
@@ -7,6 +7,7 @@ import Authentication from '../module/authentication';
 import { JwtToken } from '../types/JwtToken';
 import { RegisterOptions } from '../types/RegisterOptions';
 import { APIResponse } from '../model/APIResponse';
+import Environment from '../module/environment';
 
 class UserController {
   public static async getAllUsers(req: Request, res: Response): Promise<void> {
@@ -42,12 +43,20 @@ class UserController {
 
     let user: User = null;
 
+    // Serve a result for Anon Users of _debug
+    if (Environment.NODE_ENV === 'development' && new RegExp(/^Anon\d+$/).test(loginName.toString())) {
+      user = new User(loginName.toString(), 'Anon ' + loginName.toString().substring(5), "");
+      delete user.password_hash;
+      new APIResponse(res, 200, user).send();
+      return;
+    }
+
     try {
       user = await userRepository.findOneOrFail({
         where: [{ login_name: loginName }],
       });
     } catch (error) {
-      console.log('There is no user with login_name' + loginName);
+      console.log('There is no user with login_name ' + loginName);
       new APIResponse(res, 404, {}, [
         'There is no user with given username.',
       ]).send();
@@ -284,10 +293,10 @@ class UserController {
       if (error.name === 'EntityNotFound') {
         console.log(
           '(EntityNotFound) Couldn\'t find User: "' +
-            loginOptions.username +
-            '" with Password_hash: "' +
-            loginOptions.password +
-            '"'
+          loginOptions.username +
+          '" with Password_hash: "' +
+          loginOptions.password +
+          '"'
         );
         new APIResponse(res, 404, {}, [
           'Username and Password did not match.',
@@ -295,9 +304,9 @@ class UserController {
       } else {
         console.error(
           error.name +
-            "Couldn't find a user with the following username: " +
-            loginOptions.username +
-            '\nError: ',
+          "Couldn't find a user with the following username: " +
+          loginOptions.username +
+          '\nError: ',
           error
         );
         new APIResponse(res, 404, {}, ['Failed to look up user.']).send();

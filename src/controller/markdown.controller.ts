@@ -85,12 +85,9 @@ export class MarkdownController {
     try {
       if (fs.existsSync(path)) {
         const fileContents: Buffer = fs.readFileSync(path);
-        console.log("file loaded", fileContents.toString());
         const parsedHTML: string = marked.parse(fileContents.toString());
-        console.log("file parsed", parsedHTML);
         res.set('Content-Type', MIMETYPES.md);
         res.send(parsedHTML);
-        console.log("file sent");
       } else {
         new APIResponse(res, 404, {}, ['File not found']).send();
       }
