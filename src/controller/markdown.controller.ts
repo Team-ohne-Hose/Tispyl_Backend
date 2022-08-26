@@ -73,7 +73,7 @@ export class MarkdownController {
     new APIResponse(res, 200, payload).send();
   }
   static async fileRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
-    if (MarkdownController.isFnameSafe(req.params.md)) {
+    if (!MarkdownController.isFnameSafe(req.params.md)) {
       new APIResponse(res, 404, {}, ['Forbidden']).send();
       return;
     }
@@ -101,7 +101,7 @@ export class MarkdownController {
     }
   }
   static async mediaRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
-    if (MarkdownController.isFnameSafe(req.params.fileName)) {
+    if (!MarkdownController.isFnameSafe(req.params.fileName)) {
       new APIResponse(res, 404, {}, ['Forbidden']).send();
       return;
     }
@@ -124,7 +124,7 @@ export class MarkdownController {
     }
   }
   static async newsHeadRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
-    if (MarkdownController.isFnameSafe(req.params.md)) {
+    if (!MarkdownController.isFnameSafe(req.params.md)) {
       new APIResponse(res, 404, {}, ['Forbidden']).send();
       return;
     }
