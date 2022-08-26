@@ -60,13 +60,23 @@ export class MarkdownController {
     );
     return Promise.all(mapping_p);
   }
-
+  private static isFnameSafe(fname: string): boolean {
+    return !(fname.includes('/') ||
+      fname.includes('..') ||
+      fname.includes('~') ||
+      fname.includes('\\') ||
+      fname.includes('*'));
+  }
 
   static async availableFilesRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
     const payload = MarkdownController.getAvailableFiles(domain);
     new APIResponse(res, 200, payload).send();
   }
   static async fileRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
+    if (MarkdownController.isFnameSafe(req.params.md)) {
+      new APIResponse(res, 404, {}, ['Forbidden']).send();
+      return;
+    }
     if (req.params.md === undefined || req.params.md === null)
       new APIResponse(res, 400, {}, ['Undefined news parameter']).send();
 
@@ -91,11 +101,7 @@ export class MarkdownController {
     }
   }
   static async mediaRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
-    if (req.params.fileName.includes('/') ||
-      req.params.fileName.includes('..') ||
-      req.params.fileName.includes('~') ||
-      req.params.fileName.includes('\\') ||
-      req.params.fileName.includes('*')) {
+    if (MarkdownController.isFnameSafe(req.params.fileName)) {
       new APIResponse(res, 404, {}, ['Forbidden']).send();
       return;
     }
@@ -118,6 +124,10 @@ export class MarkdownController {
     }
   }
   static async newsHeadRequest(req: Request, res: Response, domain: MARKDOWN_DOMAIN): Promise<void> {
+    if (MarkdownController.isFnameSafe(req.params.md)) {
+      new APIResponse(res, 404, {}, ['Forbidden']).send();
+      return;
+    }
     const path = MarkdownController.getPathForDomain(domain) + '/' + req.params.md;
     if (path) {
       try {
