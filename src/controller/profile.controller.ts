@@ -32,6 +32,22 @@ class ProfileController {
 
     let picturePath = '';
 
+    // Serve a result for Anon Users of _debug
+    if (Environment.NODE_ENV === 'development' && new RegExp(/^Anon\d+$/).test(loginName.toString())) {
+      picturePath = `${Environment.IMAGE_PATH}/default_image.jpg`;
+      const mimeType =
+        ProfileController.MIMETYPES[
+        extname(picturePath).slice(1).toLowerCase()
+        ] || 'text/plain';
+
+      const stream = createReadStream(picturePath);
+      stream.on('open', () => {
+        res.set('Content-Type', mimeType);
+        stream.pipe(res);
+      });
+      return;
+    }
+
     try {
       const user: User = await userRepository.findOneOrFail({
         where: [{ login_name: loginName }],
