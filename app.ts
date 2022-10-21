@@ -89,9 +89,7 @@ async function run(): Promise<void> {
   requestHandler.use(ErrorHandler.handleKnownError);
   requestHandler.use(ErrorHandler.handleUnexpectedError);
 
-  console.info(
-    `Connecting to DB at ${Environment.DB_HOST}:${Environment.DB_PORT}`
-  );
+  console.info(`Connecting to DB at ${Environment.DB_HOST}:${Environment.DB_PORT}`);
   await connectToDataBase();
 
   console.log('Building HTTP server.');

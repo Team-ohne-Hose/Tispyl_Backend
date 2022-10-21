@@ -517,35 +517,25 @@ export class GameRoom extends Room<GameState, Metadata> {
               }
               const success = p.addItem(Number(data.itemId));
               if (success) {
-                console.log(
-                  `[onItemMessage] Player received Item: ${p.loginName}, Item:${data.itemId}`
-                );
+                console.log(`[onItemMessage] Player received Item: ${p.displayName}, Item:${data.itemId}`);
                 this.broadcast(MessageType.SERVER_MESSAGE, {
                   type: MessageType.SERVER_MESSAGE,
-                  message: `Player: ${this.state.playerList[data.playerLoginName].displayName
-                    } received Item ${data.itemId}.`,
+                  message: `Player: ${p.displayName} received Item ${data.itemId}.`,
                   origin: 'SERVER',
                 });
               } else {
-                console.log(
-                  `[onItemMessage] Failed giving Item: ${p.loginName}, Item:${data.itemId}`
-                );
+                console.log(`[onItemMessage] Failed giving Item: ${p.loginName}, Item:${data.itemId}`);
                 client.send(MessageType.SERVER_MESSAGE, {
                   type: MessageType.SERVER_MESSAGE,
-                  message: `Player: ${this.state.playerList[data.playerLoginName].displayName
-                    } couldnt receive Item ${data.itemId}. Player has maximum allowed number of items`,
+                  message: `Player: ${p.displayName} couldnt receive Item ${data.itemId}. Player has maximum allowed number of items`,
                   origin: 'SERVER',
                 });
               }
             } else {
-              console.log(
-                `[onItemMessage] Player couldn't be found to receive Item: ${data.playerLoginName}`
-              );
+              console.log(`[onItemMessage] Player couldn't be found to receive Item: ${data.playerLoginName}`);
             }
           } else {
-            console.log(
-              `[onItemMessage] Client not authorized to give Item: ${client.id}`
-            );
+            console.log(`[onItemMessage] Client not authorized to give Item: ${client.id}`);
           }
           break;
         case ItemMessageType.useItem:
