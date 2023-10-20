@@ -40,7 +40,7 @@
     "atob": "^2.1.2",
     "better-logging": "^4.4.0",
     "cannon": "^0.6.2",
-    "class-validator": "^0.13.1",
+    "class-validator": "^0.14.0",
     "colyseus": "^0.14.23",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
