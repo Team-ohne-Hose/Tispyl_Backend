@@ -39,7 +39,7 @@ mysql -u root -p
 After starting the container, the MariaDB is accessable for external tools on 127.0.0.1:3306.
 
 To start the backend use:
-```shell
+```sh
 npm start
 ```
 
