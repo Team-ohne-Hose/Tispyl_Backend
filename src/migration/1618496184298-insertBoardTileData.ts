@@ -3,12 +3,10 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 export class insertBoardTileData1618496184298 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      'INSERT INTO User (id, login_name, display_name, time_played, password_hash, last_figure, is_connected, is_dev) VALUES' +
-        "(1, 'TISPYL', 'TISPYL', 0, 'c5731c0603405caaf18128d15c4380ad', 1, 0, 0)"
+      'INSERT INTO User (id, login_name, display_name, user_creation, time_played, password_hash, last_figure, is_connected, is_dev) VALUES' +
+        "(1, 'TISPYL', 'TISPYL','2020-10-09 17:59:23', 0, 'c5731c0603405caaf18128d15c4380ad', 1, 0, 0)"
     );
-    await queryRunner.query(
-      "INSERT INTO language (id, name) VALUES (1, 'Deutsch')"
-    );
+    await queryRunner.query("INSERT INTO language (id, name) VALUES (1, 'Deutsch')");
     await queryRunner.query(
       'INSERT INTO board_tile (id, name, description, languageId, path, userId) VALUES ' +
         "(1,'Demokratie','Entscheidet wer trinken muss. Bei Gleichstand trinken beide.',1,'/assets/board/democracy.png', 1)," +
@@ -74,9 +72,7 @@ export class insertBoardTileData1618496184298 implements MigrationInterface {
         "(61,'Fake News','Stelle eine These über dich auf. Bei Drei melden sich Alle, die sie für wahr halten. Wer falsch liegt, trinkt. Für Jeden, der richtig liegt, trinkst du.',1,'/assets/board/fakeNews.png', 1)," +
         "(62,'Edward Fortyhands','Du bekommst ein Getränk an jede Hand geklebt. Sie werden erst wieder abgemacht, wenn du sie geleert hast.',1,'/assets/board/edward.png', 1)"
     );
-    await queryRunner.query(
-      "INSERT INTO tile_set (id, name, authorId) VALUES (1, 'CLASSIC', 1)"
-    );
+    await queryRunner.query("INSERT INTO tile_set (id, name, authorId) VALUES (1, 'CLASSIC', 1)");
     await queryRunner.query(
       'INSERT INTO set_field (id, tileSetId, fieldNumber, boardTileId, restrictRing, restrictField) VALUES' +
         '(1, 1, 1, 1, NULL, NULL),' +
