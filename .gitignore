@@ -43,8 +43,5 @@ lib/
 
 logs/
 
-# Config
-ormconfig.json
-
 # fileStash
 fileStash/
