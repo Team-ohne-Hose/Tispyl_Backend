@@ -1,4 +1,4 @@
-FROM mariadb/server:10.3
+FROM mariadb:lts
 ENV MYSQL_ROOT_PASSWORD root
 ENV MYSQL_DATABASE BrettSpiel
 ADD init.sql /docker-entrypoint-initdb.d
