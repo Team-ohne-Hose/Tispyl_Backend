@@ -4,7 +4,7 @@ echo "Starting Setup.."
 # Check if the .env.tpl file exists one folder up
 if [ -e ../.env.tpl ]; then
   # Create .env
-  cp ../.env.tpl ../.env3
+  cp ../.env.tpl ../.env
   echo "Create .env file"
 else
   echo "The .env.tpl file in the parent directory was not found. Please make sure it exists in the project"
