@@ -66,9 +66,8 @@ async function run(): Promise<void> {
   }
 
   betterLogging(console, {
-    saveToFile: `${Environment.LOGGING_PATH}/${
-      new Date().toISOString().split('T')[0]
-    }.log`,
+    saveToFile: `${Environment.LOGGING_PATH}/${new Date().toISOString().split('T')[0]
+      }.log`,
   });
 
   const requestHandler: express.Application = express();
@@ -138,5 +137,5 @@ async function run(): Promise<void> {
 
 if (require.main === module) {
   Environment.loadEnv();
-  run().then((r) => console.info('Server shut down.'));
+  run().then((r) => console.info('Setup Completed.'));
 }
