@@ -1,6 +1,5 @@
 /src/migration
 /src/model/EntityLoader.js
-/src/model/gltfLoaderLocal/GLTFLoaderLocal.js
 
 /dist
 
