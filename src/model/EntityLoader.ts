@@ -3,26 +3,7 @@
 import { PhysicsEntity, PhysicsEntityVariation } from './WsData';
 import { PhysicsEngine } from './PhysicsEngineCannon';
 import { PhysicsObjectState } from './state/PhysicsState';
-import { AnimationClip, BufferGeometry, Camera, Group, Mesh, Object3D } from 'three';
-import { mergeBufferGeometries } from './BufferGeometryUtils.js';
 import CANNON from 'cannon';
-
-interface GLTF {
-  animations: AnimationClip[];
-  scene: Group;
-  scenes: Group[];
-  cameras: Camera[];
-  asset: {
-    copyright?: string;
-    generator?: string;
-    version?: string;
-    minVersion?: string;
-    extensions?: any;
-    extras?: any;
-  };
-  parser: any;
-  userData: any;
-}
 interface GeometryList {
   diceDefault: {
     shape: CANNON.Shape;
@@ -61,70 +42,6 @@ export class EntityLoader {
 
   fs = require('fs');
 
-  private isMesh(obj: Object3D): obj is Mesh {
-    if (obj !== undefined) {
-      const m = obj as Mesh;
-      return m !== undefined && m.geometry !== undefined && m.type === 'Mesh';
-    }
-    return false;
-  }
-
-  private mergeChildrenGeo(parent: Object3D): BufferGeometry {
-    if (parent === undefined) {
-      // console.log('undefined');
-      return undefined;
-    } else if (this.isMesh(parent)) {
-      // console.log('Mesh: ', parent.name);
-      const buffGeo = parent.geometry.clone();
-      buffGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
-      return buffGeo;
-    } else {
-      // console.log('other: ', parent.name, parent.type);
-      const bufferGeos: BufferGeometry[] = [];
-      parent.children.forEach((val: Object3D, i: number) => {
-        const childGeo: BufferGeometry = this.mergeChildrenGeo(val);
-        if (childGeo !== undefined) {
-          bufferGeos.push(childGeo);
-        }
-      });
-      // console.log('Merge ' + bufferGeos.length + ' Geos');
-      if (bufferGeos === undefined) {
-        return undefined;
-      } else if (bufferGeos.length <= 1) {
-        return bufferGeos[0];
-      } else {
-        const resultGeo: BufferGeometry =
-          mergeBufferGeometries(bufferGeos);
-        resultGeo.scale(parent.scale.x, parent.scale.y, parent.scale.z);
-        return resultGeo;
-      }
-    }
-    return undefined;
-  }
-
-  private createConvexPolyhedron(
-    geometry: BufferGeometry
-  ): CANNON.ConvexPolyhedron {
-
-    if (!geometry.hasAttribute('position') || !geometry.hasAttribute('normal'))
-      throw Error; // TODO: Define errror types
-
-    const points: CANNON.Vec3[] = [];
-    const position = geometry.getAttribute('position');
-    for (let i = 0; i < position.count; i++) {
-      points.push(
-        new CANNON.Vec3(position.getX(i), position.getY(i), position.getZ(i))
-      );
-    }
-
-    const faces: number[][] = [];
-    const normals = geometry.getAttribute('normal');
-    for (let i = 0; i < normals.count; i++) {
-      faces.push([normals.getX(i), normals.getY(i), normals.getZ(i)]);
-    }
-    return new CANNON.ConvexPolyhedron(points, faces);
-  }
-
   private async loadGeometry(
     entity: PhysicsEntity,
     variant: PhysicsEntityVariation
@@ -153,7 +70,6 @@ export class EntityLoader {
               EntityLoader.geometries.diceDefault = geoList;
             }
             return EntityLoader.geometries.diceDefault;
-            break;
         }
         break;
       case PhysicsEntity.figure:
@@ -183,7 +99,6 @@ export class EntityLoader {
               EntityLoader.geometries.figureDefault = geoList;
             }
             return EntityLoader.geometries.figureDefault;
-            break;
         }
         break;
     }
@@ -235,7 +150,6 @@ export class EntityLoader {
       this.constantProperties.dice.default.mass,
       this.constantProperties.dice.default.behavior
     );
-    return;
     return;
   }
 

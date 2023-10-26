@@ -517,10 +517,10 @@ export class GameRoom extends Room<GameState, Metadata> {
               }
               const success = p.addItem(Number(data.itemId));
               if (success) {
-                console.log(`[onItemMessage] Player received Item: ${p.displayName}, Item:${data.itemId}`);
+                console.log(`[onItemMessage] Player received Item: ${p.displayName}, Item:${ItemManager.getName(data.itemId)}`);
                 this.broadcast(MessageType.SERVER_MESSAGE, {
                   type: MessageType.SERVER_MESSAGE,
-                  message: `Player: ${p.displayName} received Item ${data.itemId}.`,
+                  message: `Player: ${p.displayName} received Item ${ItemManager.getName(data.itemId)}.`,
                   origin: 'SERVER',
                 });
               } else {
