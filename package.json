@@ -4,7 +4,7 @@
   "description": "Backend for the famous TischSpiel",
   "main": "dist/app.js",
   "scripts": {
-    "setup": "cd scripts && setup.sh",
+    "setup": "cd scripts && setup.sh && npm install",
     "start": "nodemon app.ts",
     "start:debugger": "node --inspect -r ts-node/register app.ts",
     "start:prod": "tsc && node dist/app.js",

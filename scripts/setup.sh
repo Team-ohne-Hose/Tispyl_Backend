@@ -16,8 +16,3 @@ echo "Create docker image for database.."
 cd ../docker
 # Build the mariadb image
 docker build -t mariadb:lts .
-cd ..
-
-
-echo "Install dependencies.."
-npm install
