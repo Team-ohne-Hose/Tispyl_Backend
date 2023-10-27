@@ -26,7 +26,7 @@ It is necessary that the docker container is running first.
 
 Running the container (anywhere):
 ```sh 
-docker run -p 3306:3306 mariadb:<tag number>
+docker run -p 3306:3306 mariadb:lts
 ```
 
 Access MariaDB inside the container:
