@@ -13,15 +13,20 @@ through the docker container found under the docker directory.
 
 Running the backend requires docker. Install ```Docker Desktop``` for windows and ```docker``` on unix.
 
-Building the docker container that hosts the predefined MariaDB:
+### Setup
+
+You can set up the backend with the following command. It will create a `.env` file, a docker image of mariadb:lts and install all npm packages that you will need for the project.
+```sh
+npm run setup
 ```
-cd <project root>/docker
-docker build -t mariadb:<tag number> .
-```
+### Run the project
+
+In order to run the backend you need to start your created docker container and the backend itself. 
+It is necessary that the docker container is running first.
 
 Running the container (anywhere):
-```
-docker run -p 3306:3306 mariadb:<tag number>
+```sh 
+docker run -p 3306:3306 mariadb:lts
 ```
 
 Access MariaDB inside the container:
@@ -33,17 +38,22 @@ mysql -u root -p
 
 After starting the container, the MariaDB is accessable for external tools on 127.0.0.1:3306.
 
+To start the backend use:
+```sh
+npm start
+```
+
+
 ## Schema
-Each time a new container is build, a new database is set up. This sets up a default database called ```BrettSpiel```.
-After generating the database, a predefined script is executed to fill the database with a sensible schema 
-( ```<project root>/docker/Dockerfile``` ). If the desired schema changes, this file needs to be altered.
+The database schema is filled while you start the project. While starting, the database will be migrated automatically (in dev mode) with the files located in `/src/migrations`.
+The files contain all information about previous changes, such as creating new tables, modifying existing tables, or dropping tables. And will execute them all.
 
 # Contributing
 This section deals with coding helps, remarks and auxiliary information.
 
 ### Logging
 The new logging framework we added is used nearly identical to the normal logging we already did.
-However we are now able to use all log levels one would expect by calling the console like this:
+However, we are now able to use all log levels one would expect by calling the console like this:
 
 ````
 console.debug('foo'); //  [11:46:35] [debug] foo
