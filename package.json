@@ -1,13 +1,13 @@
 {
-  "name": "Tispyl_Backend",
+  "name": "tispyl-backend",
   "version": "1.0.0",
-  "description": "Backend for the famous TischSpiel",
+  "description": "Backend for the famous Tispyl",
   "main": "dist/app.js",
   "scripts": {
     "setup": "cd scripts && setup.sh && npm install",
     "start": "nodemon app.ts",
     "start:debugger": "node --inspect -r ts-node/register app.ts",
-    "start:prod": "tsc && node dist/app.js",
+    "start:prod": "ts-node ./app.ts",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "updateRemote": "deployment\\updateRemote.cmd deployment_rsa",
     "startRemote": "deployment\\startRemote.cmd deployment_rsa",
@@ -34,10 +34,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@colyseus/monitor": "^0.14.22",
-    "@types/express": "^4.17.8",
-    "@types/multer": "^1.4.4",
-    "@types/node": "^16.11.12",
     "atob": "^2.1.2",
     "better-logging": "^4.4.0",
     "cannon": "^0.6.2",
@@ -62,7 +58,11 @@
     "yargs": "^15.4.1"
   },
   "devDependencies": {
+    "@colyseus/monitor": "^0.14.22",
+    "@types/express": "^4.17.8",
+    "@types/multer": "^1.4.4",
     "@types/cannon": "^0.1.5",
+    "@types/node": "^16.11.12",
     "@types/three": "^0.141.0",
     "@typescript-eslint/eslint-plugin": "^5.33.1",
     "@typescript-eslint/parser": "^5.33.1",
