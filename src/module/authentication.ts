@@ -5,8 +5,10 @@ import { JwtToken, JwtUserData } from '../types/JwtToken';
 import jwt from 'jsonwebtoken';
 import * as hash from 'object-hash';
 import { APIResponse } from '../model/APIResponse';
+import { getRepository } from 'typeorm';
+import User from '../entity/User';
 
-class Authentication {
+export class Authentication {
   /** Number of salt rounds for hashing the password. */
   private static SALT_ROUNDS = 10;
 
@@ -14,10 +16,7 @@ class Authentication {
     expiresIn: 3600 * 12, // Time given in seconds.
   };
 
-  public static async generateJwtToken(
-    userData: JwtUserData,
-    jwtOptions: {}
-  ): Promise<string> {
+  public static async generateJwtToken(userData: JwtUserData, jwtOptions: {}): Promise<string> {
     return jwt.sign(userData, process.env.JWT_SECRET, jwtOptions);
   }
 
@@ -49,11 +48,7 @@ class Authentication {
     return hash.MD5(password);
   }
 
-  public static async verifyAccess(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  public static async verifyAccess(req: Request, res: Response, next: NextFunction): Promise<void> {
     const jwtToken: string = req.get('Authorization');
 
     // Check if a authorization header is set.
@@ -83,6 +78,45 @@ class Authentication {
     // If the token is valid follow the next route.
     next();
   }
-}
 
-export default Authentication;
+  public static async grantDevAccess(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const jwtToken: string = req.get('Authorization');
+
+    // Check if a authorization header is set.
+    if (jwtToken === undefined) {
+      new APIResponse(res, 401, {}, [
+        {
+          userMessage: 'Permission not granted.',
+          internalMessage: 'No JWT token was provided.',
+        },
+      ]).send();
+      return;
+    }
+
+    // If the header exists check the JWT token.
+    const validToken: JwtToken = await Authentication.verifyJwtToken(jwtToken);
+
+    try {
+      const userRepository = getRepository(User);
+      const user = await userRepository.findOneOrFail({
+        where: [{ login_name: validToken.username }],
+      });
+
+      if (validToken === null || !user.is_dev) {
+        new APIResponse(res, 401, {}, [
+          {
+            userMessage: 'Permission not granted.',
+            internalMessage: 'Wrong JWT token was provided or user was not a development account.',
+          },
+        ]).send();
+        return;
+      }
+    } catch (error) {
+      console.log('There is no user with username ' + validToken.username);
+      new APIResponse(res, 404, {}, ['There is no user with given username.']).send();
+      return;
+    }
+    // If the token is valid follow the next route.
+    next();
+  }
+}

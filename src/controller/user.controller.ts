@@ -1,13 +1,13 @@
-import { Repository, getRepository, FindRelationsNotFoundError } from 'typeorm';
+import { Repository, getRepository } from 'typeorm';
 import { Request, Response } from 'express';
 import { ValidationError, validate } from 'class-validator';
 import User from '../entity/User';
 import { LoginOptions } from '../types/LoginOptions';
-import Authentication from '../module/authentication';
 import { JwtToken } from '../types/JwtToken';
 import { RegisterOptions } from '../types/RegisterOptions';
 import { APIResponse } from '../model/APIResponse';
 import Environment from '../module/environment';
+import { Authentication } from '../module/authentication';
 
 class UserController {
   public static async getAllUsers(req: Request, res: Response): Promise<void> {
@@ -34,10 +34,7 @@ class UserController {
     res.send({ status: 'ok', data: users });
   }
 
-  public static async getSingleUser(
-    req: Request,
-    res: Response
-  ): Promise<void> {
+  public static async getSingleUser(req: Request, res: Response): Promise<void> {
     const loginName = req.query.login_name;
     const userRepository: Repository<User> = getRepository(User);
 
@@ -45,7 +42,7 @@ class UserController {
 
     // Serve a result for Anon Users of _debug
     if (Environment.NODE_ENV === 'development' && new RegExp(/^Anon\d+$/).test(loginName.toString())) {
-      user = new User(loginName.toString(), 'Anon ' + loginName.toString().substring(5), "");
+      user = new User(loginName.toString(), 'Anon ' + loginName.toString().substring(5), '');
       delete user.password_hash;
       new APIResponse(res, 200, user).send();
       return;
@@ -57,9 +54,7 @@ class UserController {
       });
     } catch (error) {
       console.log('There is no user with login_name ' + loginName);
-      new APIResponse(res, 404, {}, [
-        'There is no user with given username.',
-      ]).send();
+      new APIResponse(res, 404, {}, ['There is no user with given username.']).send();
       return;
     }
 
@@ -69,10 +64,7 @@ class UserController {
     new APIResponse(res, 200, user).send();
   }
 
-  public static async getSingleUserbyId(
-    req: Request,
-    res: Response
-  ): Promise<void> {
+  public static async getSingleUserbyId(req: Request, res: Response): Promise<void> {
     const userId = Number(req.query?.userId);
     const userRepository: Repository<User> = getRepository(User);
 
@@ -84,9 +76,7 @@ class UserController {
       });
     } catch (error) {
       console.log('There is no user with id ' + userId);
-      new APIResponse(res, 404, {}, [
-        'There is no user with given username.',
-      ]).send();
+      new APIResponse(res, 404, {}, ['There is no user with given username.']).send();
       return;
     }
 
@@ -104,11 +94,7 @@ class UserController {
      * Validate if given parameters are all given. Send a bad
      * request (400) if the validation fails.
      */
-    if (
-      !registerOptions.displayname ||
-      !registerOptions.password ||
-      !registerOptions.username
-    ) {
+    if (!registerOptions.displayname || !registerOptions.password || !registerOptions.username) {
       new APIResponse(res, 400, {}, ['Invalid request body.']).send();
       return;
     }
@@ -122,21 +108,13 @@ class UserController {
      * request (400) if the validation fails.
      */
     if (user) {
-      new APIResponse(res, 400, {}, [
-        'The given username is already in use.',
-      ]).send();
+      new APIResponse(res, 400, {}, ['The given username is already in use.']).send();
       return;
     }
 
-    const hashedPassword: string = Authentication.hashPassword(
-      registerOptions.password
-    );
+    const hashedPassword: string = Authentication.hashPassword(registerOptions.password);
 
-    user = new User(
-      registerOptions.username,
-      registerOptions.displayname,
-      hashedPassword
-    );
+    user = new User(registerOptions.username, registerOptions.displayname, hashedPassword);
 
     /**
      * Validate if the new user object is correct. Send a bad
@@ -161,9 +139,7 @@ class UserController {
       await userRepository.save(user);
     } catch (error) {
       console.error("User couldn't be saved into the database. Error: ", error);
-      new APIResponse(res, 500, {}, [
-        'Error while saving the user to the database.',
-      ]).send();
+      new APIResponse(res, 500, {}, ['Error while saving the user to the database.']).send();
       return;
     }
 
@@ -205,17 +181,10 @@ class UserController {
       return;
     }
 
-    const {
-      display_name,
-      last_figure,
-      currentPassword,
-      newPassword,
-    } = req.body;
+    const { display_name, last_figure, currentPassword, newPassword } = req.body;
 
     if (user.password_hash !== currentPassword) {
-      new APIResponse(res, 403, {}, [
-        { userMessage: 'Wrong password.', internalMessage: 'Wrong password.' },
-      ]).send();
+      new APIResponse(res, 403, {}, [{ userMessage: 'Wrong password.', internalMessage: 'Wrong password.' }]).send();
       return;
     }
 
@@ -254,9 +223,7 @@ class UserController {
       user = await userRepository.findOneOrFail(user_id);
     } catch (error) {
       console.error("Couldn't find the requested user. Error: ", error);
-      new APIResponse(res, 404, {}, [
-        "Couldn't find a user with given id.",
-      ]).send();
+      new APIResponse(res, 404, {}, ["Couldn't find a user with given id."]).send();
       return;
     }
 
@@ -292,23 +259,11 @@ class UserController {
     } catch (error) {
       if (error.name === 'EntityNotFound') {
         console.log(
-          '(EntityNotFound) Couldn\'t find User: "' +
-          loginOptions.username +
-          '" with Password_hash: "' +
-          loginOptions.password +
-          '"'
+          '(EntityNotFound) Couldn\'t find User: "' + loginOptions.username + '" with Password_hash: "' + loginOptions.password + '"'
         );
-        new APIResponse(res, 404, {}, [
-          'Username and Password did not match.',
-        ]).send();
+        new APIResponse(res, 404, {}, ['Username and Password did not match.']).send();
       } else {
-        console.error(
-          error.name +
-          "Couldn't find a user with the following username: " +
-          loginOptions.username +
-          '\nError: ',
-          error
-        );
+        console.error(error.name + "Couldn't find a user with the following username: " + loginOptions.username + '\nError: ', error);
         new APIResponse(res, 404, {}, ['Failed to look up user.']).send();
       }
       return;
@@ -337,10 +292,7 @@ class UserController {
    * @param login_name
    * @param minutes
    */
-  public static async addPlaytime(
-    login_name: string,
-    minutes: number
-  ): Promise<void> {
+  public static async addPlaytime(login_name: string, minutes: number): Promise<void> {
     const userRepository: Repository<User> = getRepository(User);
     try {
       const userToUpdate = await userRepository.findOne({
@@ -360,10 +312,7 @@ class UserController {
 
   public static async getUserEntity(loginname: string): Promise<User | null> {
     const userRepository: Repository<User> = getRepository(User);
-    return (
-      (await userRepository.findOne({ where: [{ login_name: loginname }] })) ??
-      null
-    );
+    return (await userRepository.findOne({ where: [{ login_name: loginname }] })) ?? null;
   }
 }
 
