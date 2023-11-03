@@ -38,6 +38,7 @@ class Environment {
   /** PROJECT STRUCTURE */
   public static LOGGING_PATH: string = null;
   public static IMAGE_PATH: string = null;
+  public static ASSETS_PATH: string = null;
   public static NEWS_PATH: string = null;
   public static UPDATES_PATH: string = null;
 
@@ -63,6 +64,7 @@ class Environment {
 
       Environment.LOGGING_PATH = process.env.LOGGING_PATH;
       Environment.IMAGE_PATH = process.env.IMAGE_PATH;
+      Environment.ASSETS_PATH = process.env.ASSETS_PATH;
       Environment.NEWS_PATH = process.env.NEWS_PATH;
       Environment.UPDATES_PATH = process.env.UPDATES_PATH;
     } else {
