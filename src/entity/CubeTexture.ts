@@ -10,27 +10,27 @@ export class CubeTexture {
 
   @ManyToOne(() => TextureFile, { eager: true, nullable: false })
   @JoinColumn()
-  public texture_pos_x: number | TextureFile;
+  public texture_pos_x: TextureFile;
 
   @ManyToOne(() => TextureFile, { eager: true, nullable: false })
   @JoinColumn()
-  public texture_pos_y: number | TextureFile;
+  public texture_pos_y: TextureFile;
 
   @ManyToOne(() => TextureFile, { eager: true, nullable: false })
   @JoinColumn()
-  public texture_pos_z: number | TextureFile;
+  public texture_pos_z: TextureFile;
 
   @ManyToOne(() => TextureFile, { eager: true, nullable: false })
   @JoinColumn()
-  public texture_neg_x: number | TextureFile;
+  public texture_neg_x: TextureFile;
 
   @ManyToOne(() => TextureFile, { eager: true, nullable: false })
   @JoinColumn()
-  public texture_neg_y: number | TextureFile;
+  public texture_neg_y: TextureFile;
 
   @ManyToOne(() => TextureFile, { eager: true, nullable: false })
   @JoinColumn()
-  public texture_neg_z: number | TextureFile;
+  public texture_neg_z: TextureFile;
 
   constructor(name, pos_x, pos_y, pos_z, neg_x, neg_y, neg_z) {
     this.name = name;
