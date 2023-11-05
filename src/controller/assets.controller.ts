@@ -184,7 +184,7 @@ class AssetsController {
 
   private static multerLimits = {
     fileSize: 10 * 1024 * 1024, // 10MB
-    files: 5,
+    files: 1,
     parts: 10,
   };
 
