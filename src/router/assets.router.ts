@@ -9,9 +9,9 @@ assetsRouter.get('/texture', AssetsController.getTextures);
 assetsRouter.put('/texture', Authentication.grantDevAccess, AssetsController.multipartData.single('asset'), AssetsController.uploadTexture);
 
 assetsRouter.get('/gltf', AssetsController.getGltf);
-assetsRouter.put('/gltf', AssetsController.multipartGltfData.single('asset'), AssetsController.uploadGltf);
+assetsRouter.put('/gltf', Authentication.grantDevAccess, AssetsController.multipartGltfData.single('asset'), AssetsController.uploadGltf);
 
-assetsRouter.post('/cubemap', AssetsController.defineCubeMap);
+assetsRouter.post('/cubemap', Authentication.grantDevAccess, AssetsController.defineCubeMap);
 assetsRouter.get('/cubemap', AssetsController.getCubeMaps);
 
 assetsRouter.use('/static', express.static(path.join(__dirname, '../../storage/dynamicAssets')));

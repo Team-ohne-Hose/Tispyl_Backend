@@ -95,24 +95,30 @@ export class Authentication {
 
     // If the header exists check the JWT token.
     const validToken: JwtToken = await Authentication.verifyJwtToken(jwtToken);
+    if (validToken === null) {
+      new APIResponse(res, 401, {}, [
+        {
+          userMessage: 'Permission not granted.',
+          internalMessage: 'Token not valid.',
+        },
+      ]).send();
+      return;
+    }
 
     try {
       const userRepository = getRepository(User);
-      const user = await userRepository.findOneOrFail({
-        where: [{ login_name: validToken.username }],
-      });
-
-      if (validToken === null || !user.is_dev) {
+      const user = await userRepository.findOneOrFail({ where: [{ login_name: validToken.username }] });
+      if (!user.is_dev) {
         new APIResponse(res, 401, {}, [
           {
             userMessage: 'Permission not granted.',
-            internalMessage: 'Wrong JWT token was provided or user was not a development account.',
+            internalMessage: 'Wrong JWT token, user was not a development account.',
           },
         ]).send();
         return;
       }
     } catch (error) {
-      console.log('There is no user with username ' + validToken.username);
+      console.log('There is no user with username ' + validToken?.username);
       new APIResponse(res, 404, {}, ['There is no user with given username.']).send();
       return;
     }
