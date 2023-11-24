@@ -29,7 +29,7 @@ export class addDefaultTexturesAndModels1699111060378 implements MigrationInterf
             "(SELECT id FROM texture_file WHERE name='default_cm_negy')," +
             "(SELECT id FROM texture_file WHERE name='default_cm_negz'))");
         // Default models
-        await queryRunner.query("INSERT INTO gltf_file (name, asset_file, contribution) VALUES ('default_bcap_model', 'default_bcap_model_blank.glb', '')");
+        await queryRunner.query("INSERT INTO gltf_file (name, asset_file, contribution) VALUES ('default_bcap_model', 'default_bcap_model.glb', '')");
         await queryRunner.query("INSERT INTO gltf_file (name, asset_file, contribution) VALUES ('default_dice_model', 'default_dice_model.glb', '')");
     }
 
