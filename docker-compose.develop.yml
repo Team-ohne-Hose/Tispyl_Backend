@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  app:
+    container_name: tispyl-backend
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - "25670:25670"
+    links:
+      - "database:database"
+    depends_on:
+      - database
+    env_file:
+      - .env
+    volumes:
+      - ./.env:/app/.env
+    networks:
+      - db
+
+  database:
+    ports:
+      - "3306:3306"
+    container_name: tispyl-database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: BrettSpiel
+    build:
+      context: ./docker/database
+      dockerfile: Dockerfile
+    networks:
+      - db
+
+volumes:
+  db_data:
+
+networks:
+  db:
