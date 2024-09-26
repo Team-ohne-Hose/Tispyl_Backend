@@ -8,7 +8,7 @@
     "start": "nodemon app.ts",
     "start:debugger": "node --inspect -r ts-node/register app.ts",
     "start:prod": "ts-node ./app.ts",
-    "build": "docker-compose build",
+    "build": "docker compose build",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
     "updateRemote": "deployment\\updateRemote.cmd deployment_rsa",
     "startRemote": "deployment\\startRemote.cmd deployment_rsa",
